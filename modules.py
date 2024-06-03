@@ -210,17 +210,14 @@ def homeDir() -> str:
     return os.path.expanduser("~")
     # Handle Android (TBI)
 
-def classifyPath(dbPath: str) -> str:
+def classifyPath() -> Dict[str, List[str]]:
     """
-    Attach class names to the file paths and return a JSON object.
-
-    Args:
-        dirPath: Path to the directory containing the images.
-        dbPath: Path to the database file.
+    Classify images in the home directory and store the results in the database.
 
     Returns:
         Dict[str, List[str]]: Dictionary mapping class names to lists of file paths.
     """
+    dbPath = os.path.join(homeDir(), ".pictopy.db")
     columns = ["hash TEXT PRIMARY KEY", "imageClass TEXT"]
     tableID = "media"
     conn = connectDB(dbPath)
@@ -241,4 +238,4 @@ def classifyPath(dbPath: str) -> str:
 
 # Test case
 if __name__ == "__main__":
-    print(classifyPath("/tmp/gallery.db"))  # Just for demo, actual path will be provided by FrontEnd (TBI)
+    print(classifyPath())  # Just for demo, actual path will be provided by FrontEnd (TBI)
