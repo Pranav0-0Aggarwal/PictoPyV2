@@ -4,17 +4,30 @@
 # if not add them according to their indexs
 # if conflit occurs delete DB and recreate
 
-def createSchema(conn: sqlite3.Connection) -> None:
+def create_schema(conn: sqlite3.Connection) -> None:
     """Creates tables for IMAGES, JUNCTION, and CLASS in the database.
 
     Args:
         conn: A sqlite3.Connection object.
     """
-    createTable(conn, "IMAGES", ["imageID INTEGER PRIMARY KEY", "hash TEXT", "path TEXT", "hidden INTEGER"])
-    createTable(conn, "CLASS", ["classID INTEGER PRIMARY KEY", "class TEXT"]) # ID should start from 0, same as index
-    createTable(conn, "JUNCTION", ["imageID INTEGER", "classID INTEGER", 
-                                   "FOREIGN KEY(imageID) REFERENCES IMAGES(imageID)", 
-                                   "FOREIGN KEY(classID) REFERENCES CLASS(classID)"])
+    createTable(conn, "IMAGES", [
+        "imageID INTEGER PRIMARY KEY AUTOINCREMENT", 
+        "hash TEXT UNIQUE", 
+        "path TEXT", 
+        "hidden INTEGER"
+    ])
+    createTable(conn, "CLASS", [
+        "classID INTEGER PRIMARY KEY AUTOINCREMENT", 
+        "class TEXT UNIQUE"
+    ])
+    createTable(conn, "JUNCTION", [
+        "imageID INTEGER", 
+        "classID INTEGER", 
+        "FOREIGN KEY(imageID) REFERENCES IMAGES(imageID)", 
+        "FOREIGN KEY(classID) REFERENCES CLASS(classID)",
+        "PRIMARY KEY (imageID, classID)"
+    ])
+
 
 def insertClasse(conn: sqlite3.Connection, classes: List[str]) -> None:
     """Inserts classes into the CLASS table.
