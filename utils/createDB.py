@@ -29,7 +29,7 @@ def create_schema(conn: sqlite3.Connection) -> None:
     ])
 
 
-def insertClasse(conn: sqlite3.Connection, classes: List[str]) -> None:
+def insertClasses(conn: sqlite3.Connection, classes: List[str]) -> None:
     """Inserts classes into the CLASS table.
 
     Args:
