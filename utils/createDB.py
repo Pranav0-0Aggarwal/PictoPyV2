@@ -64,6 +64,8 @@ def groupByclasses(conn: sqlite3.Connection) -> List[Tuple[str, str]]:
 
     Returns:
         list: A list of tuples where each tuple contains class name and concatenated hashes.
+        list[0][0]: class name
+        list[0][1]: concatenated hashes
     """
     query = """
         SELECT c.class, GROUP_CONCAT(i.hash)
