@@ -3,7 +3,6 @@ import time
 import cv2
 import numpy as np
 import onnxruntime
-import imread_from_url
 
 from utils import xywh2xyxy, draw_detections, multiclass_nms, class_names
 
@@ -122,14 +121,16 @@ class YOLOv8:
         self.output_names = [model_outputs[i].name for i in range(len(model_outputs))]
 
 
-import cv2
-from imread_from_url import imread_from_url
-
-def load_and_process_image(url, model_path, conf_thres=0.3, iou_thres=0.5):
-    # img = imread_from_url(url)
+def markObjects(url, model_path, conf_thres=0.3, iou_thres=0.5):
     img = cv2.imread(url)
     yolov8_detector = YOLOv8(model_path, conf_thres, iou_thres)
+
+    # Detect Objects
     boxes, scores, class_ids = yolov8_detector.detect_objects(img)
+
+    # Optionally, draw detections and save the image again
+    img = yolov8_detector.draw_detections(img)
+
     return img, boxes, scores, class_ids
 
 def save_image(image, filename):
@@ -174,6 +175,7 @@ def detectedClass(imgPath):
     img_with_detections, boxes, scores, class_ids = load_and_process_image(imgPath, model_path)
     saveOutputImage(imgPath, img_with_detections)
     return uniqueClasses(class_ids)
+
 
 
 print(detectedClass("../.images/image.jpg"))
