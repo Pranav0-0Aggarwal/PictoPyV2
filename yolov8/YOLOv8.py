@@ -134,7 +134,6 @@ def load_and_process_image(url, model_path, conf_thres=0.3, iou_thres=0.5):
 def save_image(image, filename):
     cv2.imwrite(filename, image)
 
-import os
 
 def prepend_to_file(folder_name, file_path):
     """
@@ -174,3 +173,4 @@ def main():
 
     return dectectedClass
 
+print(main())
