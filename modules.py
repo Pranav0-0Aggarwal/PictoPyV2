@@ -2,7 +2,6 @@ import os
 import hashlib
 import sqlite3
 import platform
-from pathlib import Path
 from typing import List, Dict, Union, Tuple, Generator
 
 
@@ -83,9 +82,10 @@ def imgPaths(startPath: str) -> Generator[str, None, None]:
     Returns:
         Generator[str, None, None]: Generator yielding file paths.
     """
-    for path in Path(startPath).rglob('*'):
-        if isImg(path):
-            yield str(path)
+    for root, dirs, files in os.walk(startPath):
+        for file in files:
+            if isImg(file):
+                yield os.path.join(root, file)
 
 
 def processImgs(conn: sqlite3.Connection, files: Generator[str, None, None]) -> None:
