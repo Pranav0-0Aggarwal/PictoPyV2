@@ -4,6 +4,9 @@
 # if not add them according to their indexs
 # if conflit occurs delete DB and recreate
 
+from typing import List, Tuple
+import sqlite3
+
 def create_schema(conn: sqlite3.Connection) -> None:
     """Creates tables for IMAGES, JUNCTION, and CLASS in the database.
 
@@ -36,10 +39,8 @@ def insertClasses(conn: sqlite3.Connection, classes: List[str]) -> None:
         conn: A sqlite3.Connection object.
         classes: A list of class names to insert.
     """
-    cursor = conn.cursor()
     for className in classes:
-        cursor.execute("INSERT INTO CLASS (class) VALUES (?)", (className,))
-    conn.commit()
+        executeQuery(conn, "INSERT INTO CLASS (class) VALUES (?)", (className,))
 
 def classesExist(conn: sqlite3.Connection, classes: List[str]) -> bool:
     """Checks if all classes already exist in the CLASS table.
@@ -51,9 +52,8 @@ def classesExist(conn: sqlite3.Connection, classes: List[str]) -> bool:
     Returns:
         bool: True if all classes exist in the CLASS table, False otherwise.
     """
-    cursor = conn.cursor()
-    cursor.execute("SELECT class FROM CLASS ORDER BY classID")
-    existing_classes = [row[0] for row in cursor.fetchall()]
+    result = executeQuery(conn, "SELECT class FROM CLASS ORDER BY classID")
+    existing_classes = [row[0] for row in result]
     return existing_classes == classes
 
 def groupByclasses(conn: sqlite3.Connection) -> List[Tuple[str, str]]:
