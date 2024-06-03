@@ -159,16 +159,21 @@ def prepend_to_file(folder_name, file_path):
     return new_path
 
 
-def saveOutputImage(imgPath, img_with_detections, model_path):
+def saveOutputImage(imgPath, img_with_detections):
     outputPath = prepend_to_file("output", imgPath)
     save_image(img_with_detections, outputPath)
+
+def uniqueClasses(class_ids):
+    classes = []
+    for id in np.unique(class_ids):
+        classes.append(class_names[id])
+    return classes
 
 def detectedClass(imgPath):
     model_path = "models/yolov8n.onnx"
     img_with_detections, boxes, scores, class_ids = load_and_process_image(imgPath, model_path)
+    saveOutputImage(imgPath, img_with_detections)
+    return uniqueClasses(class_ids)
 
-    dectectedClass = []
-    for id in np.unique(class_ids):
-        dectectedClass.append(class_names[id])
 
-    return dectectedClass
+print(detectedClass("../.images/image.jpg"))
