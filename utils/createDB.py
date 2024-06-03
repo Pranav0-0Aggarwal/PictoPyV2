@@ -7,7 +7,7 @@
 from typing import List, Tuple
 import sqlite3
 
-def create_schema(conn: sqlite3.Connection) -> None:
+def createSchema(conn: sqlite3.Connection) -> None:
     """Creates tables for IMAGES, JUNCTION, and CLASS in the database.
 
     Args:
