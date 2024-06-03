@@ -1,9 +1,11 @@
+import os
 import time
 import cv2
 import numpy as np
 import onnxruntime
+import imread_from_url
 
-from utils import xywh2xyxy, draw_detections, multiclass_nms
+from utils import xywh2xyxy, draw_detections, multiclass_nms, class_names
 
 
 class YOLOv8:
@@ -119,32 +121,56 @@ class YOLOv8:
         model_outputs = self.session.get_outputs()
         self.output_names = [model_outputs[i].name for i in range(len(model_outputs))]
 
-# def draw_detections(self, image, draw_scores=True, mask_alpha=0.4):
-#     # Draw detections on the image
-#     image_with_detections = draw_detections(image, self.boxes, self.scores,
-#                                              self.class_ids, mask_alpha)
-#     return image_with_detections
 
-if __name__ == '__main__':
-    from imread_from_url import imread_from_url
+import cv2
+from imread_from_url import imread_from_url
 
+def load_and_process_image(url, model_path, conf_thres=0.3, iou_thres=0.5):
+    img = imread_from_url(url)
+    yolov8_detector = YOLOv8(model_path, conf_thres, iou_thres)
+    boxes, scores, class_ids = yolov8_detector.detect_objects(img)
+    return img, boxes, scores, class_ids
+
+def save_image(image, filename):
+    cv2.imwrite(filename, image)
+
+import os
+
+def prepend_to_file(folder_name, file_path):
+    """
+    Prepend a folder name to the path of a file before the filename.
+
+    Args:
+        folder_name (str): The name of the folder to prepend.
+        file_path (str): The original path to the file.
+
+    Returns:
+        str: The modified path with the folder name prepended.
+    """
+    # Extract the base name (filename) from the file path
+    base_name = os.path.basename(file_path)
+    
+    # Remove the base name from the file path to get the directory path
+    dir_path = os.path.dirname(file_path)
+    
+    # Join the directory path with the folder name and the base name
+    new_path = os.path.join(dir_path, folder_name, base_name)
+    
+    return new_path
+
+
+def saveOutputImage(img_url, img_with_detections, model_path):
+    outputPath = prepend_to_file("output", img_url)
+    save_image(img_with_detections, outputPath)
+
+def main():
     model_path = "models/yolov8n.onnx"
-
-    # Initialize YOLOv8 object detector
-    yolov8_detector = YOLOv8(model_path, conf_thres=0.3, iou_thres=0.5)
-
     img_url = "https://live.staticflickr.com/13/19041780_d6fd803de0_3k.jpg"
-    img = imread_from_url(img_url)
+    img_with_detections, boxes, scores, class_ids = load_and_process_image(img_url, model_path)
 
-    # Detect Objects
-    boxes, scores, class_ids = yolov8_detector(img)
+    dectectedClass = []
+    for id in np.unique(class_ids):
+        dectectedClass.append(class_names[id])
 
-    print(class_ids)
+    return dectectedClass
 
-    # Save the image with detections
-    output_filename = "output_image.jpg"
-    cv2.imwrite(output_filename, img)
-
-    # Optionally, draw detections and save the image again
-    img_with_detections = yolov8_detector.draw_detections(img)
-    cv2.imwrite("output_image_with_detections.jpg", img_with_detections)
