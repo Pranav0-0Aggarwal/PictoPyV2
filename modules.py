@@ -118,7 +118,6 @@ def connectDB(dbPath: str) -> sqlite3.Connection:
     """
     return sqlite3.connect(dbPath)
 
-
 def createTable(conn: sqlite3.Connection, tableID: str, columns: List[str]) -> None:
     """
     Create a table in the database if it doesn't exist.
@@ -128,9 +127,8 @@ def createTable(conn: sqlite3.Connection, tableID: str, columns: List[str]) -> N
         tableID: Name of the table.
         columns: List of column names and types.
     """
-    cursor = conn.cursor()
-    cursor.execute(f"CREATE TABLE IF NOT EXISTS {tableID} ({', '.join(columns)})")
-    conn.commit()
+    query = f"CREATE TABLE IF NOT EXISTS {tableID} ({', '.join(columns)})"
+    executeQuery(conn, query)
 
 
 def executeQuery(conn: sqlite3.Connection, query: str) -> List[Tuple]:
