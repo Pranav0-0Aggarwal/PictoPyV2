@@ -144,6 +144,7 @@ def executeQuery(conn: sqlite3.Connection, query: str) -> List[Tuple]:
     Returns:
         List[Tuple]: Results of the query.
     """
+    # Prevent SQL injection (TBI)
     cursor = conn.cursor()
     cursor.execute(query)
     return cursor.fetchall()
