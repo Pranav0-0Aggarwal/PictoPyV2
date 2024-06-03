@@ -2,7 +2,7 @@
 import os
 import sqlite3
 from typing import Dict, List, Generator
-from utils.fs import genHash, isImg, imgPaths
+from utils.fs import genHash, isImg, imgPaths, homeDir, detectFileWithHash
 from utils.db import connectDB, createTable, executeQuery, closeConnection, hashExist
 from yolov8 import detectedClass
 
@@ -31,19 +31,30 @@ def fileByClass(conn: sqlite3.Connection, files: Generator[str, None, None], tab
     return classDict
 
 def classifyPath() -> Dict[str, List[str]]:
-    dbPath = os.path.join(os.path.expanduser("~"), ".pictopy.db")
+    """
+    Classify images in the home directory and store the results in the database.
+
+    Returns:
+        Dict[str, List[str]]: Dictionary mapping class names to lists of file paths.
+    """
+    dbPath = os.path.join(homeDir(), ".pictopy.db")
     columns = ["hash TEXT PRIMARY KEY", "imageClass TEXT"]
     tableID = "media"
     conn = connectDB(dbPath)
     createTable(conn, tableID, columns)
 
-    files = imgPaths(os.path.expanduser("~"))
+    files = imgPaths(homeDir())
     processImgs(conn, files)
 
+    # Re-create the generator since it would be exhausted
+    files = imgPaths(homeDir())  
+    # Retrieve files classified by class from the database
     result = fileByClass(conn, files, tableID)
+
     closeConnection(conn)
 
     return result
+
 
 # Test case
 if __name__ == "__main__":
