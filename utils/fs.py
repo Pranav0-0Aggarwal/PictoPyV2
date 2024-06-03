@@ -68,3 +68,14 @@ def detectFileWithHash(files: Generator[str, None, None], targetHash: str) -> Un
     # File paths can be stored in DB but what if path is changed?
     # we need to keep checking for the path change and update DB (TBI)
 
+
+def homeDir() -> str:
+    """
+    Get the home directory path.
+
+    Returns:
+        str: Home directory path.
+    """
+    return os.path.expanduser("~")
+    # Handle Android (TBI)
+

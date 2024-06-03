@@ -36,6 +36,7 @@ def executeQuery(conn: sqlite3.Connection, query: str) -> List[Tuple]:
     cursor = conn.cursor()
     cursor.execute(query)
     return cursor.fetchall()
+    # Prevent SQL injection (TBI)
 
 def closeConnection(conn: sqlite3.Connection) -> None:
     """Closes the connection to the database.
