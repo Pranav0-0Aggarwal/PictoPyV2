@@ -1,7 +1,6 @@
 import os
 import hashlib
 import sqlite3
-import platform
 from typing import List, Dict, Union, Tuple, Generator
 from yolov8 import detectedClass
 
