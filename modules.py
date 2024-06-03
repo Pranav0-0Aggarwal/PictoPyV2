@@ -1,6 +1,7 @@
 import os
 import hashlib
 import sqlite3
+import platform
 from pathlib import Path
 from typing import List, Dict, Union, Tuple, Generator
 
@@ -199,7 +200,17 @@ def fileByClass(conn: sqlite3.Connection, files: Generator[str, None, None], tab
     return classDict
 
 
-def classifyPath(dirPath: str, dbPath: str) -> str:
+def homeDir() -> str:
+    """
+    Get the home directory path.
+
+    Returns:
+        str: Home directory path.
+    """
+    return os.path.expanduser("~")
+    # Handle Android (TBI)
+
+def classifyPath(dbPath: str) -> str:
     """
     Attach class names to the file paths and return a JSON object.
 
@@ -215,11 +226,11 @@ def classifyPath(dirPath: str, dbPath: str) -> str:
     conn = connectDB(dbPath)
     createTable(conn, tableID, columns)
 
-    files = imgPaths(dirPath)
+    files = imgPaths(homeDir())
     processImgs(conn, files)
 
     # Re-create the generator since it would be exhausted
-    files = imgPaths(dirPath)  
+    files = imgPaths(homeDir())  
     # Retrieve files classified by class from the database
     result = fileByClass(conn, files, tableID)
 
@@ -230,4 +241,4 @@ def classifyPath(dirPath: str, dbPath: str) -> str:
 
 # Test case
 if __name__ == "__main__":
-    print(classifyPath("/home", "/tmp/gallery.db"))  # Just for demo, actual path will be provided by FrontEnd (TBI)
+    print(classifyPath("/tmp/gallery.db"))  # Just for demo, actual path will be provided by FrontEnd (TBI)
