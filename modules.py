@@ -1,5 +1,4 @@
 import os
-import json
 import hashlib
 import sqlite3
 from pathlib import Path
@@ -227,8 +226,7 @@ def classifyPath(dirPath: str, dbPath: str) -> str:
 
     closeConnection(conn)
 
-    return json.dumps(result, indent=2)
-    # return result
+    return result
 
 
 # Test case
