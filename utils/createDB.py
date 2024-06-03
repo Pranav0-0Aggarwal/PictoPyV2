@@ -57,10 +57,10 @@ def groupByclasses(conn: sqlite3.Connection) -> List[Tuple[str, str]]:
     Returns:
         list: A list of tuples where each tuple contains class name and concatenated hashes.
         list[0][0]: class name
-        list[0][1]: concatenated hashes
+        list[0][1]: concatenated paths
     """
     query = """
-        SELECT c.class, GROUP_CONCAT(i.hash)
+        SELECT c.class, GROUP_CONCAT(i.path)
         FROM CLASS c
         JOIN JUNCTION j ON c.classID = j.classID
         JOIN IMAGES i ON j.imageID = i.imageID
