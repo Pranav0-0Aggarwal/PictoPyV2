@@ -72,13 +72,20 @@ def detectFileWithHash(files: List[str], targetHash: str) -> Union[str, None]:
     # File paths can be stored in DB but what if path is changed?
     # we need to keep checking for the path change and update DB (TBI)
 
-def imgPaths(start_path: str) -> Generator[str, None, None]:
-    """Yields absolute paths of image files."""
-    image_extensions = ('.png', '.jpg', '.jpeg', '.gif', '.bmp')
-    for path in Path(start_path).rglob('*'):
+def imgPaths(startPath: str) -> Generator[str, None, None]:
+    """
+    Yields absolute paths of image files.
+
+    Args:
+        startPath: Path to the directory containing the images.
+
+    Returns:
+        files: List of file paths.
+    """
+    for path in Path(startPath).rglob('*'):
         if not isImg(path):
             continue
-        # Directly utilize this in processImgs() to save memory
+        # Directly utilize this in processImgs() to save memory (TBI)
         yield str(path)
 
 def processImgs(conn: sqlite3.Connection, files: List[str]) -> None:
