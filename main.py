@@ -17,9 +17,9 @@ def processImgs(conn: sqlite3.Connection, files: Generator[str, None, None]) -> 
         try:
             imgClass = detectedClass(file)
             _, imageID = executeQuery(conn, f"INSERT OR REPLACE INTO IMAGES(hash, path) VALUES('{imgHash}', '{file}')", 1)
-            for classID in imgClass:
+            for className in imgClass:
                 try:
-                    _, classID = executeQuery(conn, f"INSERT OR REPLACE INTO CLASS(class) VALUES('{imgClass}')", 1)
+                    _, classID = executeQuery(conn, f"INSERT OR REPLACE INTO CLASS(class) VALUES('{className}')", 1)
                 except IntegrityError:
                     classID = executeQuery(conn, f"SELECT id FROM CLASS WHERE class = '{imgClass}'")
                 executeQuery(conn, f"INSERT OR REPLACE INTO JUNCTION(imageID, classID) VALUES('{imageID}', '{classID}')")
