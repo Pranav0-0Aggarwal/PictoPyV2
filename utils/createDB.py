@@ -56,3 +56,20 @@ def classesExist(conn: sqlite3.Connection, classes: List[str]) -> bool:
     existing_classes = [row[0] for row in cursor.fetchall()]
     return existing_classes == classes
 
+def groupByclasses(conn: sqlite3.Connection) -> List[Tuple[str, str]]:
+    """Returns hashes grouped by classes from the database.
+
+    Args:
+        conn: A sqlite3.Connection object.
+
+    Returns:
+        list: A list of tuples where each tuple contains class name and concatenated hashes.
+    """
+    query = """
+        SELECT c.class, GROUP_CONCAT(i.hash)
+        FROM CLASS c
+        JOIN JUNCTION j ON c.classID = j.classID
+        JOIN IMAGES i ON j.imageID = i.imageID
+        GROUP BY c.class
+    """
+    return executeQuery(conn, query)
