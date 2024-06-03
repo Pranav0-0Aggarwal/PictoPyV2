@@ -4,8 +4,9 @@
 # if not add them according to their indexs
 # if conflit occurs delete DB and recreate
 
-from typing import List, Tuple
 import sqlite3
+from utils import createTable, executeQuery
+from typing import List, Tuple
 
 def createSchema(conn: sqlite3.Connection) -> None:
     """Creates tables for IMAGES, JUNCTION, and CLASS in the database.
@@ -32,16 +33,7 @@ def createSchema(conn: sqlite3.Connection) -> None:
     ])
 
 
-def insertClasses(conn: sqlite3.Connection, classes: List[str]) -> None:
-    """Inserts classes into the CLASS table.
-
-    Args:
-        conn: A sqlite3.Connection object.
-        classes: A list of class names to insert.
-    """
-    for className in classes:
-        executeQuery(conn, "INSERT INTO CLASS (class) VALUES (?)", (className,))
-
+# NN
 def classesExist(conn: sqlite3.Connection, classes: List[str]) -> bool:
     """Checks if all classes already exist in the CLASS table.
 
