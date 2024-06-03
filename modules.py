@@ -3,6 +3,7 @@ import hashlib
 import sqlite3
 import platform
 from typing import List, Dict, Union, Tuple, Generator
+from yolov8 import detectedClass
 
 
 def genHash(imgPath: str) -> str:
@@ -19,20 +20,6 @@ def genHash(imgPath: str) -> str:
     with open(imgPath, "rb") as f:
         imgData = f.read()
         return hashlib.md5(imgData).hexdigest()
-
-
-def classifyImg(imgPath: str) -> str:
-    """
-    Classify the image using object detection.
-
-    Args:
-        imgPath: Path to the image file.
-
-    Returns:
-        str: Classification of the image.
-    """
-    # Object detection (TBI)
-    return "thing"  # for demo
 
 
 def isImg(filePath: str) -> bool:
@@ -103,7 +90,8 @@ def processImgs(conn: sqlite3.Connection, files: Generator[str, None, None]) -> 
         if hashExist(conn, imgHash):
             continue
         # Add condition to check if the file path is same as the one attached to hash in DB (TBI)
-        imgClass = classifyImg(file)
+        imgClass = detectedClass(file)
+        print(imgClass)
         query = f"INSERT OR REPLACE INTO media(hash, imageClass) VALUES('{imgHash}', '{imgClass}')"
         executeQuery(conn, query)
 
