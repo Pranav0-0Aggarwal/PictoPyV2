@@ -126,7 +126,8 @@ import cv2
 from imread_from_url import imread_from_url
 
 def load_and_process_image(url, model_path, conf_thres=0.3, iou_thres=0.5):
-    img = imread_from_url(url)
+    # img = imread_from_url(url)
+    img = cv2.imread(url)
     yolov8_detector = YOLOv8(model_path, conf_thres, iou_thres)
     boxes, scores, class_ids = yolov8_detector.detect_objects(img)
     return img, boxes, scores, class_ids
@@ -158,19 +159,16 @@ def prepend_to_file(folder_name, file_path):
     return new_path
 
 
-def saveOutputImage(img_url, img_with_detections, model_path):
-    outputPath = prepend_to_file("output", img_url)
+def saveOutputImage(imgPath, img_with_detections, model_path):
+    outputPath = prepend_to_file("output", imgPath)
     save_image(img_with_detections, outputPath)
 
-def main():
+def detectedClass(imgPath):
     model_path = "models/yolov8n.onnx"
-    img_url = "https://live.staticflickr.com/13/19041780_d6fd803de0_3k.jpg"
-    img_with_detections, boxes, scores, class_ids = load_and_process_image(img_url, model_path)
+    img_with_detections, boxes, scores, class_ids = load_and_process_image(imgPath, model_path)
 
     dectectedClass = []
     for id in np.unique(class_ids):
         dectectedClass.append(class_names[id])
 
     return dectectedClass
-
-print(main())
