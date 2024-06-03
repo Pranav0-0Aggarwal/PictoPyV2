@@ -2,12 +2,9 @@ import os
 import json
 import hashlib
 import sqlite3
-from typing import List, Dict, Union, Tuple
+from pathlib import Path
+from typing import List, Dict, Union, Tuple, Generator
 
-
-# TODO:
-# recursively look for media in child directories
-# implement classifyImg()
 
 def genHash(imgPath: str) -> str:
     """
@@ -75,6 +72,14 @@ def detectFileWithHash(files: List[str], targetHash: str) -> Union[str, None]:
     # File paths can be stored in DB but what if path is changed?
     # we need to keep checking for the path change and update DB (TBI)
 
+def imgPaths(start_path: str) -> Generator[str, None, None]:
+    """Yields absolute paths of image files."""
+    image_extensions = ('.png', '.jpg', '.jpeg', '.gif', '.bmp')
+    for path in Path(start_path).rglob('*'):
+        if not isImg(path):
+            continue
+        # Directly utilize this in processImgs() to save memory
+        yield str(path)
 
 def processImgs(conn: sqlite3.Connection, files: List[str]) -> None:
     """
@@ -210,7 +215,7 @@ def classifyPath(dirPath: str, dbPath: str) -> Dict[str, List[str]]:
     createTable(conn, tableID, columns)
 
     # Process images and insert data into the database
-    files = [os.path.join(dirPath, file) for file in os.listdir(dirPath)]
+    files = imgPaths(dirPath)
     # dbPath = os.path.join(dirPath, "gallery.db") # DB in same dir as images
     processImgs(conn, files)
 
