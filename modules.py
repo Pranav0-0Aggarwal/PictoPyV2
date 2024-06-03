@@ -51,12 +51,12 @@ def isImg(filePath: str) -> bool:
     return fileExtension.lower() in imgExts
 
 
-def detectFileWithHash(files: List[str], targetHash: str) -> Union[str, None]:
+def detectFileWithHash(files: Generator[str, None, None], targetHash: str) -> Union[str, None]:
     """
-    Detect a file with a specific hash value.
+    Detect a file with a specific hash value from a generator.
 
     Args:
-        files: List of file paths.
+        files: Generator yielding file paths.
         targetHash: Hash value to compare with.
 
     Returns:
@@ -72,6 +72,7 @@ def detectFileWithHash(files: List[str], targetHash: str) -> Union[str, None]:
     # File paths can be stored in DB but what if path is changed?
     # we need to keep checking for the path change and update DB (TBI)
 
+
 def imgPaths(startPath: str) -> Generator[str, None, None]:
     """
     Yields absolute paths of image files.
@@ -80,22 +81,20 @@ def imgPaths(startPath: str) -> Generator[str, None, None]:
         startPath: Path to the directory containing the images.
 
     Returns:
-        files: List of file paths.
+        Generator[str, None, None]: Generator yielding file paths.
     """
     for path in Path(startPath).rglob('*'):
-        if not isImg(path):
-            continue
-        # Generator being used to save memory
-        # Directly utilize this in processImgs() to save memory (TBI)
-        yield str(path)
+        if isImg(path):
+            yield str(path)
 
-def processImgs(conn: sqlite3.Connection, files: List[str]) -> None:
+
+def processImgs(conn: sqlite3.Connection, files: Generator[str, None, None]) -> None:
     """
     Process images and insert data into the database.
 
     Args:
         conn: SQLite database connection.
-        files: List of file paths.
+        files: Generator yielding file paths.
     """
     for file in files:
         if not isImg(file):
@@ -118,8 +117,7 @@ def connectDB(dbPath: str) -> sqlite3.Connection:
     Returns:
         sqlite3.Connection: Database connection.
     """
-    conn = sqlite3.connect(dbPath)
-    return conn
+    return sqlite3.connect(dbPath)
 
 
 def createTable(conn: sqlite3.Connection, tableID: str, columns: List[str]) -> None:
@@ -176,16 +174,16 @@ def hashExist(conn: sqlite3.Connection, hashValue: str) -> bool:
     """
     query = f"SELECT EXISTS(SELECT 1 FROM media WHERE hash='{hashValue}')"
     result = executeQuery(conn, query)
-    return result[0][0]
+    return result[0][0] == 1
 
 
-def fileByClass(conn: sqlite3.Connection, files: List[str], tableID: str) -> Dict[str, List[str]]:
+def fileByClass(conn: sqlite3.Connection, files: Generator[str, None, None], tableID: str) -> Dict[str, List[str]]:
     """
     Retrieve files classified by class from the database.
 
     Args:
         conn: SQLite database connection.
-        files: List of file paths.
+        files: Generator yielding file paths.
         tableID: Name of the table.
 
     Returns:
@@ -194,8 +192,7 @@ def fileByClass(conn: sqlite3.Connection, files: List[str], tableID: str) -> Dic
     rows = executeQuery(conn, f"SELECT imageClass, hash FROM {tableID}")
     classDict = {}
     for row in rows:
-        imageClass = row[0]
-        hashValue = row[1]
+        imageClass, hashValue = row
         if imageClass not in classDict:
             classDict[imageClass] = []
         filePath = detectFileWithHash(files, hashValue)
@@ -204,7 +201,7 @@ def fileByClass(conn: sqlite3.Connection, files: List[str], tableID: str) -> Dic
     return classDict
 
 
-def classifyPath(dirPath: str, dbPath: str) -> Dict[str, List[str]]:
+def classifyPath(dirPath: str, dbPath: str) -> str:
     """
     Attach class names to the file paths and return a JSON object.
 
@@ -215,26 +212,25 @@ def classifyPath(dirPath: str, dbPath: str) -> Dict[str, List[str]]:
     Returns:
         Dict[str, List[str]]: Dictionary mapping class names to lists of file paths.
     """
-
-    # Create database and table if they don't exist
     columns = ["hash TEXT PRIMARY KEY", "imageClass TEXT"]
     tableID = "media"
     conn = connectDB(dbPath)
     createTable(conn, tableID, columns)
 
-    # Process images and insert data into the database
     files = imgPaths(dirPath)
-    # dbPath = os.path.join(dirPath, "gallery.db") # DB in same dir as images
     processImgs(conn, files)
 
+    # Re-create the generator since it would be exhausted
+    files = imgPaths(dirPath)  
     # Retrieve files classified by class from the database
-    result = json.dumps(fileByClass(conn, files, tableID), indent=2)
+    result = fileByClass(conn, files, tableID)
 
-    # Close the database connection
     closeConnection(conn)
 
-    return result
+    return json.dumps(result, indent=2)
+    # return result
+
 
 # Test case
-# if __name__ == "__main__":
-#     print(classifyPath("/tmp/sample/", "/tmp/sample/gallery.db")) # Just for demo, actual path will be provided by FrontEnd (TBI)
+if __name__ == "__main__":
+    print(classifyPath("/home", "/tmp/gallery.db"))  # Just for demo, actual path will be provided by FrontEnd (TBI)
