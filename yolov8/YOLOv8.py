@@ -3,6 +3,7 @@ import time
 import cv2
 import numpy as np
 import onnxruntime
+from typing import List, Tuple
 
 from yolov8.utils import xywh2xyxy, draw_detections, multiclass_nms, class_names
 
@@ -121,7 +122,7 @@ class YOLOv8:
         self.output_names = [model_outputs[i].name for i in range(len(model_outputs))]
 
 
-def markObjects(url, model_path, conf_thres=0.3, iou_thres=0.5):
+def markObjects(url: str, model_path: str, conf_thres: float = 0.3, iou_thres: float = 0.5) -> Tuple[cv2.Mat, List[List[float]], List[float], List[int]]:
     """
     Detect objects in an image using the YOLOv8 model.
 
@@ -150,7 +151,7 @@ def markObjects(url, model_path, conf_thres=0.3, iou_thres=0.5):
     return img, boxes, scores, class_ids
 
 
-def save_image(image, filename):
+def save_image(image: cv2.Mat, filename: str):
     """
     Save an image to a file.
 
@@ -161,7 +162,7 @@ def save_image(image, filename):
     cv2.imwrite(filename, image)
 
 
-def prepend_to_file(folder_name, file_path):
+def prepend_to_file(folder_name: str, file_path: str) -> str:
     """
     Prepend a folder name to the path of a file before the filename.
 
@@ -184,7 +185,7 @@ def prepend_to_file(folder_name, file_path):
     return new_path
 
 
-def saveOutputImage(imgPath, img_with_detections):
+def saveOutputImage(imgPath: str, img_with_detections: cv2.Mat):
     """
     Save the image with detected objects to the output folder.
 
@@ -196,7 +197,7 @@ def saveOutputImage(imgPath, img_with_detections):
     save_image(img_with_detections, outputPath)
 
 
-def uniqueClasses(class_ids):
+def uniqueClasses(class_ids: List[int]) -> List[str]:
     """
     Get a list of unique classes detected in the image.
 
@@ -212,7 +213,7 @@ def uniqueClasses(class_ids):
     return classes
 
 
-def detectedClass(imgPath):
+def detectedClass(imgPath: str) -> List[str]:
     """
     Detect objects in an image and return a list of unique classes.
 
