@@ -122,6 +122,22 @@ class YOLOv8:
 
 
 def markObjects(url, model_path, conf_thres=0.3, iou_thres=0.5):
+    """
+    Detect objects in an image using the YOLOv8 model.
+
+    Args:
+        url (str): The path to the image file.
+        model_path (str): The path to the YOLOv8 model file.
+        conf_thres (float, optional): The confidence threshold for object detection. Defaults to 0.3.
+        iou_thres (float, optional): The IoU threshold for non-maxima suppression. Defaults to 0.5.
+
+    Returns:
+        tuple: A tuple containing the following:
+            - img (ndarray): The image with detected objects drawn on it.
+            - boxes (ndarray): The bounding boxes of the detected objects.
+            - scores (ndarray): The confidence scores of the detected objects.
+            - class_ids (ndarray): The class IDs of the detected objects.
+    """
     img = cv2.imread(url)
     yolov8_detector = YOLOv8(model_path, conf_thres, iou_thres)
 
@@ -133,7 +149,15 @@ def markObjects(url, model_path, conf_thres=0.3, iou_thres=0.5):
 
     return img, boxes, scores, class_ids
 
+
 def save_image(image, filename):
+    """
+    Save an image to a file.
+
+    Args:
+        image (ndarray): The image to save.
+        filename (str): The path to the output file.
+    """
     cv2.imwrite(filename, image)
 
 
@@ -161,16 +185,43 @@ def prepend_to_file(folder_name, file_path):
 
 
 def saveOutputImage(imgPath, img_with_detections):
+    """
+    Save the image with detected objects to the output folder.
+
+    Args:
+        imgPath (str): The path to the original image file.
+        img_with_detections (ndarray): The image with detected objects drawn on it.
+    """
     outputPath = prepend_to_file("output", imgPath)
     save_image(img_with_detections, outputPath)
 
+
 def uniqueClasses(class_ids):
+    """
+    Get a list of unique classes detected in the image.
+
+    Args:
+        class_ids (ndarray): The class IDs of the detected objects.
+
+    Returns:
+        list: A list of unique class names.
+    """
     classes = []
     for id in np.unique(class_ids):
         classes.append(class_names[id])
     return classes
 
+
 def detectedClass(imgPath):
+    """
+    Detect objects in an image and return a list of unique classes.
+
+    Args:
+        imgPath (str): The path to the image file.
+
+    Returns:
+        list: A list of unique class names detected in the image.
+    """
     model_path = "models/yolov8n.onnx"
     img_with_detections, boxes, scores, class_ids = markObjects(imgPath, model_path)
     saveOutputImage(imgPath, img_with_detections)
