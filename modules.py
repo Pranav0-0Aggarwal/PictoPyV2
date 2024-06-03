@@ -102,6 +102,7 @@ def processImgs(conn: sqlite3.Connection, files: Generator[str, None, None]) -> 
         imgHash = genHash(file)
         if hashExist(conn, imgHash):
             continue
+        # Add condition to check if the file path is same as the one attached to hash in DB (TBI)
         imgClass = classifyImg(file)
         query = f"INSERT OR REPLACE INTO media(hash, imageClass) VALUES('{imgHash}', '{imgClass}')"
         executeQuery(conn, query)
