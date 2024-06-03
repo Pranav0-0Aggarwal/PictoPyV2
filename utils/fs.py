@@ -1,6 +1,6 @@
 import os
 import hashlib
-from typing import Generator
+from typing import Generator, Union
 
 def genHash(imgPath: str) -> str:
     """
@@ -46,3 +46,25 @@ def imgPaths(startPath: str) -> Generator[str, None, None]:
         for file in files:
             if isImg(file):
                 yield os.path.join(root, file)
+
+def detectFileWithHash(files: Generator[str, None, None], targetHash: str) -> Union[str, None]:
+    """
+    Detect a file with a specific hash value from a generator.
+
+    Args:
+        files: Generator yielding file paths.
+        targetHash: Hash value to compare with.
+
+    Returns:
+        Union[str, None]: Path of the file if found, None otherwise.
+    """
+    for file in files:
+        if not isImg(file):
+            continue
+        fileHash = genHash(file)
+        if fileHash == targetHash:
+            return file
+    return None
+    # File paths can be stored in DB but what if path is changed?
+    # we need to keep checking for the path change and update DB (TBI)
+
