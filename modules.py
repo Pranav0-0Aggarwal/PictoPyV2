@@ -85,6 +85,7 @@ def imgPaths(startPath: str) -> Generator[str, None, None]:
     for path in Path(startPath).rglob('*'):
         if not isImg(path):
             continue
+        # Generator being used to save memory
         # Directly utilize this in processImgs() to save memory (TBI)
         yield str(path)
 
