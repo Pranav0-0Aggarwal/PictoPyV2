@@ -9,26 +9,55 @@ from yolov8.utils import xywh2xyxy, draw_detections, multiclass_nms, class_names
 
 
 class YOLOv8:
+    def __init__(self, path: str, conf_thres: float = 0.7, iou_thres: float = 0.5) -> None:
+        """
+        Initialize the YOLOv8 object detector.
 
-    def __init__(self, path, conf_thres=0.7, iou_thres=0.5):
+        Args:
+            path (str): The path to the YOLOv8 model file.
+            conf_thres (float): The confidence threshold for object detection.
+            iou_thres (float): The IoU threshold for non-maxima suppression.
+        """
         self.conf_threshold = conf_thres
         self.iou_threshold = iou_thres
 
         # Initialize model
         self.initialize_model(path)
 
-    def __call__(self, image):
+    def __call__(self, image: np.ndarray) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+        """
+        Perform object detection on the given image.
+
+        Args:
+            image (np.ndarray): The input image.
+
+        Returns:
+            tuple: A tuple containing the bounding boxes, scores, and class IDs of the detected objects.
+        """
         return self.detect_objects(image)
 
-    def initialize_model(self, path):
-        self.session = onnxruntime.InferenceSession(path,
-                                                    providers=onnxruntime.get_available_providers())
+    def initialize_model(self, path: str) -> None:
+        """
+        Initialize the ONNX model.
+
+        Args:
+            path (str): The path to the YOLOv8 model file.
+        """
+        self.session = onnxruntime.InferenceSession(path, providers=onnxruntime.get_available_providers())
         # Get model info
         self.get_input_details()
         self.get_output_details()
 
+    def detect_objects(self, image: np.ndarray) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+        """
+        Detect objects in the given image.
 
-    def detect_objects(self, image):
+        Args:
+            image (np.ndarray): The input image.
+
+        Returns:
+            tuple: A tuple containing the bounding boxes, scores, and class IDs of the detected objects.
+        """
         input_tensor = self.prepare_input(image)
 
         # Perform inference on the image
@@ -38,7 +67,16 @@ class YOLOv8:
 
         return self.boxes, self.scores, self.class_ids
 
-    def prepare_input(self, image):
+    def prepare_input(self, image: np.ndarray) -> np.ndarray:
+        """
+        Prepare the input image for the model.
+
+        Args:
+            image (np.ndarray): The input image.
+
+        Returns:
+            np.ndarray: The preprocessed image tensor.
+        """
         self.img_height, self.img_width = image.shape[:2]
 
         input_img = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
@@ -53,15 +91,32 @@ class YOLOv8:
 
         return input_tensor
 
+    def inference(self, input_tensor: np.ndarray) -> List[np.ndarray]:
+        """
+        Perform inference on the input tensor.
 
-    def inference(self, input_tensor):
+        Args:
+            input_tensor (np.ndarray): The preprocessed image tensor.
+
+        Returns:
+            list: The model outputs.
+        """
         start = time.perf_counter()
         outputs = self.session.run(self.output_names, {self.input_names[0]: input_tensor})
 
         # print(f"Inference time: {(time.perf_counter() - start)*1000:.2f} ms")
         return outputs
 
-    def process_output(self, output):
+    def process_output(self, output: List[np.ndarray]) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+        """
+        Process the model outputs to extract bounding boxes, scores, and class IDs.
+
+        Args:
+            output (list): The model outputs.
+
+        Returns:
+            tuple: A tuple containing the bounding boxes, scores, and class IDs of the detected objects.
+        """
         predictions = np.squeeze(output[0]).T
 
         # Filter out object confidence scores below threshold
@@ -70,7 +125,7 @@ class YOLOv8:
         scores = scores[scores > self.conf_threshold]
 
         if len(scores) == 0:
-            return [], [], []
+            return np.array([]), np.array([]), np.array([])
 
         # Get the class with the highest confidence
         class_ids = np.argmax(predictions[:, 4:], axis=1)
@@ -79,37 +134,58 @@ class YOLOv8:
         boxes = self.extract_boxes(predictions)
 
         # Apply non-maxima suppression to suppress weak, overlapping bounding boxes
-        # indices = nms(boxes, scores, self.iou_threshold)
         indices = multiclass_nms(boxes, scores, class_ids, self.iou_threshold)
 
         return boxes[indices], scores[indices], class_ids[indices]
 
-    def extract_boxes(self, predictions):
-        # Extract boxes from predictions
+    def extract_boxes(self, predictions: np.ndarray) -> np.ndarray:
+        """
+        Extract bounding boxes from the predictions.
+
+        Args:
+            predictions (np.ndarray): The model predictions.
+
+        Returns:
+            np.ndarray: The bounding boxes.
+        """
         boxes = predictions[:, :4]
-
-        # Scale boxes to original image dimensions
         boxes = self.rescale_boxes(boxes)
-
-        # Convert boxes to xyxy format
         boxes = xywh2xyxy(boxes)
-
         return boxes
 
-    def rescale_boxes(self, boxes):
+    def rescale_boxes(self, boxes: np.ndarray) -> np.ndarray:
+        """
+        Rescale bounding boxes to the original image dimensions.
 
-        # Rescale boxes to original image dimensions
+        Args:
+            boxes (np.ndarray): The bounding boxes.
+
+        Returns:
+            np.ndarray: The rescaled bounding boxes.
+        """
         input_shape = np.array([self.input_width, self.input_height, self.input_width, self.input_height])
         boxes = np.divide(boxes, input_shape, dtype=np.float32)
         boxes *= np.array([self.img_width, self.img_height, self.img_width, self.img_height])
         return boxes
 
-    def draw_detections(self, image, draw_scores=True, mask_alpha=0.4):
+    def draw_detections(self, image: np.ndarray, draw_scores: bool = True, mask_alpha: float = 0.4) -> np.ndarray:
+        """
+        Draw detections on the image.
 
-        return draw_detections(image, self.boxes, self.scores,
-                               self.class_ids, mask_alpha)
+        Args:
+            image (np.ndarray): The input image.
+            draw_scores (bool, optional): Whether to draw scores on the image. Defaults to True.
+            mask_alpha (float, optional): The transparency of the mask. Defaults to 0.4.
 
-    def get_input_details(self):
+        Returns:
+            np.ndarray: The image with detections drawn on it.
+        """
+        return draw_detections(image, self.boxes, self.scores, self.class_ids, mask_alpha)
+
+    def get_input_details(self) -> None:
+        """
+        Get the input details of the model.
+        """
         model_inputs = self.session.get_inputs()
         self.input_names = [model_inputs[i].name for i in range(len(model_inputs))]
 
@@ -117,7 +193,10 @@ class YOLOv8:
         self.input_height = self.input_shape[2]
         self.input_width = self.input_shape[3]
 
-    def get_output_details(self):
+    def get_output_details(self) -> None:
+        """
+        Get the output details of the model.
+        """
         model_outputs = self.session.get_outputs()
         self.output_names = [model_outputs[i].name for i in range(len(model_outputs))]
 
