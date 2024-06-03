@@ -4,7 +4,7 @@ import cv2
 import numpy as np
 import onnxruntime
 
-from utils import xywh2xyxy, draw_detections, multiclass_nms, class_names
+from yolov8.utils import xywh2xyxy, draw_detections, multiclass_nms, class_names
 
 
 class YOLOv8:
@@ -172,10 +172,6 @@ def uniqueClasses(class_ids):
 
 def detectedClass(imgPath):
     model_path = "models/yolov8n.onnx"
-    img_with_detections, boxes, scores, class_ids = load_and_process_image(imgPath, model_path)
+    img_with_detections, boxes, scores, class_ids = markObjects(imgPath, model_path)
     saveOutputImage(imgPath, img_with_detections)
     return uniqueClasses(class_ids)
-
-
-
-print(detectedClass("../.images/image.jpg"))
