@@ -26,7 +26,6 @@ def processImgs(conn: sqlite3.Connection, files: Generator[str, None, None]) -> 
 
         except IntegrityError:
             executeQuery(conn, f"UPDATE IMAGES SET path = '{file}' WHERE hash = '{imgHash}'")
-           # Add condition to check if the file path is same as the one attached to hash in DB (TBI)
 
 
 #NN

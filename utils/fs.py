@@ -65,8 +65,6 @@ def detectFileWithHash(files: Generator[str, None, None], targetHash: str) -> Un
         if fileHash == targetHash:
             return file
     return None
-    # File paths can be stored in DB but what if path is changed?
-    # we need to keep checking for the path change and update DB (TBI)
 
 
 def homeDir() -> str:
