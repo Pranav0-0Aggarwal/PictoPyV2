@@ -4,10 +4,11 @@
 # if not add them according to their indexs
 # if conflit occurs delete DB and recreate
 
-from typing import List, Tuple
 import sqlite3
+from utils import createTable, executeQuery
+from typing import List, Tuple
 
-def create_schema(conn: sqlite3.Connection) -> None:
+def createSchema(conn: sqlite3.Connection) -> None:
     """Creates tables for IMAGES, JUNCTION, and CLASS in the database.
 
     Args:
@@ -32,16 +33,7 @@ def create_schema(conn: sqlite3.Connection) -> None:
     ])
 
 
-def insertClasses(conn: sqlite3.Connection, classes: List[str]) -> None:
-    """Inserts classes into the CLASS table.
-
-    Args:
-        conn: A sqlite3.Connection object.
-        classes: A list of class names to insert.
-    """
-    for className in classes:
-        executeQuery(conn, "INSERT INTO CLASS (class) VALUES (?)", (className,))
-
+# NN
 def classesExist(conn: sqlite3.Connection, classes: List[str]) -> bool:
     """Checks if all classes already exist in the CLASS table.
 
@@ -65,10 +57,10 @@ def groupByclasses(conn: sqlite3.Connection) -> List[Tuple[str, str]]:
     Returns:
         list: A list of tuples where each tuple contains class name and concatenated hashes.
         list[0][0]: class name
-        list[0][1]: concatenated hashes
+        list[0][1]: concatenated paths
     """
     query = """
-        SELECT c.class, GROUP_CONCAT(i.hash)
+        SELECT c.class, GROUP_CONCAT(i.path)
         FROM CLASS c
         JOIN JUNCTION j ON c.classID = j.classID
         JOIN IMAGES i ON j.imageID = i.imageID
