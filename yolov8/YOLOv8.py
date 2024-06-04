@@ -201,35 +201,6 @@ class YOLOv8:
         self.output_names = [model_outputs[i].name for i in range(len(model_outputs))]
 
 
-def markObjects(url: str, model_path: str, conf_thres: float = 0.3, iou_thres: float = 0.5) -> Tuple[cv2.Mat, List[List[float]], List[float], List[int]]:
-    """
-    Detect objects in an image using the YOLOv8 model.
-
-    Args:
-        url (str): The path to the image file.
-        model_path (str): The path to the YOLOv8 model file.
-        conf_thres (float, optional): The confidence threshold for object detection. Defaults to 0.3.
-        iou_thres (float, optional): The IoU threshold for non-maxima suppression. Defaults to 0.5.
-
-    Returns:
-        tuple: A tuple containing the following:
-            - img (ndarray): The image with detected objects drawn on it.
-            - boxes (ndarray): The bounding boxes of the detected objects.
-            - scores (ndarray): The confidence scores of the detected objects.
-            - class_ids (ndarray): The class IDs of the detected objects.
-    """
-    img = cv2.imread(url)
-    yolov8_detector = YOLOv8(model_path, conf_thres, iou_thres)
-
-    # Detect Objects
-    boxes, scores, class_ids = yolov8_detector.detect_objects(img)
-
-    # Optionally, draw detections and save the image again
-    img = yolov8_detector.draw_detections(img)
-
-    return img, boxes, scores, class_ids
-
-
 def save_image(image: cv2.Mat, filename: str):
     """
     Save an image to a file.
@@ -263,17 +234,49 @@ def prepend_to_file(folder_name: str, file_path: str) -> str:
     
     return new_path
 
+def imgDetector(imgPath: str, model_path: str, conf_thres: float = 0.3, iou_thres: float = 0.5) -> Tuple[np.ndarray, YOLOv8]:
+    """
+    Load an image and object detector from YOLOv8 model.
 
-def saveOutputImage(imgPath: str, img_with_detections: cv2.Mat):
+    Args:
+        imgPath (str): The path to the image file.
+        model_path (str): The path to the YOLOv8 model file.
+        conf_thres (float, optional): The confidence threshold for object detection. Defaults to 0.3.
+        iou_thres (float, optional): The IoU threshold for non-maxima suppression. Defaults to 0.5.
+    
+    Returns:
+        tuple: A tuple containing the image and the object detector.
+    """
+    return cv2.imread(imgPath), YOLOv8(model_path, conf_thres, iou_thres)
+
+def markObjects(img: np.ndarray, yolov8_detector: YOLOv8) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """
+    Detect objects in an image using the YOLOv8 model.
+
+    Args:
+        img (ndarray): The image to detect objects in.
+        yolov8_detector (YOLOv8): The YOLOv8 object detector.
+
+    Returns:
+        tuple: A tuple containing the following:
+            - boxes (ndarray): The bounding boxes of the detected objects.
+            - scores (ndarray): The confidence scores of the detected objects.
+            - class_ids (ndarray): The class IDs of the detected objects.
+    """
+    return yolov8_detector.detect_objects(img)
+
+
+def saveOutputImage(imgPath: str, img: np.ndarray, yolov8_detector: YOLOv8) -> None:
     """
     Save the image with detected objects to the output folder.
 
     Args:
         imgPath (str): The path to the original image file.
-        img_with_detections (ndarray): The image with detected objects drawn on it.
+        img (ndarray): The image with detected objects.
+        yolov8_detector (YOLOv8): The YOLOv8 object detector.
     """
     outputPath = prepend_to_file("output", imgPath)
-    save_image(img_with_detections, outputPath)
+    save_image(yolov8_detector.draw_detections(img), outputPath)
 
 
 def uniqueClasses(class_ids: List[int]) -> List[str]:
@@ -303,6 +306,7 @@ def detectedClass(imgPath: str) -> List[str]:
         list: A list of unique class names detected in the image.
     """
     model_path = "models/yolov8n.onnx"
-    img_with_detections, boxes, scores, class_ids = markObjects(imgPath, model_path)
-    saveOutputImage(imgPath, img_with_detections)
+    img, yolov8_detector = imgDetector(imgPath, model_path)
+    _, _, class_ids = markObjects(img, yolov8_detector)
+    saveOutputImage(imgPath, img, yolov8_detector)
     return uniqueClasses(class_ids)
