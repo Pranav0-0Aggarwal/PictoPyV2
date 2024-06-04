@@ -1,47 +1,63 @@
 #!/bin/sh
 
+# Colors
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+BLUE='\033[0;34m'
+CYAN='\033[0;36m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+# Remove images in the output directory
+echo -e "${CYAN}Removing old images from output directory...${NC}"
 rm .images/output/*
 
-sleep 2
+sleep 4
 
+# Display system information
+echo -e "${BLUE}Fetching system information...${NC}"
 fastfetch
 
 sleep 4
 
-echo "
-============
-
+# Display size of the dataset
+echo -e "
+${YELLOW}============
 Size of dataset
-
 ============
+${NC}"
+echo "
+$ du -sh .images
 "
-echo "$ du -sh .images"
 du -sh .images
 
 sleep 4
 
-echo "
+# Run main.py and measure time
+echo -e "
+${YELLOW}============
+Running main.py
 ============
-$ time python main.py
-"
-echo "
-Scanning the whole Drive ...
-"
+${NC}"
+echo -e "${CYAN}Scanning the whole Drive...${NC}"
 source .venv/bin/activate
 time python main.py
 
 sleep 4
 
-echo "
-============
+# Display DB schema
+echo -e "
+${YELLOW}============
 DB schema:
 ============
-"
+${NC}"
 sqlite3 ~/.pictopy.db .schema
 
 sleep 4
 
-echo "
-=========
-Image output here is only for testing porpose, won't be created in production, thus saving time
-========="
+# Testing message
+echo -e "
+${RED}=========
+Image output here is only for testing purposes, won't be created in production, thus saving time
+=========${NC}"
+
