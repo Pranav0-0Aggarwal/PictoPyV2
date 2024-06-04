@@ -11,18 +11,18 @@ from yolov8 import detectedClass
 
 def processImgs(conn: sqlite3.Connection, files: Generator[str, None, None]) -> None:
     for file in files:
-        # if not isImg(file): # Path is already filtered by imagePaths()
-        #     continue
         imgHash = genHash(file)
         try:
             imgClass = detectedClass(file)
-            _, imageID = executeQuery(conn, f"INSERT OR REPLACE INTO IMAGES(hash, path) VALUES('{imgHash}', '{file}')", 1)
+            _, imageID = executeQuery(conn, f"INSERT INTO IMAGES(hash, path) VALUES('{imgHash}', '{file}')", 1)
+
             for className in imgClass:
                 try:
-                    _, classID = executeQuery(conn, f"INSERT OR REPLACE INTO CLASS(class) VALUES('{className}')", 1)
+                    _, classID = executeQuery(conn, f"INSERT INTO CLASS(class) VALUES('{className}')", 1)
                 except IntegrityError:
-                    classID = executeQuery(conn, f"SELECT id FROM CLASS WHERE class = '{imgClass}'")
-                executeQuery(conn, f"INSERT OR REPLACE INTO JUNCTION(imageID, classID) VALUES('{imageID}', '{classID}')")
+                    classID = executeQuery(conn, f"SELECT classID FROM CLASS WHERE class = '{className}'")[0][0]
+                
+                executeQuery(conn, f"INSERT OR IGNORE INTO JUNCTION(imageID, classID) VALUES('{imageID}', '{classID}')")
 
         except IntegrityError:
             executeQuery(conn, f"UPDATE IMAGES SET path = '{file}' WHERE hash = '{imgHash}'")
