@@ -4,8 +4,8 @@ import sqlite3
 from sqlite3 import IntegrityError
 from typing import Dict, List, Generator
 from utils.fs import genHash, isImg, imgPaths, homeDir, detectFileWithHash
-from utils.db import connectDB, createTable, executeQuery, closeConnection, hashExist
-from utils.createDB import  createSchema, groupByclasses, classesExist
+from utils.db import connectDB, createTable, executeQuery, closeConnection, groupByclasses, hashExist
+from utils.createDB import  createSchema, classesExist
 from yolov8 import detectedClass
 
 
