@@ -31,7 +31,6 @@ def executeQuery(conn: sqlite3.Connection, query: str, rowID: int = 0) -> List[T
         query: The SQL query to execute.
         rowID: An optional integer indicating whether to return the last row ID.
 
-
     Returns:
         A list of tuples containing the results of the query, or the last row ID if rowID is 1.
     """
@@ -64,3 +63,14 @@ def hashExist(conn: sqlite3.Connection, hashValue: str) -> bool:
     query = f"SELECT EXISTS(SELECT 1 FROM media WHERE hash='{hashValue}')"
     result = executeQuery(conn, query)
     return result[0][0] == 1
+
+def toggleVisibility(conn: sqlite3.Connection, paths: List[str], hidden: int) -> None:
+    """Switch visibility of images by changing value of hidden column.
+
+    Args:
+        conn: sqlite3.Connection object.
+        paths: A list of paths to switch visibility.
+        hidden: The new value of hidden column.
+    """
+    query = f"UPDATE media SET hidden={hidden} WHERE path IN ({', '.join(['?'] * len(paths))})"
+    executeQuery(conn, query, paths)
