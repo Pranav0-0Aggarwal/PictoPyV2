@@ -33,6 +33,11 @@ du -sh .images
 
 sleep 4
 
+# prepare environment
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+
 # Run main.py and measure time
 echo -e "
 ${YELLOW}============
@@ -40,7 +45,6 @@ Running main.py
 ============
 ${NC}"
 echo -e "${CYAN}Scanning the whole Drive...${NC}"
-source .venv/bin/activate
 time python main.py
 
 sleep 4
