@@ -23,21 +23,21 @@ def createTable(conn: sqlite3.Connection, tableID: str, columns: List[str]) -> N
     query = f"CREATE TABLE IF NOT EXISTS {tableID} ({', '.join(columns)})"
     executeQuery(conn, query)
 
-def executeQuery(conn: sqlite3.Connection, query: str, rodID: int = 0) -> List[Tuple]:
+def executeQuery(conn: sqlite3.Connection, query: str, rowID: int = 0) -> List[Tuple]:
     """Executes a query on the database.
 
     Args:
         conn: A sqlite3.Connection object.
         query: The SQL query to execute.
-        rodID: An optional integer indicating whether to return the last row ID.
+        rowID: An optional integer indicating whether to return the last row ID.
 
 
     Returns:
-        A list of tuples containing the results of the query, or the last row ID if rodID is 1.
+        A list of tuples containing the results of the query, or the last row ID if rowID is 1.
     """
     cursor = conn.cursor()
     cursor.execute(query)
-    if rodID == 1:
+    if rowID == 1:
         return cursor.fetchall(), cursor.lastrowid
     return cursor.fetchall()
     # Prevent SQL injection (TBI)
