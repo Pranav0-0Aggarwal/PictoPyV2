@@ -79,8 +79,8 @@ def groupByclasses(conn: sqlite3.Connection) -> List[Tuple[str, str]]:
     query = """
         SELECT c.class, GROUP_CONCAT(i.path)
         FROM CLASS c
-        JOIN JUNCTION j ON c.classID = j.classID
-        JOIN IMAGES i ON j.imageID = i.imageID
+        JOIN JUNCTION j ON c.classID = j.classID 
+        JOIN IMAGES i ON j.imageID = i.imageID WHERE i.hidden = 0
         GROUP BY c.class
     """
     return executeQuery(conn, query)

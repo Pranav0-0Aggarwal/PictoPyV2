@@ -14,7 +14,7 @@ def processImgs(conn: sqlite3.Connection, files: Generator[str, None, None]) -> 
         imgHash = genHash(file)
         try:
             imgClass = detectedClass(file)
-            _, imageID = executeQuery(conn, f"INSERT INTO IMAGES(hash, path) VALUES('{imgHash}', '{file}')", 1)
+            _, imageID = executeQuery(conn, f"INSERT INTO IMAGES(hash, path, hidden) VALUES('{imgHash}', '{file}', 0)", 1)
 
             for className in imgClass:
                 try:
