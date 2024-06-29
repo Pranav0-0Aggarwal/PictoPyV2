@@ -12,9 +12,11 @@ from yolov8 import detectClasslass
 def processImgs(conn: sqlite3.Connection, files: Generator[str, None, None]) -> None:
     for file in files:
         imgHash = genHash(file)
+        if hashExist(conn, imgHash):
+            continue
         try:
             imgClass = detectClasslass(file)
-            _, imageID = executeQuery(conn, f"INSERT INTO IMAGES(hash, path, hidden) VALUES('{imgHash}', '{file}', 0)", 1)
+            _, imageID = executeQuery(conn, f"INSERT INTO MEDIA(hash, path, hidden) VALUES('{imgHash}', '{file}', 0)", 1)
 
             for className in imgClass:
                 try:
@@ -25,7 +27,7 @@ def processImgs(conn: sqlite3.Connection, files: Generator[str, None, None]) -> 
                 executeQuery(conn, f"INSERT OR IGNORE INTO JUNCTION(imageID, classID) VALUES('{imageID}', '{classID}')")
 
         except IntegrityError:
-            executeQuery(conn, f"UPDATE IMAGES SET path = '{file}' WHERE hash = '{imgHash}'")
+            executeQuery(conn, f"UPDATE MEDIA SET path = '{file}' WHERE hash = '{imgHash}'")
 
 
 #NN
@@ -51,7 +53,7 @@ def classifyPath() -> Dict[str, List[str]]:
     dbPath = os.path.join(homeDir(), ".pictopy.db")
     conn = connectDB(dbPath)
     # columns = ["hash TEXT PRIMARY KEY", "imageClass TEXT"]
-    # tableID = "media"
+    # tableID = "MEDIA"
     # createTable(conn, tableID, columns)
     createSchema(conn)
 

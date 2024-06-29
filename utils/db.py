@@ -60,7 +60,7 @@ def hashExist(conn: sqlite3.Connection, hashValue: str) -> bool:
     Returns:
         True if the hash value exists, False otherwise.
     """
-    query = f"SELECT EXISTS(SELECT 1 FROM media WHERE hash='{hashValue}')"
+    query = f"SELECT EXISTS(SELECT 1 FROM MEDIA WHERE hash='{hashValue}')"
     result = executeQuery(conn, query)
     return result[0][0] == 1
 
@@ -78,7 +78,7 @@ def groupByClass(conn: sqlite3.Connection) -> List[Tuple[str, str]]:
         SELECT c.class, GROUP_CONCAT(i.path)
         FROM CLASS c
         JOIN JUNCTION j ON c.classID = j.classID 
-        JOIN IMAGES i ON j.imageID = i.imageID WHERE i.hidden = 0
+        JOIN MEDIA i ON j.imageID = i.imageID WHERE i.hidden = 0
         GROUP BY c.class
     """
     dict = {}
@@ -94,7 +94,7 @@ def toggleVisibility(conn: sqlite3.Connection, paths: List[str], hidden: int) ->
         paths: A list of paths to switch visibility.
         hidden: The new value of hidden column.
     """
-    query = f"UPDATE media SET hidden={hidden} WHERE path IN ({', '.join(['?'] * len(paths))})"
+    query = f"UPDATE MEDIA SET hidden={hidden} WHERE path IN ({', '.join(['?'] * len(paths))})"
     executeQuery(conn, query, paths)
 
 def pathByClass(conn: sqlite3.Connection, classes: List[str]) -> List[str]:
