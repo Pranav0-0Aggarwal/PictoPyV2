@@ -72,9 +72,7 @@ def groupByclasses(conn: sqlite3.Connection) -> List[Tuple[str, str]]:
         conn: A sqlite3.Connection object.
 
     Returns:
-        list: A list of tuples where each tuple contains class name and concatenated hashes.
-        list[0][0]: class name
-        list[0][1]: concatenated paths
+        dict: A dictionary where each key is a class name and each value is a list of paths.
     """
     query = """
         SELECT c.class, GROUP_CONCAT(i.path)
@@ -83,7 +81,10 @@ def groupByclasses(conn: sqlite3.Connection) -> List[Tuple[str, str]]:
         JOIN IMAGES i ON j.imageID = i.imageID WHERE i.hidden = 0
         GROUP BY c.class
     """
-    return executeQuery(conn, query)
+    dict = {}
+    for row in executeQuery(conn, query):
+        dict[row[0]] = list(row[1].split(','))
+    return dict
 
 def toggleVisibility(conn: sqlite3.Connection, paths: List[str], hidden: int) -> None:
     """Switch visibility of images by changing value of hidden column.
@@ -103,6 +104,12 @@ def hideByClass(conn: sqlite3.Connection, classes: List[str]) -> None:
         conn: sqlite3.Connection object.
         classes: A list of class names.
     """
+    # create a joint list of paths associated with each class in list
+
+    # call toggleVisibility with the joint list
+    for class_ in classes:
+        query = f"UPDATE media SET hidden = 1 WHERE path IN (SELECT path FROM media WHERE class = '{class_}')"
+        executeQuery(conn, query)
 
 def unhideByClass(conn: sqlite3.Connection, classes: List[str]) -> None:
     """Unhides images by class.
@@ -111,6 +118,9 @@ def unhideByClass(conn: sqlite3.Connection, classes: List[str]) -> None:
         conn: sqlite3.Connection object.
         classes: A list of class names.
     """
+    for class_ in classes:
+        query = f"UPDATE media SET hidden = 0 WHERE path IN (SELECT path FROM media WHERE class = '{class_}')"
+        executeQuery(conn, query)
 
 def delete(conn: sqlite3.Connection, paths: List[str]) -> None:
     """Prompt for confirmation.
