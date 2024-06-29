@@ -6,14 +6,14 @@ from typing import Dict, List, Generator
 from utils.fs import genHash, isImg, imgPaths, homeDir, detectFileWithHash
 from utils.db import connectDB, createTable, executeQuery, closeConnection, groupByclasses, hashExist
 from utils.createDB import  createSchema, classesExist
-from yolov8 import detectedClass
+from yolov8 import detectClasslass
 
 
 def processImgs(conn: sqlite3.Connection, files: Generator[str, None, None]) -> None:
     for file in files:
         imgHash = genHash(file)
         try:
-            imgClass = detectedClass(file)
+            imgClass = detectClasslass(file)
             _, imageID = executeQuery(conn, f"INSERT INTO IMAGES(hash, path, hidden) VALUES('{imgHash}', '{file}', 0)", 1)
 
             for className in imgClass:
