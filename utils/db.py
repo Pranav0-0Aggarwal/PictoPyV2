@@ -66,7 +66,7 @@ def hashExist(conn: sqlite3.Connection, hashValue: str) -> bool:
 
 
 def groupByclasses(conn: sqlite3.Connection) -> List[Tuple[str, str]]:
-    """Returns hashes grouped by classes from the database.
+    """Returns paths grouped by classes from the database.
 
     Args:
         conn: A sqlite3.Connection object.
