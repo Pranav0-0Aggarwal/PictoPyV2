@@ -97,6 +97,23 @@ def toggleVisibility(conn: sqlite3.Connection, paths: List[str], hidden: int) ->
     query = f"UPDATE media SET hidden={hidden} WHERE path IN ({', '.join(['?'] * len(paths))})"
     executeQuery(conn, query, paths)
 
+def pathByClass(conn: sqlite3.Connection, classes: List[str]) -> List[str]:
+    """Returns list of all paths associated with the given classes.
+
+    Args:
+        conn: sqlite3.Connection object.
+        classes: A list of class names.
+
+    Returns:
+        A list of paths.
+    """
+    paths = []
+    groups = groupByclasses(conn)
+    for group in groups:
+        if group[0] in classes:
+            paths.extend(group[1])
+    return paths
+
 def hideByClass(conn: sqlite3.Connection, classes: List[str]) -> None:
     """Hides images by class.
 
@@ -104,13 +121,8 @@ def hideByClass(conn: sqlite3.Connection, classes: List[str]) -> None:
         conn: sqlite3.Connection object.
         classes: A list of class names.
     """
-    # create a joint list of paths associated with each class in list
-
-    # call toggleVisibility with the joint list
-    for class_ in classes:
-        query = f"UPDATE media SET hidden = 1 WHERE path IN (SELECT path FROM media WHERE class = '{class_}')"
-        executeQuery(conn, query)
-
+    toggleVisibility(conn, pathByClass(conn, classes), 1)
+    
 def unhideByClass(conn: sqlite3.Connection, classes: List[str]) -> None:
     """Unhides images by class.
 
@@ -118,9 +130,7 @@ def unhideByClass(conn: sqlite3.Connection, classes: List[str]) -> None:
         conn: sqlite3.Connection object.
         classes: A list of class names.
     """
-    for class_ in classes:
-        query = f"UPDATE media SET hidden = 0 WHERE path IN (SELECT path FROM media WHERE class = '{class_}')"
-        executeQuery(conn, query)
+    toggleVisibility(conn, pathByClass(conn, classes), 0)
 
 def delete(conn: sqlite3.Connection, paths: List[str]) -> None:
     """Prompt for confirmation.
