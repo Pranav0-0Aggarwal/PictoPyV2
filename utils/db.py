@@ -138,14 +138,12 @@ def unhideByClass(conn: sqlite3.Connection, classes: List[str]) -> None:
 def delete(conn: sqlite3.Connection, paths: List[str]) -> None:
     """
     Delete images by path.
-    Delete rows from MEDIA and JUNCTION tables using imageID. 
+    Delete related rows from DB. 
 
     Args:
         conn: sqlite3.Connection object.
         paths: A list of paths to delete.
-    """
-
-    
+    """    
 
 def deleteByClass(conn: sqlite3.Connection, classes: List[str]) -> None:
     """Deletes images by class.
