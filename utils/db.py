@@ -25,6 +25,7 @@ def createTable(conn: sqlite3.Connection, tableID: str, columns: List[str]) -> N
 
 def executeQuery(conn: sqlite3.Connection, query: str, rowID: int = 0) -> List[Tuple]:
     """Executes a query on the database.
+    Prevent SQL injection (TBI)
 
     Args:
         conn: A sqlite3.Connection object.
@@ -39,7 +40,6 @@ def executeQuery(conn: sqlite3.Connection, query: str, rowID: int = 0) -> List[T
     if rowID == 1:
         return cursor.fetchall(), cursor.lastrowid
     return cursor.fetchall()
-    # Prevent SQL injection (TBI)
 
 def closeConnection(conn: sqlite3.Connection) -> None:
     """Closes the connection to the database.
