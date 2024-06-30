@@ -29,7 +29,7 @@ def createSchema(conn: sqlite3.Connection) -> None:
     createTable(conn, "JUNCTION", [
         "imageID INTEGER", 
         "classID INTEGER", 
-        "FOREIGN KEY(imageID) REFERENCES MEDIA(imageID)", 
+        "FOREIGN KEY(imageID) REFERENCES MEDIA(imageID) ON DELETE CASCADE",
         "FOREIGN KEY(classID) REFERENCES CLASS(classID)",
         "PRIMARY KEY (imageID, classID)"
     ])
