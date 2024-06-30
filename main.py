@@ -2,7 +2,7 @@
 import os
 import sqlite3
 from sqlite3 import IntegrityError
-from typing import Dict, List, Generator
+from typing import Dict, List, Generator, Tuple
 from utils.fs import genHash, isImg, imgPaths, homeDir, detectFileWithHash
 from utils.db import connectDB, createTable, executeQuery, closeConnection, groupByClass, hashExist, hideByClass, unhideByClass, delete, deleteByClass, toggleVisibility
 from utils.createDB import  createSchema, classesExist
@@ -43,12 +43,12 @@ def fileByClass(conn: sqlite3.Connection, files: Generator[str, None, None], tab
             classDict[imageClass].append(filePath)
     return classDict
 
-def classifyPath() -> Dict[str, List[str]]:
+def classifyPath() -> Dict[str, Tuple[str]]:
     """
     Classify images in the home directory and store the results in the database.
 
     Returns:
-        Dict[str, List[str]]: Dictionary mapping class names to lists of file paths.
+        Dict[str, Tuple[str]]: Dictionary mapping class names to lists of file paths.
     """
     dbPath = os.path.join(homeDir(), ".pictopy.db")
     conn = connectDB(dbPath)
@@ -64,7 +64,7 @@ def classifyPath() -> Dict[str, List[str]]:
     files = imgPaths(homeDir())  
     # Retrieve files classified by class from the database
     # result = fileByClass(conn, files, tableID)
-    # hideByClass(conn, ["tv", "truck"])
+    # unhideByClass(conn, ("tv", "truck"))
     result = groupByClass(conn)
 
     closeConnection(conn)
@@ -76,4 +76,4 @@ def classifyPath() -> Dict[str, List[str]]:
 if __name__ == "__main__":
     print(classifyPath())
 
-# periodically run the object detection function and compare it with DB
+# periodically run the object detection function and compare it with DB (TBI)
