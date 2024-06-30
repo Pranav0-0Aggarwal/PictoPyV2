@@ -99,6 +99,7 @@ def toggleVisibility(conn: sqlite3.Connection, paths: List[str], hidden: int) ->
 
 def pathByClass(conn: sqlite3.Connection, classes: List[str]) -> List[str]:
     """Returns list of all paths associated with the given classes.
+    (TBI) improve efficiency, as groupByClass() scans whole DB which is expensive.
 
     Args:
         conn: sqlite3.Connection object.
