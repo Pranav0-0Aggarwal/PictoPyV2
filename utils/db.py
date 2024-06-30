@@ -95,7 +95,7 @@ def toggleVisibility(conn: sqlite3.Connection, paths: List[str], hidden: int) ->
         paths: A list of paths to switch visibility.
         hidden: The new value of hidden column.
     """
-    query = f"UPDATE MEDIA SET hidden={hidden} WHERE path IN ({', '.join(['?'] * len(paths))})"
+    query = f"UPDATE MEDIA SET hidden={hidden} WHERE path IN {tuple(paths)}"
     executeQuery(conn, query)
 
 def listByClass(conn: sqlite3.Connection, classes: List[str], groupOf: str = "path") -> List[str]:
@@ -112,9 +112,9 @@ def listByClass(conn: sqlite3.Connection, classes: List[str], groupOf: str = "pa
     """
     res = []
     groups = groupByClass(conn, groupOf)
-    for group in groups:
-        if group[0] in classes:
-            paths.extend(group[1])
+    for class_ in groups:
+        if class_ in classes:
+            res.extend(groups[class_])
     return res
 
 def hideByClass(conn: sqlite3.Connection, classes: List[str]) -> None:
