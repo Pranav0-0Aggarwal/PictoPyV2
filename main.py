@@ -3,8 +3,8 @@ import os
 import sqlite3
 from sqlite3 import IntegrityError
 from typing import Dict, List, Generator, Tuple
-from utils.fs import genHash, isImg, imgPaths, homeDir, detectFileWithHash
-from utils.db import connectDB, createTable, executeQuery, closeConnection, groupByClass, hashExist, hideByClass, unhideByClass, delete, deleteByClass, toggleVisibility
+from utils.fs import genHash, isImg, imgPaths, homeDir, detectFileWithHash, deleteFile
+from utils.db import connectDB, createTable, executeQuery, closeConnection, groupByClass, hashExist, hideByClass, unhideByClass, deleteFromDB, deleteByClass, toggleVisibility
 from utils.createDB import  createSchema, classesExist
 from yolov8 import detectClasslass
 

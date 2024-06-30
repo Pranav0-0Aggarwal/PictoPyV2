@@ -135,10 +135,10 @@ def unhideByClass(conn: sqlite3.Connection, classes: Tuple[str]) -> None:
     """
     toggleVisibility(conn, tupleByClass(conn, classes, 1), 0)
 
-def delete(conn: sqlite3.Connection, paths: Tuple[str]) -> None:
+def deleteFromDB(conn: sqlite3.Connection, paths: Tuple[str]) -> None:
     """
-    Delete images by path.
     Delete related rows from DB. 
+    Delete files by path.
 
     Args:
         conn: sqlite3.Connection object.
@@ -146,6 +146,7 @@ def delete(conn: sqlite3.Connection, paths: Tuple[str]) -> None:
     """
     query = f"DELETE FROM MEDIA WHERE path IN {paths}"
     executeQuery(conn, query)
+    deleteFile(paths)
 
 def deleteByClass(conn: sqlite3.Connection, classes: Tuple[str]) -> None:
     """Deletes images by class.
