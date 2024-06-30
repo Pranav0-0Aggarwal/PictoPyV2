@@ -12,13 +12,13 @@ def connectDB(dbPath: str) -> sqlite3.Connection:
     """
     return sqlite3.connect(dbPath)
 
-def createTable(conn: sqlite3.Connection, tableID: str, columns: List[str]) -> None:
+def createTable(conn: sqlite3.Connection, tableID: str, columns: Tuple[str]) -> None:
     """Creates a table in the database with the given name and columns.
 
     Args:
         conn: A sqlite3.Connection object.
         tableID: The name of the table to create.
-        columns: A list of column names.
+        columns: A tuple of column names.
     """
     query = f"CREATE TABLE IF NOT EXISTS {tableID} ({', '.join(columns)})"
     executeQuery(conn, query)
@@ -33,7 +33,7 @@ def executeQuery(conn: sqlite3.Connection, query: str, rowID: int = 0) -> List[T
         rowID: An optional integer indicating whether to return the last row ID.
 
     Returns:
-        A list of tuples containing the results of the query, or the last row ID if rowID is 1.
+        A tuple of tuples containing the results of the query, or the last row ID if rowID is 1.
     """
     cursor = conn.cursor()
     cursor.execute(query)
@@ -73,7 +73,7 @@ def groupByClass(conn: sqlite3.Connection, groupOf: str = "path") -> dict:
         groupOf: The column to be grouped.
 
     Returns:
-        dict: A dictionary where each key is a class name and each value is a list of paths.
+        dict: A dictionary where each key is a class name and each value is a tuple of paths.
     """
     query = f"""
         SELECT c.class, GROUP_CONCAT(i.{groupOf})
@@ -84,31 +84,31 @@ def groupByClass(conn: sqlite3.Connection, groupOf: str = "path") -> dict:
     """
     dict = {}
     for row in executeQuery(conn, query):
-        dict[row[0]] = list(row[1].split(','))
+        dict[row[0]] = tuple(row[1].split(','))
     return dict
 
-def toggleVisibility(conn: sqlite3.Connection, paths: List[str], hidden: int) -> None:
+def toggleVisibility(conn: sqlite3.Connection, paths: Tuple[str], hidden: int) -> None:
     """Switch visibility of images by changing value of hidden column.
 
     Args:
         conn: sqlite3.Connection object.
-        paths: A list of paths to switch visibility.
+        paths: A tuple of paths to switch visibility.
         hidden: The new value of hidden column.
     """
     query = f"UPDATE MEDIA SET hidden={hidden} WHERE path IN {tuple(paths)}"
     executeQuery(conn, query)
 
-def listByClass(conn: sqlite3.Connection, classes: List[str], groupOf: str = "path") -> List[str]:
-    """Returns list of all paths associated with the given classes.
+def tupleByClass(conn: sqlite3.Connection, classes: Tuple[str], groupOf: str = "path") -> Tuple[str]:
+    """Returns tuple of all paths associated with the given classes.
     (TBI) improve efficiency, as groupByClass() scans whole DB which is expensive.
 
     Args:
         conn: sqlite3.Connection object.
-        classes: A list of class names.
+        classes: A tuple of class names.
         groupOf: The column to be grouped.
 
     Returns:
-        A list of paths.
+        A tuple of paths.
     """
     res = []
     groups = groupByClass(conn, groupOf)
@@ -117,41 +117,41 @@ def listByClass(conn: sqlite3.Connection, classes: List[str], groupOf: str = "pa
             res.extend(groups[class_])
     return res
 
-def hideByClass(conn: sqlite3.Connection, classes: List[str]) -> None:
+def hideByClass(conn: sqlite3.Connection, classes: Tuple[str]) -> None:
     """Hides images by class.
 
     Args:
         conn: sqlite3.Connection object.
-        classes: A list of class names.
+        classes: A tuple of class names.
     """
-    toggleVisibility(conn, listByClass(conn, classes), 1)
+    toggleVisibility(conn, tupleByClass(conn, classes), 1)
     
-def unhideByClass(conn: sqlite3.Connection, classes: List[str]) -> None:
+def unhideByClass(conn: sqlite3.Connection, classes: Tuple[str]) -> None:
     """Unhides images by class.
 
     Args:
         conn: sqlite3.Connection object.
-        classes: A list of class names.
+        classes: A tuple of class names.
     """
-    toggleVisibility(conn, listByClass(conn, classes), 0)
+    toggleVisibility(conn, tupleByClass(conn, classes), 0)
 
-def delete(conn: sqlite3.Connection, paths: List[str]) -> None:
+def delete(conn: sqlite3.Connection, paths: Tuple[str]) -> None:
     """
     Delete images by path.
     Delete related rows from DB. 
 
     Args:
         conn: sqlite3.Connection object.
-        paths: A list of paths to delete.
+        paths: A tuple of paths to delete.
     """
     query = f"DELETE FROM MEDIA WHERE path IN ({', '.join(['?'] * len(paths))})"
     executeQuery(conn, query)
 
-def deleteByClass(conn: sqlite3.Connection, classes: List[str]) -> None:
+def deleteByClass(conn: sqlite3.Connection, classes: Tuple[str]) -> None:
     """Deletes images by class.
 
     Args:
         conn: sqlite3.Connection object.
-        classes: A list of class names.
+        classes: A tuple of class names.
     """
-    delete(conn, listByClass(conn, classes))
+    delete(conn, tupleByClass(conn, classes))
