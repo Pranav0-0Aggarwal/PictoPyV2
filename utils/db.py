@@ -65,17 +65,18 @@ def hashExist(conn: sqlite3.Connection, hashValue: str) -> bool:
     return result[0][0] == 1
 
 
-def groupByClass(conn: sqlite3.Connection) -> List[Tuple[str, str]]:
+def groupByClass(conn: sqlite3.Connection, groupOf: str = "path") -> List[Tuple[str, str]]:
     """Returns paths grouped by classes from the database.
 
     Args:
         conn: A sqlite3.Connection object.
+        groupOf: The column to be grouped.
 
     Returns:
         dict: A dictionary where each key is a class name and each value is a list of paths.
     """
-    query = """
-        SELECT c.class, GROUP_CONCAT(i.path)
+    query = f"""
+        SELECT c.class, GROUP_CONCAT(i.{groupOf})
         FROM CLASS c
         JOIN JUNCTION j ON c.classID = j.classID 
         JOIN MEDIA i ON j.imageID = i.imageID WHERE i.hidden = 0
@@ -97,23 +98,24 @@ def toggleVisibility(conn: sqlite3.Connection, paths: List[str], hidden: int) ->
     query = f"UPDATE MEDIA SET hidden={hidden} WHERE path IN ({', '.join(['?'] * len(paths))})"
     executeQuery(conn, query, paths)
 
-def pathByClass(conn: sqlite3.Connection, classes: List[str]) -> List[str]:
+def listByClass(conn: sqlite3.Connection, classes: List[str], groupOf: str = "path") -> List[str]:
     """Returns list of all paths associated with the given classes.
     (TBI) improve efficiency, as groupByClass() scans whole DB which is expensive.
 
     Args:
         conn: sqlite3.Connection object.
         classes: A list of class names.
+        groupOf: The column to be grouped.
 
     Returns:
         A list of paths.
     """
-    paths = []
-    groups = groupByClass(conn)
+    res = []
+    groups = groupByClass(conn, groupOf)
     for group in groups:
         if group[0] in classes:
             paths.extend(group[1])
-    return paths
+    return res
 
 def hideByClass(conn: sqlite3.Connection, classes: List[str]) -> None:
     """Hides images by class.
@@ -122,7 +124,7 @@ def hideByClass(conn: sqlite3.Connection, classes: List[str]) -> None:
         conn: sqlite3.Connection object.
         classes: A list of class names.
     """
-    toggleVisibility(conn, pathByClass(conn, classes), 1)
+    toggleVisibility(conn, listByClass(conn, classes), 1)
     
 def unhideByClass(conn: sqlite3.Connection, classes: List[str]) -> None:
     """Unhides images by class.
@@ -131,17 +133,19 @@ def unhideByClass(conn: sqlite3.Connection, classes: List[str]) -> None:
         conn: sqlite3.Connection object.
         classes: A list of class names.
     """
-    toggleVisibility(conn, pathByClass(conn, classes), 0)
+    toggleVisibility(conn, listByClass(conn, classes), 0)
 
 def delete(conn: sqlite3.Connection, paths: List[str]) -> None:
-    """Prompt for confirmation.
-    Deletes images by path.
-    Deletes entry from DB considering junction table.
+    """
+    Delete images by path.
+    Delete rows from MEDIA and JUNCTION tables using imageID. 
 
     Args:
         conn: sqlite3.Connection object.
         paths: A list of paths to delete.
     """
+
+    
 
 def deleteByClass(conn: sqlite3.Connection, classes: List[str]) -> None:
     """Deletes images by class.
