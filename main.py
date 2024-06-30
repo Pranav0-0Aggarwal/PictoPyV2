@@ -4,7 +4,7 @@ import sqlite3
 from sqlite3 import IntegrityError
 from typing import Dict, List, Generator
 from utils.fs import genHash, isImg, imgPaths, homeDir, detectFileWithHash
-from utils.db import connectDB, createTable, executeQuery, closeConnection, groupByClass, hashExist
+from utils.db import connectDB, createTable, executeQuery, closeConnection, groupByClass, hashExist, hideByClass, unhideByClass, delete, deleteByClass, toggleVisibility
 from utils.createDB import  createSchema, classesExist
 from yolov8 import detectClasslass
 
@@ -64,6 +64,7 @@ def classifyPath() -> Dict[str, List[str]]:
     files = imgPaths(homeDir())  
     # Retrieve files classified by class from the database
     # result = fileByClass(conn, files, tableID)
+    # hideByClass(conn, ["tv", "truck"])
     result = groupByClass(conn)
 
     closeConnection(conn)
