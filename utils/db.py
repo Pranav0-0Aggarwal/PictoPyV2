@@ -1,5 +1,5 @@
 import sqlite3
-from typing import List, Tuple
+from typing import List, Tuple, Dict
 
 def connectDB(dbPath: str) -> sqlite3.Connection:
     """Connects to the database at the given path.
@@ -65,7 +65,7 @@ def hashExist(conn: sqlite3.Connection, hashValue: str) -> bool:
     return result[0][0] == 1
 
 
-def groupByClass(conn: sqlite3.Connection, groupOf: str = "path") -> dict:
+def groupByClass(conn: sqlite3.Connection, hidden: int = 0, groupOf: str = "path") -> Dict[str, Tuple[str]]:
     """Returns paths grouped by classes from the database.
 
     Args:
@@ -79,7 +79,7 @@ def groupByClass(conn: sqlite3.Connection, groupOf: str = "path") -> dict:
         SELECT c.class, GROUP_CONCAT(i.{groupOf})
         FROM CLASS c
         JOIN JUNCTION j ON c.classID = j.classID 
-        JOIN MEDIA i ON j.imageID = i.imageID WHERE i.hidden = 0
+        JOIN MEDIA i ON j.imageID = i.imageID WHERE i.hidden = {hidden}
         GROUP BY c.class
     """
     dict = {}
@@ -95,10 +95,10 @@ def toggleVisibility(conn: sqlite3.Connection, paths: Tuple[str], hidden: int) -
         paths: A tuple of paths to switch visibility.
         hidden: The new value of hidden column.
     """
-    query = f"UPDATE MEDIA SET hidden={hidden} WHERE path IN {tuple(paths)}"
+    query = f"UPDATE MEDIA SET hidden={hidden} WHERE path IN {paths}"
     executeQuery(conn, query)
 
-def tupleByClass(conn: sqlite3.Connection, classes: Tuple[str], groupOf: str = "path") -> Tuple[str]:
+def tupleByClass(conn: sqlite3.Connection, classes: Tuple[str], hidden: int = 0, groupOf: str = "path") -> Tuple[str]:
     """Returns tuple of all paths associated with the given classes.
     (TBI) improve efficiency, as groupByClass() scans whole DB which is expensive.
 
@@ -111,11 +111,11 @@ def tupleByClass(conn: sqlite3.Connection, classes: Tuple[str], groupOf: str = "
         A tuple of paths.
     """
     res = []
-    groups = groupByClass(conn, groupOf)
+    groups = groupByClass(conn, hidden, groupOf)
     for class_ in groups:
         if class_ in classes:
             res.extend(groups[class_])
-    return res
+    return tuple(res)
 
 def hideByClass(conn: sqlite3.Connection, classes: Tuple[str]) -> None:
     """Hides images by class.
@@ -124,7 +124,7 @@ def hideByClass(conn: sqlite3.Connection, classes: Tuple[str]) -> None:
         conn: sqlite3.Connection object.
         classes: A tuple of class names.
     """
-    toggleVisibility(conn, tupleByClass(conn, classes), 1)
+    toggleVisibility(conn, tupleByClass(conn, classes, 0), 1)
     
 def unhideByClass(conn: sqlite3.Connection, classes: Tuple[str]) -> None:
     """Unhides images by class.
@@ -133,7 +133,7 @@ def unhideByClass(conn: sqlite3.Connection, classes: Tuple[str]) -> None:
         conn: sqlite3.Connection object.
         classes: A tuple of class names.
     """
-    toggleVisibility(conn, tupleByClass(conn, classes), 0)
+    toggleVisibility(conn, tupleByClass(conn, classes, 1), 0)
 
 def delete(conn: sqlite3.Connection, paths: Tuple[str]) -> None:
     """
@@ -144,7 +144,7 @@ def delete(conn: sqlite3.Connection, paths: Tuple[str]) -> None:
         conn: sqlite3.Connection object.
         paths: A tuple of paths to delete.
     """
-    query = f"DELETE FROM MEDIA WHERE path IN ({', '.join(['?'] * len(paths))})"
+    query = f"DELETE FROM MEDIA WHERE path IN {paths}"
     executeQuery(conn, query)
 
 def deleteByClass(conn: sqlite3.Connection, classes: Tuple[str]) -> None:
