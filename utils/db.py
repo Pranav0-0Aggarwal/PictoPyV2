@@ -96,7 +96,7 @@ def toggleVisibility(conn: sqlite3.Connection, paths: List[str], hidden: int) ->
         hidden: The new value of hidden column.
     """
     query = f"UPDATE MEDIA SET hidden={hidden} WHERE path IN ({', '.join(['?'] * len(paths))})"
-    executeQuery(conn, query, paths)
+    executeQuery(conn, query)
 
 def listByClass(conn: sqlite3.Connection, classes: List[str], groupOf: str = "path") -> List[str]:
     """Returns list of all paths associated with the given classes.
@@ -143,7 +143,9 @@ def delete(conn: sqlite3.Connection, paths: List[str]) -> None:
     Args:
         conn: sqlite3.Connection object.
         paths: A list of paths to delete.
-    """    
+    """
+    query = f"DELETE FROM MEDIA WHERE path IN ({', '.join(['?'] * len(paths))})"
+    executeQuery(conn, query)
 
 def deleteByClass(conn: sqlite3.Connection, classes: List[str]) -> None:
     """Deletes images by class.
@@ -152,3 +154,4 @@ def deleteByClass(conn: sqlite3.Connection, classes: List[str]) -> None:
         conn: sqlite3.Connection object.
         classes: A list of class names.
     """
+    delete(conn, listByClass(conn, classes))
