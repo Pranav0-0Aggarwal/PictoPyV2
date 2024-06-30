@@ -1,5 +1,6 @@
 import sqlite3
 from typing import List, Tuple, Dict
+from utils.fs import deleteFile
 
 def connectDB(dbPath: str) -> sqlite3.Connection:
     """Connects to the database at the given path.

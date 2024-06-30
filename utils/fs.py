@@ -1,6 +1,6 @@
 import os
 import hashlib
-from typing import Generator, Union
+from typing import Generator, Union, Tuple
 
 def genHash(imgPath: str) -> str:
     """
@@ -85,4 +85,5 @@ def deleteFile(paths: Tuple[str]) -> None:
         paths: A tuple of paths to delete.
     """
     for path in paths:
+        print(path)
         os.remove(path)
