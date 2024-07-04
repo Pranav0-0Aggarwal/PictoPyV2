@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=0.9">
+    <title>PictoPy</title>
+    <style>
+        .mediaSection {
+            margin-bottom: 20px;
+        }
+        .mediaTitle {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .mediaImages {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .mediaImages img {
+            max-width: 200px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        {% for title, paths in classDict.items() %}
+        <div class="mediaSection">
+            <div class="mediaTitle">{{ title }}</div>
+            <div class="mediaImages">
+                {% for path in paths %}
+                <img src="media/{{ path }}" alt="{{ title }}">
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</body>
+</html>

@@ -7,6 +7,7 @@ from utils.fs import genHash, isImg, imgPaths, homeDir, detectFileWithHash, dele
 from utils.db import connectDB, createTable, executeQuery, closeConnection, groupByClass, hashExist, hideByClass, unhideByClass, deleteFromDB, deleteByClass, toggleVisibility
 from utils.createDB import  createSchema, classesExist
 from yolov8 import detectClasslass
+from flask import Flask, render_template, send_file, request
 
 
 def processImgs(conn: sqlite3.Connection, files: Generator[str, None, None]) -> None:
@@ -52,9 +53,6 @@ def classifyPath() -> Dict[str, Tuple[str]]:
     """
     dbPath = os.path.join(homeDir(), ".pictopy.db")
     conn = connectDB(dbPath)
-    # columns = ["hash TEXT PRIMARY KEY", "imageClass TEXT"]
-    # tableID = "MEDIA"
-    # createTable(conn, tableID, columns)
     createSchema(conn)
 
     files = imgPaths(homeDir())
@@ -62,18 +60,23 @@ def classifyPath() -> Dict[str, Tuple[str]]:
 
     # Re-create the generator since it would be exhausted
     files = imgPaths(homeDir())  
-    # Retrieve files classified by class from the database
-    # result = fileByClass(conn, files, tableID)
-    # unhideByClass(conn, ("tv", "truck"))
     result = groupByClass(conn)
 
     closeConnection(conn)
 
     return result
 
-
-# Test case
-if __name__ == "__main__":
-    print(classifyPath())
-
 # periodically run the object detection function and compare it with DB (TBI)
+
+app = Flask(__name__)
+
+@app.route('/')
+def index():
+    return render_template('index.html', classDict=classifyPath())
+
+@app.route('/media/<path:filename>')
+def media(filename):
+    return send_file(f"/{filename}")
+
+if __name__ == '__main__':
+    app.run(debug=True, host='0.0.0.0')
