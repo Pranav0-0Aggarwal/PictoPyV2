@@ -3,10 +3,10 @@ import os
 import sqlite3
 from sqlite3 import IntegrityError
 from typing import Dict, List, Generator, Tuple
-from utils.fs import genHash, isImg, imgPaths, homeDir, detectFileWithHash, deleteFile
-from utils.db import connectDB, createTable, executeQuery, closeConnection, groupByClass, hashExist, hideByClass, unhideByClass, deleteFromDB, deleteByClass, toggleVisibility
+from utils.fs import genHash, isImg, imgPaths, homeDir, detectFileWithHash, deleteFile, pathExist
+from utils.db import connectDB, createTable, executeQuery, closeConnection, groupByClass, hashExist, hideByClass, unhideByClass, deleteFromDB, deleteByClass, cleanDB
 from utils.createDB import  createSchema, classesExist
-from yolov8 import detectClasslass
+from yolov8 import detectClasses
 from flask import Flask, render_template, send_file, request, redirect, url_for
 from markupsafe import escape
 
@@ -25,7 +25,7 @@ def processImgs(conn: sqlite3.Connection, files: Generator[str, None, None]) -> 
         if hashExist(conn, imgHash):
             continue
         try:
-            imgClass = detectClasslass(file)
+            imgClass = detectClasses(file)
             _, imageID = executeQuery(conn, f"INSERT INTO MEDIA(hash, path, hidden) VALUES('{imgHash}', '{file}', 0)", 1)
 
             for className in imgClass:
@@ -67,8 +67,9 @@ def classifyPath() -> Dict[str, Tuple[str]]:
     files = imgPaths(homeDir())
     processImgs(conn, files)
 
-    # Re-create the generator since it would be exhausted
-    files = imgPaths(homeDir())  
+    # Clear unavailable paths from DB
+    cleanDB(conn)
+
     result = groupByClass(conn)
 
     closeConnection(conn)
@@ -89,7 +90,10 @@ def static_file(path):
 
 @app.route('/media/<path:path>')
 def media(path):
-    return send_file(f"/{escape(path)}")
+    path = escape(f"/{path}")
+    if pathExist(path):
+        return send_file(path)
+    return redirect(url_for('index')) # doesn't reload / (TBI)
 
 @app.route('/delete', methods=['POST'])
 def delete():
