@@ -21,20 +21,35 @@
             margin-right: 10px;
             margin-bottom: 10px;
         }
+        .buttonContainer {
+            margin-top: 10px;
+        }
+        .buttonContainer button {
+            margin-right: 10px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        {% for title, paths in classDict.items() %}
-        <div class="mediaSection">
-            <div class="mediaTitle">{{ title }}</div>
-            <div class="mediaImages">
-                {% for path in paths %}
-                <img src="media/{{ path }}" alt="{{ title }}">
-                {% endfor %}
+        <form action="/operate" method="post">
+            {% for title, paths in classDict.items() %}
+            <div class="mediaSection">
+                <div class="mediaTitle">{{ title }}</div>
+                <div class="mediaImages">
+                    {% for path in paths %}
+                    <div>
+                        <input type="checkbox" name="selectedImages" value="{{ path }}">
+                        <img src="media/{{ path }}" alt="{{ title }}">
+                    </div>
+                    {% endfor %}
+                </div>
             </div>
-        </div>
-        {% endfor %}
+            {% endfor %}
+            <div class="buttonContainer">
+                <button type="submit" name="action" value="delete">Delete</button>
+                <button type="submit" name="action" value="hide">Hide</button>
+            </div>
+        </form>
     </div>
 </body>
 </html>

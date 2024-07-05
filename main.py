@@ -87,5 +87,17 @@ def index():
 def media(filename):
     return send_file(f"/{escape(filename)}")
 
+@app.route('/operate', methods=['POST'])
+def operate():
+    action = request.form['action']
+    selectedImages = request.form.getlist('selectedImages')
+
+    if action == 'delete':
+        return f"Deleting images: {selectedImages}"
+    elif action == 'hide':
+        return f"Hiding images: {selectedImages}"
+    else:
+        return "Unknown action"
+
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
