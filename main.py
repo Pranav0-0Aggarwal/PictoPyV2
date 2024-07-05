@@ -64,8 +64,7 @@ def classifyPath() -> Dict[str, Tuple[str]]:
     conn = connectDB(dbPath)
     createSchema(conn)
 
-    files = imgPaths(homeDir())
-    processImgs(conn, files)
+    processImgs(conn, imgPaths(homeDir()))
 
     # Clear unavailable paths from DB
     cleanDB(conn)
