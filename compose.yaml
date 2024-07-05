@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+ web:
+   build:
+     context: .
+     dockerfile: DockerFile
+   ports:
+     - 5000:5000
+   develop:
+     watch:
+       - path: ./requirements.txt
+         action: rebuild
+       - path: .
+         target: /app
+         action: sync
+   volumes:
+     - type: bind
+       source: ./
+       target: /app
+       read_only: true
+     - type: bind
+       source: ${HOME}
+       target: /app/host
+       read_only: true
+    
