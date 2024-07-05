@@ -1,4 +1,4 @@
-
+// Function to send selected data to Flask route
 function callRoute(route) {
     var selectedImages = [];
 
@@ -28,4 +28,14 @@ function callRoute(route) {
     .catch(error => {
         console.error('Error:', error);
     });
+}
+
+// Function to handle class checkbox check/uncheck
+function toggleClass(className) {
+    var classCheckbox = document.getElementById(className);
+    var mediaImagesCheckboxes = document.querySelectorAll('.mediaImages .' + className);
+    mediaImagesCheckboxes.forEach(function(checkbox) {
+        checkbox.checked = classCheckbox.checked;
+    });
+    console.log(document.querySelectorAll('input[name="selectedImages[]"]:checked'));
 }
