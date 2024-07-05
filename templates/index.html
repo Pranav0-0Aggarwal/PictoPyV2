@@ -4,52 +4,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=0.9">
     <title>PictoPy</title>
-    <style>
-        .mediaSection {
-            margin-bottom: 20px;
-        }
-        .mediaTitle {
-            font-size: 24px;
-            font-weight: bold;
-        }
-        .mediaImages {
-            display: flex;
-            flex-wrap: wrap;
-        }
-        .mediaImages img {
-            max-width: 200px;
-            margin-right: 10px;
-            margin-bottom: 10px;
-        }
-        .buttonContainer {
-            margin-top: 10px;
-        }
-        .buttonContainer button {
-            margin-right: 10px;
-        }
-    </style>
+    <link rel="stylesheet" href="/static/index.css"/>
+    <script src="/static/index.js"></script>
 </head>
 <body>
     <div class="container">
-        <form action="/operate" method="post">
-            {% for title, paths in classDict.items() %}
-            <div class="mediaSection">
-                <div class="mediaTitle">{{ title }}</div>
-                <div class="mediaImages">
-                    {% for path in paths %}
-                    <div>
-                        <input type="checkbox" name="selectedImages" value="{{ path }}">
-                        <img src="media/{{ path }}" alt="{{ title }}">
-                    </div>
-                    {% endfor %}
+        {% for className, paths in classDict.items() %}
+        <div class="mediaSection">
+            <label>
+                <span class="mediaClass">{{ className }}</span>
+            </label>
+            <div class="mediaImages">
+                {% for path in paths %}
+                <div>
+                    <input type="checkbox" name="selectedImages[]" value="{{ path }}" class="{{ className }}">
+                    <img src="media/{{ path }}" alt="{{ className }}">
                 </div>
+                {% endfor %}
             </div>
-            {% endfor %}
-            <div class="buttonContainer">
-                <button type="submit" name="action" value="delete">Delete</button>
-                <button type="submit" name="action" value="hide">Hide</button>
-            </div>
-        </form>
+        </div>
+        {% endfor %}
+        <div class="buttonContainer">
+            <button onclick="callRoute('delete')">Delete</button>
+            <button onclick="callRoute('hide')">Hide</button>
+            <button onclick="callRoute('ShowHidden')">Show Hidden</button>
     </div>
 </body>
 </html>
