@@ -44,7 +44,6 @@ def imgPaths(startPath: str) -> Generator[str, None, None]:
         A generator that yields paths to all images in the directory.
     """
     for root, dirs, files in os.walk(startPath):
-        print(len(files))
         for dir_name in list(dirs):  # Convert dirs to a list to avoid RuntimeError
             if dir_name.startswith('.'):
                 dirs.remove(dir_name)
