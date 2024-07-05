@@ -4,7 +4,7 @@ import sqlite3
 from sqlite3 import IntegrityError
 from typing import Dict, List, Generator, Tuple
 from utils.fs import genHash, isImg, imgPaths, homeDir, detectFileWithHash, deleteFile, pathExist
-from utils.db import connectDB, createTable, executeQuery, closeConnection, groupByClass, hashExist, hideByClass, unhideByClass, deleteFromDB, deleteByClass, cleanDB
+from utils.db import connectDB, createTable, executeQuery, closeConnection, groupByClass, hashExist, deleteFromDB, cleanDB, toggleVisibility
 from utils.createDB import  createSchema, classesExist
 from yolov8 import detectClasses
 from flask import Flask, render_template, send_file, request, redirect, url_for
@@ -96,14 +96,20 @@ def media(path):
 
 @app.route('/delete', methods=['POST'])
 def delete():
-    data = request.get_json()
-    print(f"Deleting images: {data.get('selectedImages', [])}")
+    data = tuple(request.get_json().get('selectedImages', []))
+    print(f"Deleting images: {data}")
+    conn = connectDB(os.path.join(homeDir(), ".pictopy.db"))
+    deleteFromDB(conn, data)
+    closeConnection(conn)
     return redirect(url_for('index'))
 
 @app.route('/hide', methods=['POST'])
 def hide():
-    data = request.get_json()
-    print(f"Hiding images: {data.get('selectedImages', [])}")
+    data = tuple(request.get_json().get('selectedImages', []))
+    print(f"Hiding images: {data}")
+    conn = connectDB(os.path.join(homeDir(), ".pictopy.db"))
+    toggleVisibility(conn, data, 1)
+    closeConnection(conn)
     return redirect(url_for('index'))
 
 if __name__ == '__main__':
