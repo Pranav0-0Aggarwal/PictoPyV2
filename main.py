@@ -7,7 +7,7 @@ from utils.fs import genHash, isImg, imgPaths, homeDir, detectFileWithHash, dele
 from utils.db import connectDB, createTable, executeQuery, closeConnection, groupByClass, hashExist, hideByClass, unhideByClass, deleteFromDB, deleteByClass, toggleVisibility
 from utils.createDB import  createSchema, classesExist
 from yolov8 import detectClasslass
-from flask import Flask, render_template, send_file, request
+from flask import Flask, render_template, send_file, request, redirect, url_for
 from markupsafe import escape
 
 
@@ -83,21 +83,25 @@ app = Flask(__name__)
 def index():
     return render_template('index.html', classDict=classifyPath())
 
-@app.route('/media/<path:filename>')
-def media(filename):
-    return send_file(f"/{escape(filename)}")
+@app.route('/static/<path:path>')
+def static_file(path):
+    return app.send_static_file(path)
 
-@app.route('/operate', methods=['POST'])
-def operate():
-    action = request.form['action']
-    selectedImages = request.form.getlist('selectedImages')
+@app.route('/media/<path:path>')
+def media(path):
+    return send_file(f"/{escape(path)}")
 
-    if action == 'delete':
-        return f"Deleting images: {selectedImages}"
-    elif action == 'hide':
-        return f"Hiding images: {selectedImages}"
-    else:
-        return "Unknown action"
+@app.route('/delete', methods=['POST'])
+def delete():
+    data = request.get_json()
+    print(f"Deleting images: {data.get('selectedImages', [])}")
+    return redirect(url_for('index'))
+
+@app.route('/hide', methods=['POST'])
+def hide():
+    data = request.get_json()
+    print(f"Hiding images: {data.get('selectedImages', [])}")
+    return redirect(url_for('index'))
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
