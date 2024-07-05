@@ -12,6 +12,14 @@ from markupsafe import escape
 
 
 def processImgs(conn: sqlite3.Connection, files: Generator[str, None, None]) -> None:
+    """
+    Processes images by extracting their hash values, detecting their classes, and storing them in the database.
+
+    Args:
+        conn: The database connection object.
+        files: A generator of file paths.
+    """
+
     for file in files:
         imgHash = genHash(file)
         if hashExist(conn, imgHash):
