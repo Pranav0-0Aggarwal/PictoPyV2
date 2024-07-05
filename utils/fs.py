@@ -97,3 +97,15 @@ def deleteFile(paths: Tuple[str]) -> None:
         except Exception as e:
             print(f"ERROR: {e}")
             pass
+
+def pathExist(path: str) -> bool:
+    """
+    Check if a file or directory exists.
+
+    Args:
+        path: Path to the file or directory.
+
+    Returns:
+        bool: True if the file or directory exists, False otherwise.
+    """
+    return os.path.exists(path)
