@@ -8,6 +8,7 @@ from utils.db import connectDB, createTable, executeQuery, closeConnection, grou
 from utils.createDB import  createSchema, classesExist
 from yolov8 import detectClasslass
 from flask import Flask, render_template, send_file, request
+from markupsafe import escape
 
 
 def processImgs(conn: sqlite3.Connection, files: Generator[str, None, None]) -> None:
@@ -76,7 +77,7 @@ def index():
 
 @app.route('/media/<path:filename>')
 def media(filename):
-    return send_file(f"/{filename}")
+    return send_file(f"/{escape(filename)}")
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
