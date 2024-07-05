@@ -34,7 +34,8 @@ def isImg(filePath: str) -> bool:
 
 def imgPaths(startPath: str) -> Generator[str, None, None]:
     """
-    Generates a list of paths to all images in the given directory.
+    Generate path to all images in the given directory and it's subdirectories.
+    Ignore hidden directories.
 
     Args:
         startPath: Path to the directory to search for images.
@@ -43,9 +44,14 @@ def imgPaths(startPath: str) -> Generator[str, None, None]:
         A generator that yields paths to all images in the directory.
     """
     for root, dirs, files in os.walk(startPath):
+        for dir_name in list(dirs):  # Convert dirs to a list to avoid RuntimeError
+            if dir_name.startswith('.'):
+                dirs.remove(dir_name)
+        
         for file in files:
             if isImg(file):
                 yield os.path.join(root, file)
+                
 
 def detectFileWithHash(files: Generator[str, None, None], targetHash: str) -> Union[str, None]:
     """
@@ -85,5 +91,20 @@ def deleteFile(paths: Tuple[str]) -> None:
         paths: A tuple of paths to delete.
     """
     for path in paths:
-        print(path)
-        os.remove(path)
+        try:
+            os.remove(path)
+        except Exception as e:
+            print(f"ERROR: {e}")
+            pass
+
+def pathExist(path: str) -> bool:
+    """
+    Check if a file or directory exists.
+
+    Args:
+        path: Path to the file or directory.
+
+    Returns:
+        bool: True if the file or directory exists, False otherwise.
+    """
+    return os.path.exists(path)

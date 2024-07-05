@@ -295,7 +295,7 @@ def uniqueClasses(class_ids: List[int]) -> List[str]:
     return classes
 
 
-def detectClasslass(imgPath: str) -> List[str]:
+def detectClasses(imgPath: str) -> List[str]:
     """
     Detect objects in an image and return a list of unique classes.
 
