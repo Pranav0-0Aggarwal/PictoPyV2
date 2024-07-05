@@ -10,8 +10,13 @@
 </head>
 <body>
     <div class="container">
-        {% for className, paths in classDict.items() %}
-        <div class="mediaSection">
+         <div class="buttonContainer">
+             <button onclick="callRoute('delete')">Delete</button>
+             <button onclick="callRoute('hide')">Hide</button>
+             <button onclick="callRoute('ShowHidden')">Show Hidden</button>
+         </div>
+         {% for className, paths in classDict.items() %}
+         <div class="mediaSection">
             <label>
                 <input type="checkbox" id="{{ className }}" onchange="toggleClass('{{ className }}')">
                 <span class="mediaClass">{{ className }}</span>
@@ -26,11 +31,6 @@
             </div>
         </div>
         {% endfor %}
-        <div class="buttonContainer">
-            <button onclick="callRoute('delete')">Delete</button>
-            <button onclick="callRoute('hide')">Hide</button>
-            <button onclick="callRoute('ShowHidden')">Show Hidden</button>
-        </div>
-    </div>
+   </div>
 </body>
 </html>
