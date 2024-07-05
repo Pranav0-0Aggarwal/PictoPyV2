@@ -1,6 +1,6 @@
 import sqlite3
 from typing import List, Tuple, Dict
-from utils.fs import deleteFile
+from utils.fs import deleteFile, pathExist
 
 def connectDB(dbPath: str) -> sqlite3.Connection:
     """Connects to the database at the given path.
@@ -157,3 +157,30 @@ def deleteByClass(conn: sqlite3.Connection, classes: Tuple[str]) -> None:
         classes: A tuple of class names.
     """
     delete(conn, tupleByClass(conn, classes))
+
+# def cleanDB(conn: sqlite3.Connection) -> None:
+#     """Filter unavailable paths from DB and delete them.
+# 
+#     Args:
+#         conn: sqlite3.Connection object.
+#     """
+#     query = "SELECT path FROM MEDIA"
+#     for path in executeQuery(conn, query):
+#         if not pathExist(path[0]):
+#             deleteFromDB(conn, path)
+
+def cleanDB(conn: sqlite3.Connection) -> None:
+    """Filter unavailable paths from DB and delete them.
+
+    Args:
+        conn: sqlite3.Connection object.
+    """
+    query = "SELECT path FROM MEDIA"
+    paths = []
+    for path in executeQuery(conn, query):
+        if not pathExist(path[0]):
+            paths.append(path[0])
+    
+    if paths:
+        print(paths)
+        deleteFromDB(conn, tuple(paths))
