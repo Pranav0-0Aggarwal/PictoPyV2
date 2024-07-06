@@ -181,3 +181,19 @@ def cleanDB(conn: sqlite3.Connection) -> None:
     if paths:
         print(paths)
         deleteFromDB(conn, tuple(paths))
+
+def insertIntoDB(conn: sqlite3.Connection, file: str, imgClass: List[str], imgHash: str) -> None:
+    try:
+        _, imageID = executeQuery(conn, "INSERT INTO MEDIA(hash, path, hidden) VALUES(?, ?, 0)", (imgHash, file), 1)
+
+        for className in imgClass:
+            try:
+                _, classID = executeQuery(conn, "INSERT INTO CLASS(class) VALUES(?)", (className,), 1)
+            except sqlite3.IntegrityError:
+                classID = executeQuery(conn, "SELECT classID FROM CLASS WHERE class = ?", (className,))[0][0]
+            
+            executeQuery(conn, "INSERT OR IGNORE INTO JUNCTION(imageID, classID) VALUES(?, ?)", (imageID, classID))
+
+    except sqlite3.IntegrityError:
+        executeQuery(conn, "UPDATE MEDIA SET path = ? WHERE hash = ?", (file, imgHash))
+
