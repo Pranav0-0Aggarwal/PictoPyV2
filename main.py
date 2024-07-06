@@ -34,7 +34,11 @@ def processImgs(conn: sqlite3.Connection, files: Generator[str, None, None]) -> 
         imgHash = genHash(file)
         if hashExist(conn, imgHash):
             continue
-        imgClass = detectClasses(file, objDetectionModel)
+        try:
+            imgClass = detectClasses(file, objDetectionModel)
+        except Exception as e:
+            print(e)
+            continue
         insertIntoDB(conn, file, imgClass, imgHash)
 
 def classifyPath() -> Dict[str, Tuple[str]]:
