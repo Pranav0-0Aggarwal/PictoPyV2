@@ -3,13 +3,22 @@ import os
 import sqlite3
 from sqlite3 import IntegrityError
 from typing import Dict, List, Generator, Tuple
-from utils.fs import genHash, isImg, imgPaths, homeDir, detectFileWithHash, deleteFile, pathExist
+from utils.fs import genHash, isImg, imgPaths, homeDir, detectFileWithHash, deleteFile, pathExist, pathOf
 from utils.db import connectDB, createTable, executeQuery, closeConnection, groupByClass, hashExist, deleteFromDB, cleanDB, toggleVisibility
 from utils.createDB import  createSchema, classesExist
 from yolov8 import detectClasses
 from flask import Flask, render_template, send_file, request, redirect, url_for
 from markupsafe import escape
 
+
+def dbPath() -> str:
+    """
+    Database is created on the user's home directory.
+
+    Returns:
+        str: The path to the database file.
+    """
+    return os.path.join(os.path.expanduser("~"), ".pictopy.db")
 
 def processImgs(conn: sqlite3.Connection, files: Generator[str, None, None]) -> None:
     """
@@ -19,13 +28,14 @@ def processImgs(conn: sqlite3.Connection, files: Generator[str, None, None]) -> 
         conn: The database connection object.
         files: A generator of file paths.
     """
-
+    
+    objDetectionModel = pathOf("models/yolov8n.onnx")
     for file in files:
         imgHash = genHash(file)
         if hashExist(conn, imgHash):
             continue
         try:
-            imgClass = detectClasses(file)
+            imgClass = detectClasses(file, objDetectionModel)
             _, imageID = executeQuery(conn, f"INSERT INTO MEDIA(hash, path, hidden) VALUES('{imgHash}', '{file}', 0)", 1)
 
             for className in imgClass:
@@ -60,8 +70,7 @@ def classifyPath() -> Dict[str, Tuple[str]]:
     Returns:
         Dict[str, Tuple[str]]: Dictionary mapping class names to lists of file paths.
     """
-    dbPath = os.path.join(homeDir(), ".pictopy.db")
-    conn = connectDB(dbPath)
+    conn = connectDB(dbPath())
     createSchema(conn)
 
     processImgs(conn, imgPaths(homeDir()))
@@ -98,7 +107,7 @@ def media(path):
 def delete():
     data = tuple(request.get_json().get('selectedImages', []))
     print(f"Deleting images: {data}")
-    conn = connectDB(os.path.join(homeDir(), ".pictopy.db"))
+    conn = connectDB(dbPath())
     deleteFromDB(conn, data)
     closeConnection(conn)
     return redirect(url_for('index'))
@@ -107,7 +116,7 @@ def delete():
 def hide():
     data = tuple(request.get_json().get('selectedImages', []))
     print(f"Hiding images: {data}")
-    conn = connectDB(os.path.join(homeDir(), ".pictopy.db"))
+    conn = connectDB(dbPath())
     toggleVisibility(conn, data, 1)
     closeConnection(conn)
     return redirect(url_for('index'))

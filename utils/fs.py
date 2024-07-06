@@ -108,3 +108,20 @@ def pathExist(path: str) -> bool:
         bool: True if the file or directory exists, False otherwise.
     """
     return os.path.exists(path)
+
+def pathOf(path) -> str:
+    """
+    When packaging the app using pyinstaller _internal/<file>/ will be available instead of <file>/.
+    Depending on environment path of models will be returned.
+
+    Args:
+        path: Path to the model file.
+
+    Returns:
+        str: Path to the model file.
+    """
+    if pathExist(path):
+        return path
+    elif pathExist(f"_internal/{path}"): 
+        return path
+ 
