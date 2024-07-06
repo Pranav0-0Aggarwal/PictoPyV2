@@ -36,18 +36,18 @@ def processImgs(conn: sqlite3.Connection, files: Generator[str, None, None]) -> 
             continue
         try:
             imgClass = detectClasses(file, objDetectionModel)
-            _, imageID = executeQuery(conn, f"INSERT INTO MEDIA(hash, path, hidden) VALUES('{imgHash}', '{file}', 0)", 1)
+            _, imageID = executeQuery(conn, f"INSERT INTO MEDIA(hash, path, hidden) VALUES(?, ?, 0)", (imgHash, file), 1)
 
             for className in imgClass:
                 try:
-                    _, classID = executeQuery(conn, f"INSERT INTO CLASS(class) VALUES('{className}')", 1)
+                    _, classID = executeQuery(conn, f"INSERT INTO CLASS(class) VALUES(?)", (className,), 1)
                 except IntegrityError:
-                    classID = executeQuery(conn, f"SELECT classID FROM CLASS WHERE class = '{className}'")[0][0]
+                    classID = executeQuery(conn, f"SELECT classID FROM CLASS WHERE class = ?", (className,))[0][0]
                 
-                executeQuery(conn, f"INSERT OR IGNORE INTO JUNCTION(imageID, classID) VALUES('{imageID}', '{classID}')")
+                executeQuery(conn, f"INSERT OR IGNORE INTO JUNCTION(imageID, classID) VALUES(?, ?)", (imageID, classID))
 
         except IntegrityError:
-            executeQuery(conn, f"UPDATE MEDIA SET path = '{file}' WHERE hash = '{imgHash}'")
+            executeQuery(conn, f"UPDATE MEDIA SET path = ? WHERE hash = ?", (file, imgHash))
 
 
 #NN
