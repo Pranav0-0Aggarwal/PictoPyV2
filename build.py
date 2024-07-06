@@ -7,7 +7,7 @@ from main import app
 # This event will be set when we need to stop the Flask server
 stopEvent = Event()
 
-appTitle = "Stock Prices App"
+appTitle = "PictoPy"
 host = "http://127.0.0.1"
 port = 5000
 
