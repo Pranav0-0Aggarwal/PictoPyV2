@@ -1,3 +1,5 @@
+# Credit: https://github.com/thewilltejeda/htmx-desktop-app-01/blob/main/run.py
+
 import webview
 from threading import Thread, Event
 from main import app
