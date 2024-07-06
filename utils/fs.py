@@ -1,4 +1,5 @@
 import os
+import sys
 import hashlib
 from typing import Generator, Union, Tuple
 
@@ -111,7 +112,7 @@ def pathExist(path: str) -> bool:
 
 def pathOf(path) -> str:
     """
-    When packaging the app using pyinstaller _internal/<file>/ will be available instead of <file>/.
+    When packaging the app using pyinstaller sys._MEIPASS/<file>/ will be available instead of <file>/.
     Depending on environment path of models will be returned.
 
     Args:
@@ -122,6 +123,4 @@ def pathOf(path) -> str:
     """
     if pathExist(path):
         return path
-    elif pathExist(f"_internal/{path}"): 
-        return path
- 
+    return f"{sys._MEIPASS}/{path}" 
