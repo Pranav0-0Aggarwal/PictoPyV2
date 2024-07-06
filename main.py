@@ -4,7 +4,7 @@ import sqlite3
 from sqlite3 import IntegrityError
 from typing import Dict, List, Generator, Tuple
 from utils.fs import genHash, isImg, imgPaths, homeDir, detectFileWithHash, deleteFile, pathExist, pathOf
-from utils.db import connectDB, createTable, executeQuery, closeConnection, groupByClass, hashExist, deleteFromDB, cleanDB, toggleVisibility
+from utils.db import insertIntoDB, deleteByClass, groupByClass, toggleVisibility, connectDB, closeConnection, cleanDB, hashExist
 from utils.createDB import  createSchema, classesExist
 from yolov8 import detectClasses
 from flask import Flask, render_template, send_file, request, redirect, url_for
@@ -34,34 +34,8 @@ def processImgs(conn: sqlite3.Connection, files: Generator[str, None, None]) -> 
         imgHash = genHash(file)
         if hashExist(conn, imgHash):
             continue
-        try:
-            imgClass = detectClasses(file, objDetectionModel)
-            _, imageID = executeQuery(conn, f"INSERT INTO MEDIA(hash, path, hidden) VALUES('{imgHash}', '{file}', 0)", 1)
-
-            for className in imgClass:
-                try:
-                    _, classID = executeQuery(conn, f"INSERT INTO CLASS(class) VALUES('{className}')", 1)
-                except IntegrityError:
-                    classID = executeQuery(conn, f"SELECT classID FROM CLASS WHERE class = '{className}'")[0][0]
-                
-                executeQuery(conn, f"INSERT OR IGNORE INTO JUNCTION(imageID, classID) VALUES('{imageID}', '{classID}')")
-
-        except IntegrityError:
-            executeQuery(conn, f"UPDATE MEDIA SET path = '{file}' WHERE hash = '{imgHash}'")
-
-
-#NN
-def fileByClass(conn: sqlite3.Connection, files: Generator[str, None, None], tableID: str) -> Dict[str, List[str]]:
-    rows = executeQuery(conn, f"SELECT imageClass, hash FROM {tableID}")
-    classDict = {}
-    for row in rows:
-        imageClass, hashValue = row
-        if imageClass not in classDict:
-            classDict[imageClass] = []
-        filePath = detectFileWithHash(files, hashValue)
-        if filePath:
-            classDict[imageClass].append(filePath)
-    return classDict
+        imgClass = detectClasses(file, objDetectionModel)
+        insertIntoDB(conn, file, imgClass, imgHash)
 
 def classifyPath() -> Dict[str, Tuple[str]]:
     """
