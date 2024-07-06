@@ -5,7 +5,7 @@ a = Analysis(
     ['build.py'],
     pathex=[],
     binaries=[],
-    datas=[('models/*.onnx', 'models/'),],
+    datas=[('templates/', 'templates/'),('static/', 'static/'),('models/', 'models/'),],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},

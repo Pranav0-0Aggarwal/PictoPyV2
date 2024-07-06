@@ -64,7 +64,7 @@ def classifyPath() -> Dict[str, Tuple[str]]:
 
 # periodically run the object detection function and compare it with DB (TBI)
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder=f"{pathOf('static')}")
 
 @app.route('/')
 def index():
@@ -72,7 +72,7 @@ def index():
 
 @app.route('/static/<path:path>')
 def static_file(path):
-    return app.send_static_file(path)
+    return app.send_static_file(pathOf(path))
 
 @app.route('/media/<path:path>')
 def media(path):
