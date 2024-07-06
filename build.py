@@ -26,7 +26,7 @@ if __name__ == '__main__':
         # resizable=False,
         # height=710,
         # width=225,
-        frameless=True,
+        # frameless=True,
         easy_drag=True,
         on_top=True
         )
