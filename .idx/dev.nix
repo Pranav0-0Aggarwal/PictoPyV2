@@ -8,6 +8,11 @@
   packages = [
     # pkgs.go
     pkgs.python311
+    pkgs.binutils
+    pkgs.krb5.dev
+    pkgs.gcc
+    pkgs.libkrb5
+    pkgs.python311Packages.gssapi
     pkgs.libGL
     pkgs.glib
     pkgs.sqlite
