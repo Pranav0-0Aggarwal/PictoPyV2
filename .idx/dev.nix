@@ -6,15 +6,17 @@
 
   # Use https://search.nixos.org/packages to find packages
   packages = [
-    # pkgs.go
     pkgs.python311
+    pkgs.binutils
+    pkgs.krb5.dev
+    pkgs.gcc
+    pkgs.libkrb5
+    pkgs.python311Packages.gssapi
+    pkgs.winePackages.stable
     pkgs.libGL
     pkgs.glib
     pkgs.sqlite
     pkgs.fastfetch
-    # pkgs.python311Packages.pip
-    # pkgs.nodejs_20
-    # pkgs.nodePackages.nodemon
   ];
 
   # Sets environment variables in the workspace

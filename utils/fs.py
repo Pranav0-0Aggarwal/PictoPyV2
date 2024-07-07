@@ -1,4 +1,5 @@
 import os
+import sys
 import hashlib
 from typing import Generator, Union, Tuple
 
@@ -108,3 +109,18 @@ def pathExist(path: str) -> bool:
         bool: True if the file or directory exists, False otherwise.
     """
     return os.path.exists(path)
+
+def pathOf(path) -> str:
+    """
+    When packaging the app using pyinstaller sys._MEIPASS/<file>/ will be available instead of <file>/.
+    Depending on environment path of models will be returned.
+
+    Args:
+        path: Path to the model file.
+
+    Returns:
+        str: Path to the model file.
+    """
+    if pathExist(path):
+        return path
+    return f"{sys._MEIPASS}/{path}" 
