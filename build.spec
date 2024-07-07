@@ -23,7 +23,7 @@ exe = EXE(
     a.datas,
     [],
     name='PictoPy',
-    icon='static/asset/favicon.png',
+    icon='static/asset/favicon.ico',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
