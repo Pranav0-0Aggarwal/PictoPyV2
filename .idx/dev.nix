@@ -6,12 +6,12 @@
 
   # Use https://search.nixos.org/packages to find packages
   packages = [
-    pkgs.python311
+    pkgs.python3
     pkgs.binutils
     pkgs.krb5.dev
     pkgs.gcc
     pkgs.libkrb5
-    pkgs.python311Packages.gssapi
+    pkgs.python3Packages.gssapi
     pkgs.winePackages.stable
     pkgs.libGL
     pkgs.glib
