@@ -2,13 +2,10 @@ version: '3.8'
 
 services:
  web:
-   build:
-     context: .
-     dockerfile: DockerFile
-   ports:
-     - 5000:5000
    develop:
      watch:
+       - path: ./DockerFile
+         action: rebuild
        - path: ./requirements.txt
          action: rebuild
        - path: .
@@ -17,9 +14,13 @@ services:
    volumes:
      - type: bind
        source: ./
-       target: /app
+       target: /root/app
      - type: bind
        source: ${HOME}
-       target: /app/host
-       read_only: true
-    
+       target: /root
+   build:
+     context: .
+     dockerfile: DockerFile
+   ports:
+     - 5000:5000
+   
