@@ -8,7 +8,7 @@ if conflit occurs delete DB and recreate
 
 import sqlite3
 from utils import createTable, executeQuery
-from typing import List, Tuple
+from typing import List
 
 def createSchema(conn: sqlite3.Connection) -> None:
     """Creates tables for MEDIA, JUNCTION, and CLASS in the database.
