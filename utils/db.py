@@ -95,7 +95,7 @@ def toggleVisibility(conn: sqlite3.Connection, paths: Tuple[str], hidden: int) -
         paths: A tuple of paths to switch visibility.
         hidden: The new value of hidden column.
     """
-    query = "UPDATE MEDIA SET hidden=? WHERE path IN ({})".format(','.join('?' * len(paths)))
+    query = f"UPDATE MEDIA SET hidden=? WHERE path IN ({', '.join('?' * len(paths))})"
     executeQuery(conn, query, (hidden,) + paths)
 
 def tupleByClass(conn: sqlite3.Connection, classes: Tuple[str], hidden: int = 0, groupOf: str = "path") -> Tuple[str]:
@@ -142,7 +142,7 @@ def deleteFromDB(conn: sqlite3.Connection, paths: Tuple[str]) -> None:
         conn: sqlite3.Connection object.
         paths: A tuple of paths to delete.
     """
-    query = "DELETE FROM MEDIA WHERE path IN ({})".format(','.join('?' * len(paths)))
+    query = f"DELETE FROM MEDIA WHERE path IN ({', '.join('?' * len(paths))})"
     executeQuery(conn, query, paths)
     deleteFile(paths)
 
