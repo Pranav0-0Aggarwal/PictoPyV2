@@ -4,7 +4,7 @@ import sqlite3
 from sqlite3 import IntegrityError
 from typing import Dict, List, Generator, Tuple
 from utils.fs import genHash, isImg, imgPaths, homeDir, detectFileWithHash, deleteFile, pathExist, pathOf
-from utils.db import insertIntoDB, deleteByClass, groupByClass, toggleVisibility, connectDB, closeConnection, cleanDB, hashExist
+from utils.db import insertIntoDB, deleteFromDB, groupByClass, toggleVisibility, connectDB, closeConnection, cleanDB, hashExist
 from utils.createDB import  createSchema, classesExist
 from yolov8 import detectClasses
 from flask import Flask, render_template, send_file, request, redirect, url_for
