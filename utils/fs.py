@@ -1,7 +1,7 @@
 import os
 import sys
 import hashlib
-from typing import Generator, Union, Tuple
+from typing import Generator, Union, List
 
 def genHash(imgPath: str) -> str:
     """
@@ -84,12 +84,12 @@ def homeDir() -> str:
     """
     return os.path.expanduser("~")
 
-def deleteFile(paths: Tuple[str]) -> None:
+def deleteFile(paths: List[str]) -> None:
     """
     Delete files by path.
 
     Args:
-        paths: A tuple of paths to delete.
+        paths: A list of paths to delete.
     """
     for path in paths:
         try:

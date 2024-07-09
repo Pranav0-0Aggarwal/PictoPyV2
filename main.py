@@ -2,7 +2,7 @@
 import os
 import sqlite3
 from sqlite3 import IntegrityError
-from typing import Dict, List, Generator, Tuple
+from typing import Dict, List, Generator, List
 from utils.fs import genHash, isImg, imgPaths, homeDir, detectFileWithHash, deleteFile, pathExist, pathOf
 from utils.db import insertIntoDB, deleteFromDB, groupByClass, toggleVisibility, connectDB, closeConnection, cleanDB, hashExist
 from utils.createDB import  createSchema, classesExist
@@ -41,12 +41,12 @@ def processImgs(conn: sqlite3.Connection, files: Generator[str, None, None]) -> 
             continue
         insertIntoDB(conn, file, imgClass, imgHash)
 
-def classifyPath() -> Dict[str, Tuple[str]]:
+def classifyPath() -> Dict[str, List[str]]:
     """
     Classify images in the home directory and store the results in the database.
 
     Returns:
-        Dict[str, Tuple[str]]: Dictionary mapping class names to lists of file paths.
+        Dict[str, List[str]]: Dictionary mapping class names to lists of file paths.
     """
     conn = connectDB(dbPath())
     createSchema(conn)
@@ -83,7 +83,7 @@ def media(path):
 
 @app.route('/delete', methods=['POST'])
 def delete():
-    data = tuple(request.get_json().get('selectedImages', []))
+    data = list(request.get_json().get('selectedImages', []))
     print(f"Deleting images: {data}")
     conn = connectDB(dbPath())
     deleteFromDB(conn, data)
@@ -92,7 +92,7 @@ def delete():
 
 @app.route('/hide', methods=['POST'])
 def hide():
-    data = tuple(request.get_json().get('selectedImages', []))
+    data = list(request.get_json().get('selectedImages', []))
     print(f"Hiding images: {data}")
     conn = connectDB(dbPath())
     toggleVisibility(conn, data, 1)
