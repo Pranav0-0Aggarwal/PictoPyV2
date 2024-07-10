@@ -83,7 +83,7 @@ def media(path):
 
 @app.route('/delete', methods=['POST'])
 def delete():
-    data = list(request.get_json().get('selectedImages', []))
+    data = request.get_json().get('selectedImages', [])
     print(f"Deleting images: {data}")
     conn = connectDB(dbPath())
     deleteFromDB(conn, data)
@@ -92,7 +92,7 @@ def delete():
 
 @app.route('/hide', methods=['POST'])
 def hide():
-    data = list(request.get_json().get('selectedImages', []))
+    data = request.get_json().get('selectedImages', [])
     print(f"Hiding images: {data}")
     conn = connectDB(dbPath())
     toggleVisibility(conn, data, 1)
