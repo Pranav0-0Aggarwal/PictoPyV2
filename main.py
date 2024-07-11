@@ -88,7 +88,7 @@ def index():
     return render_template('index.html', classDict=classifyPath())
 
 @app.route('/static/<path:path>')
-def static_file(path):
+def staticFile(path):
     return app.send_static_file(pathOf(path))
 
 @app.route('/media/<path:path>')
