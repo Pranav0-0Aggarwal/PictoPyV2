@@ -4,8 +4,7 @@ import sqlite3
 from sqlite3 import IntegrityError
 from typing import Dict, List, Generator, List
 from utils.fs import genHash, isImg, imgPaths, homeDir, detectFileWithHash, deleteFile, pathExist, pathOf
-from utils.db import insertIntoDB, deleteFromDB, groupByClass, toggleVisibility, connectDB, closeConnection, cleanDB, hashExist
-from utils.createDB import  createSchema, classesExist
+from utils.db import createSchema, insertIntoDB, deleteFromDB, groupByClass, toggleVisibility, connectDB, closeConnection, cleanDB, hashExist
 from yolov8 import detectClasses
 from flask import Flask, render_template, send_file, request, redirect, url_for
 from markupsafe import escape
@@ -49,7 +48,27 @@ def classifyPath() -> Dict[str, List[str]]:
         Dict[str, List[str]]: Dictionary mapping class names to lists of file paths.
     """
     conn = connectDB(dbPath())
-    createSchema(conn)
+    createSchema(conn, 
+        {
+            "MEDIA": [
+                "imageID INTEGER PRIMARY KEY AUTOINCREMENT", 
+                "hash TEXT UNIQUE", 
+                "path TEXT", 
+                "hidden INTEGER"
+            ],
+            "CLASS": [
+                "classID INTEGER PRIMARY KEY AUTOINCREMENT", 
+                "class TEXT UNIQUE"
+            ],
+            "JUNCTION": [
+                "imageID INTEGER", 
+                "classID INTEGER", 
+                "FOREIGN KEY(imageID) REFERENCES MEDIA(imageID) ON DELETE CASCADE",
+                "FOREIGN KEY(classID) REFERENCES CLASS(classID)",
+                "PRIMARY KEY (imageID, classID)"
+            ]
+        }
+    )
 
     processImgs(conn, imgPaths(homeDir()))
 

@@ -24,6 +24,16 @@ def createTable(conn: sqlite3.Connection, tableID: str, columns: List[str]) -> N
     query = f"CREATE TABLE IF NOT EXISTS {tableID} ({', '.join(columns)})"
     executeQuery(conn, query)
 
+def createSchema(conn: sqlite3.Connection, tables: Dict[str, List[str]]) -> None:
+    """Creates tables for MEDIA, JUNCTION, and CLASS in the database.
+
+    Args:
+        conn: A sqlite3.Connection object.
+        tables: A dictionary where each key is a table name and each value is a list of column definitions.
+    """
+    for tableName, columns in tables.items():
+        createTable(conn, tableName, columns)
+
 def executeQuery(conn: sqlite3.Connection, query: str, params: List = (), rowID: int = 0) -> List[List]:
     """Executes a query on the database.
 
