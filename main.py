@@ -81,8 +81,6 @@ def classifyPath() -> Dict[str, List[str]]:
 
     return result
 
-# periodically run the object detection function and compare it with DB (TBI)
-
 app = Flask(__name__, template_folder=f"{pathOf('static')}")
 
 @app.route('/')
