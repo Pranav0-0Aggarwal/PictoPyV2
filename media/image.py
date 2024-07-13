@@ -13,7 +13,7 @@ def saveImage(image: cv2.Mat, filename: str) -> None:
     """
     cv2.imwrite(filename, image)
 
-def imageClasses(imgPath: str, model_path: str, outputPath: str = None) -> Tuple[List[str], np.ndarray]:
+def imageClasses(imgPath: str, model_path: str, outputPath: str = None) -> List[str]:
     img = cv2.imread(imgPath)
     if outputPath:
         saveImage(detectClasses(img, model_path)[1], outputPath)
