@@ -16,7 +16,9 @@ def dbPath() -> str:
     Returns:
         str: The path to the database file.
     """
-    return os.path.join(os.path.expanduser("~"), ".pictopy.db")
+    directory = os.path.join(os.path.expanduser("~"), ".pictopy")
+    os.makedirs(directory, exist_ok=True)
+    return os.path.join(directory, "database.db")
 
 def processImgs(conn: sqlite3.Connection, files: Generator[str, None, None]) -> None:
     """
