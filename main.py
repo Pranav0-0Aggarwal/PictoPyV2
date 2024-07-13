@@ -3,6 +3,7 @@ import os
 import sqlite3
 from typing import Dict, List, Generator, List
 from utils import *
+from media import *
 from yolov8 import detectClasses
 from flask import Flask, render_template, send_file, request, redirect, url_for
 from markupsafe import escape
@@ -32,7 +33,7 @@ def processImgs(conn: sqlite3.Connection, files: Generator[str, None, None]) -> 
         if hashExist(conn, imgHash):
             continue
         try:
-            imgClass,_ = detectClasses(file, objDetectionModel)
+            imgClass = imageClasses(file, objDetectionModel)
         except Exception as e:
             print(e)
             continue
