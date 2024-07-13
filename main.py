@@ -32,7 +32,7 @@ def processImgs(conn: sqlite3.Connection, files: Generator[str, None, None]) -> 
         if hashExist(conn, imgHash):
             continue
         try:
-            imgClass = detectClasses(file, objDetectionModel)
+            imgClass,_ = detectClasses(file, objDetectionModel)
         except Exception as e:
             print(e)
             continue
