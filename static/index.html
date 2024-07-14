@@ -24,7 +24,7 @@
             <div class="mediaImages">
                 {% for path in paths %}
                 <div>
-                    <input type="checkbox" name="selectedImages[]" value="{{ path }}" class="{{ className }}">
+                    <input type="checkbox" name="selectedMedia[]" value="{{ path }}" class="{{ className }}">
                     <img src="media/{{ path }}" alt="{{ className }}">
                 </div>
                 {% endfor %}
