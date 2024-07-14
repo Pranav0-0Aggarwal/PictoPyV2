@@ -88,7 +88,7 @@ def groupByClass(conn: sqlite3.Connection, hidden: int = 0, fileType: str = "img
     if fileType == "any":
         fileTypeCondition = ""
     else:
-        fileTypeCondition = "AND i.format = ?"
+        fileTypeCondition = "AND i.fileType = ?"
 
     query = f"""
         SELECT c.class, GROUP_CONCAT(i.{groupOf})
