@@ -22,7 +22,9 @@ def dbPath() -> str:
 
 def processImgs(conn: sqlite3.Connection, files: Generator[str, None, None]) -> None:
     """
-    Processes images by extracting their hash values, detecting their classes, and storing them in the database.
+    Processes images by extracting their hash values.
+    If hash already exists in the database, just update the path.
+    Otherwise detect classes and insert them into the database.
 
     Args:
         conn: The database connection object.
@@ -32,7 +34,7 @@ def processImgs(conn: sqlite3.Connection, files: Generator[str, None, None]) -> 
     objDetectionModel = pathOf("models/yolov8n.onnx")
     for file in files:
         imgHash = genHash(file)
-        if hashExist(conn, imgHash):
+        if updateMediaPath(conn, file, imgHash):
             continue
         try:
             imgClass = imageClasses(file, objDetectionModel)
