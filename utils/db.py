@@ -34,23 +34,20 @@ def createSchema(conn: sqlite3.Connection, tables: Dict[str, List[str]]) -> None
     for tableName, columns in tables.items():
         createTable(conn, tableName, columns)
 
-def executeQuery(conn: sqlite3.Connection, query: str, params: List = (), rowID: int = 0) -> List[List]:
+def executeQuery(conn: sqlite3.Connection, query: str, params: List = ()) -> sqlite3.Cursor:
     """Executes a query on the database.
 
     Args:
         conn: A sqlite3.Connection object.
         query: The SQL query to execute.
         params: The parameters to be used in the query.
-        rowID: An optional integer indicating whether to return the last row ID.
 
     Returns:
-        A list of lists containing the results of the query, or the last row ID if rowID is 1.
+        A sqlite3.Cursor object.        
     """
     cursor = conn.cursor()
     cursor.execute(query, params)
-    if rowID == 1:
-        return cursor.fetchall(), cursor.lastrowid
-    return cursor.fetchall()
+    return cursor
 
 def closeConnection(conn: sqlite3.Connection) -> None:
     """Closes the connection to the database.
@@ -61,6 +58,7 @@ def closeConnection(conn: sqlite3.Connection) -> None:
     conn.commit()
     conn.close()
 
+# NN
 def hashExist(conn: sqlite3.Connection, hashValue: str) -> bool:
     """Checks if a hash value exists in the database.
 
@@ -95,7 +93,7 @@ def groupByClass(conn: sqlite3.Connection, hidden: int = 0, groupOf: str = "path
         GROUP BY c.class
     """
     result = {}
-    for row in executeQuery(conn, query, [hidden]):
+    for row in executeQuery(conn, query, [hidden]).fetchall():
         result[row[0]] = row[1].split(',')
     return result
 
@@ -186,13 +184,20 @@ def cleanDB(conn: sqlite3.Connection) -> None:
     """
     query = "SELECT path FROM MEDIA"
     paths = []
-    for path in executeQuery(conn, query):
+    for path in executeQuery(conn, query).fetchall():
         if not pathExist(path[0]):
             paths.append(path[0])
     
     if paths:
         print(paths)
         deleteFromDB(conn, paths)
+
+def updateMediaPath(conn, file, imgHash):
+    if executeQuery(conn, "UPDATE MEDIA SET path = ? WHERE hash = ?", [file, imgHash]).rowcount == 0:
+        print("No rows were updated. The hash does not exist.")
+        return False
+    print("Row updated successfully.")
+    return True
 
 def insertIntoDB(conn: sqlite3.Connection, file: str, imgClass: List[str], imgHash: str) -> None:
     """Inserts image and its classes into the database.
@@ -203,16 +208,12 @@ def insertIntoDB(conn: sqlite3.Connection, file: str, imgClass: List[str], imgHa
         imgClass: A list of classes associated with the image.
         imgHash: The hash value of the image.
     """
-    try:
-        _, mediaID = executeQuery(conn, "INSERT INTO MEDIA(hash, path, hidden) VALUES(?, ?, 0)", [imgHash, file], 1)
+    mediaID = executeQuery(conn, "INSERT INTO MEDIA(hash, path, hidden) VALUES(?, ?, 0)", [imgHash, file]).lastrowid
 
-        for className in imgClass:
-            try:
-                _, classID = executeQuery(conn, "INSERT INTO CLASS(class) VALUES(?)", [className], 1)
-            except sqlite3.IntegrityError:
-                classID = executeQuery(conn, "SELECT classID FROM CLASS WHERE class = ?", [className])[0][0]
-            
-            executeQuery(conn, "INSERT OR IGNORE INTO JUNCTION(mediaID, classID) VALUES(?, ?)", [mediaID, classID])
-
-    except sqlite3.IntegrityError:
-        executeQuery(conn, "UPDATE MEDIA SET path = ? WHERE hash = ?", [file, imgHash])
+    for className in imgClass:
+        try:
+            classID = executeQuery(conn, "INSERT INTO CLASS(class) VALUES(?)", [className]).lastrowid
+        except sqlite3.IntegrityError:
+            classID = executeQuery(conn, "SELECT classID FROM CLASS WHERE class = ?", [className]).fetchall()[0][0]
+        
+        executeQuery(conn, "INSERT OR IGNORE INTO JUNCTION(mediaID, classID) VALUES(?, ?)", [mediaID, classID])
