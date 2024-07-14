@@ -73,30 +73,40 @@ def hashExist(conn: sqlite3.Connection, hashValue: str) -> bool:
     result = executeQuery(conn, query, [hashValue])
     return result[0][0] == 1
 
-def groupByClass(conn: sqlite3.Connection, fileType: str, hidden: int = 0, groupOf: str = "path") -> Dict[str, List[str]]:
+def groupByClass(conn: sqlite3.Connection, hidden: int = 0, fileType: str = "img", groupOf: str = "path") -> Dict[str, List[str]]:
     """Returns paths grouped by classes from the database.
 
     Args:
         conn: A sqlite3.Connection object.
         hidden: Filter media by hidden status.
-        fileType: Filter media by file type.
+        fileType: Filter media by file type ('img' or 'vid').
         groupOf: The column to be grouped.
 
     Returns:
         dict: A dictionary where each key is a class name and each value is a list of paths.
     """
+    if fileType == "any":
+        fileTypeCondition = ""
+    else:
+        fileTypeCondition = "AND i.format = ?"
+
     query = f"""
-        SELECT c.class,
-        GROUP_CONCAT(i.{groupOf})
+        SELECT c.class, GROUP_CONCAT(i.{groupOf})
         FROM CLASS c
         JOIN JUNCTION j ON c.classID = j.classID 
         JOIN MEDIA i ON j.mediaID = i.mediaID 
-        WHERE i.hidden = ? AND i.fileType = ?
+        WHERE i.hidden = ? {fileTypeCondition}
         GROUP BY c.class
     """
     result = {}
-    for row in executeQuery(conn, query, [fileType, hidden]).fetchall():
+    if fileType == "any":
+        cursor = executeQuery(conn, query, [hidden])
+    else:
+        cursor = executeQuery(conn, query, [hidden, fileType])
+    
+    for row in cursor.fetchall():
         result[row[0]] = row[1].split(',')
+    
     return result
 
 def toggleVisibility(conn: sqlite3.Connection, paths: List[str], hidden: int) -> None:
