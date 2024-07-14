@@ -1,7 +1,6 @@
-
 import os
 import sqlite3
-from typing import Dict, List, Generator, List
+from typing import Dict, List, Generator
 from utils import *
 from media import *
 from yolov8 import detectClasses
@@ -102,6 +101,24 @@ def media(path):
         return send_file(path)
     return redirect(url_for('index')) # doesn't reload / (TBI)
 
+# Sections with Demo return
+
+@app.route('/<string:format>/<string:groupOf>')
+def groupBy(format, groupOf):
+    if format not in ["img", "vid"]:
+        return redirect(url_for('index'))
+    return render_template('index.html', classDict=classifyPath())
+
+@app.route('/hidden/<string:groupOf>')
+def hidden(groupOf):
+    return render_template('index.html', classDict=classifyPath())
+
+@app.route('/trash/<string:groupOf>')
+def trash(groupOf):
+    return render_template('index.html', classDict=classifyPath())
+
+# Buttons
+
 @app.route('/delete', methods=['POST'])
 def delete():
     data = request.get_json().get('selectedMedia', [])
@@ -119,6 +136,10 @@ def hide():
     toggleVisibility(conn, data, 1)
     closeConnection(conn)
     return redirect(url_for('index'))
+
+@app.route('/info/<path:path>')
+def info(path):
+    return os.stat(path)
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
