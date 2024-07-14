@@ -84,7 +84,7 @@ def videoClasses(inputPath: str, modelPath: str, outputPath: str = None) -> Set[
 
     # Collect and return combined classes from each frame of the video
     allClasses = set(firstFrameClasses)
-    for _, classes in processFrames(frames, modelPath):
+    for classes, _ in processFrames(frames, modelPath):
         allClasses.update(classes)
     
     return allClasses
