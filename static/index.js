@@ -1,11 +1,11 @@
 // Function to send selected data to Flask route
 function callRoute(route) {
-    var selectedImages = [];
+    var selectedMedia = [];
 
     // Collect selected image paths
-    var imageCheckboxes = document.querySelectorAll('input[name="selectedImages[]"]:checked');
+    var imageCheckboxes = document.querySelectorAll('input[name="selectedMedia[]"]:checked');
     imageCheckboxes.forEach(function(checkbox) {
-        selectedImages.push(checkbox.value);
+        selectedMedia.push(checkbox.value);
     });
 
     // Send selected data to Flask route
@@ -15,7 +15,7 @@ function callRoute(route) {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-            selectedImages: selectedImages
+            selectedMedia: selectedMedia
         })
     })
     .then(response => {
@@ -37,5 +37,5 @@ function toggleClass(className) {
     mediaImagesCheckboxes.forEach(function(checkbox) {
         checkbox.checked = classCheckbox.checked;
     });
-    console.log(document.querySelectorAll('input[name="selectedImages[]"]:checked'));
+    console.log(document.querySelectorAll('input[name="selectedMedia[]"]:checked'));
 }
