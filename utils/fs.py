@@ -54,6 +54,7 @@ def imgPaths(startPath: str) -> Generator[str, None, None]:
                 yield os.path.join(root, file)
                 
 
+# NN
 def detectFileWithHash(files: Generator[str, None, None], targetHash: str) -> Union[str, None]:
     """
     Detect a file with a specific hash value from a generator.
