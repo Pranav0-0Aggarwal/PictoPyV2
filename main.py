@@ -55,7 +55,7 @@ def classifyPath() -> Dict[str, List[str]]:
                 "mediaID INTEGER PRIMARY KEY AUTOINCREMENT", 
                 "hash TEXT UNIQUE", 
                 "path TEXT UNIQUE",
-                "format TEXT",
+                "format TEXT CHECK(format IN ('img', 'vid'))",
                 "hidden INTEGER"
             ],
             "CLASS": [
