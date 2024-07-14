@@ -73,28 +73,40 @@ def hashExist(conn: sqlite3.Connection, hashValue: str) -> bool:
     result = executeQuery(conn, query, [hashValue])
     return result[0][0] == 1
 
-def groupByClass(conn: sqlite3.Connection, hidden: int = 0, groupOf: str = "path") -> Dict[str, List[str]]:
+def groupByClass(conn: sqlite3.Connection, hidden: int = 0, fileType: str = "img", groupOf: str = "path") -> Dict[str, List[str]]:
     """Returns paths grouped by classes from the database.
 
     Args:
         conn: A sqlite3.Connection object.
-        hidden: Filter images by hidden status.
+        hidden: Filter media by hidden status.
+        fileType: Filter media by file type ('img' or 'vid').
         groupOf: The column to be grouped.
 
     Returns:
         dict: A dictionary where each key is a class name and each value is a list of paths.
     """
+    if fileType == "any":
+        fileTypeCondition = ""
+    else:
+        fileTypeCondition = "AND i.fileType = ?"
+
     query = f"""
         SELECT c.class, GROUP_CONCAT(i.{groupOf})
         FROM CLASS c
         JOIN JUNCTION j ON c.classID = j.classID 
         JOIN MEDIA i ON j.mediaID = i.mediaID 
-        WHERE i.hidden = ?
+        WHERE i.hidden = ? {fileTypeCondition}
         GROUP BY c.class
     """
     result = {}
-    for row in executeQuery(conn, query, [hidden]).fetchall():
+    if fileType == "any":
+        cursor = executeQuery(conn, query, [hidden])
+    else:
+        cursor = executeQuery(conn, query, [hidden, fileType])
+    
+    for row in cursor.fetchall():
         result[row[0]] = row[1].split(',')
+    
     return result
 
 def toggleVisibility(conn: sqlite3.Connection, paths: List[str], hidden: int) -> None:
@@ -199,7 +211,7 @@ def updateMediaPath(conn, file, imgHash):
     print("Row updated successfully.")
     return True
 
-def insertIntoDB(conn: sqlite3.Connection, file: str, imgClass: List[str], imgHash: str) -> None:
+def insertIntoDB(conn: sqlite3.Connection, imgClass: List[str], imgHash: str, file: str, fileType: str) -> None:
     """Inserts image and its classes into the database.
 
     Args:
@@ -208,7 +220,7 @@ def insertIntoDB(conn: sqlite3.Connection, file: str, imgClass: List[str], imgHa
         imgClass: A list of classes associated with the image.
         imgHash: The hash value of the image.
     """
-    mediaID = executeQuery(conn, "INSERT INTO MEDIA(hash, path, hidden) VALUES(?, ?, 0)", [imgHash, file]).lastrowid
+    mediaID = executeQuery(conn, "INSERT INTO MEDIA(hash, path, fileType, hidden) VALUES(?, ?, ?, 0)", [imgHash, file, fileType]).lastrowid
 
     for className in imgClass:
         try:

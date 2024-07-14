@@ -31,18 +31,21 @@ def processImgs(conn: sqlite3.Connection, files: Generator[str, None, None]) -> 
     """
     
     objDetectionModel = pathOf("models/yolov8n.onnx")
-    for file in files:
+    for file, fileType, parentDir in files:
         imgHash = genHash(file)
         if updateMediaPath(conn, file, imgHash):
             continue
         try:
-            imgClass = imageClasses(file, objDetectionModel)
+            if fileType == "vid":
+                imgClass = videoClasses(file, objDetectionModel)
+            elif fileType == "img":
+                imgClass = imageClasses(file, objDetectionModel)
         except Exception as e:
             print(e)
             continue
-        insertIntoDB(conn, file, imgClass, imgHash)
+        insertIntoDB(conn, imgClass, imgHash, file, fileType)
 
-def classifyPath() -> Dict[str, List[str]]:
+def classifyPath(hidden, fileType) -> Dict[str, List[str]]:
     """
     Classify images in the home directory and store the results in the database.
 
@@ -56,7 +59,7 @@ def classifyPath() -> Dict[str, List[str]]:
                 "mediaID INTEGER PRIMARY KEY AUTOINCREMENT", 
                 "hash TEXT UNIQUE", 
                 "path TEXT UNIQUE",
-                "format TEXT CHECK(format IN ('img', 'vid'))",
+                "fileType TEXT CHECK(fileType IN ('img', 'vid'))",
                 "hidden INTEGER"
             ],
             "CLASS": [
@@ -78,7 +81,7 @@ def classifyPath() -> Dict[str, List[str]]:
     # Clear unavailable paths from DB
     cleanDB(conn)
 
-    result = groupByClass(conn)
+    result = groupByClass(conn, hidden, fileType)
 
     closeConnection(conn)
 
@@ -88,34 +91,34 @@ app = Flask(__name__, template_folder=f"{pathOf('static')}")
 
 @app.route('/')
 def index():
-    return render_template('index.html', classDict=classifyPath())
+    return redirect(url_for('groupMedia', fileType='img', groupBy='classes'))
 
 @app.route('/static/<path:path>')
 def staticFile(path):
     return app.send_static_file(pathOf(path))
 
 @app.route('/media/<path:path>')
-def media(path):
+def sendFile(path):
     path = escape(f"/{path}")
     if pathExist(path):
         return send_file(path)
-    return redirect(url_for('index')) # doesn't reload / (TBI)
+    return redirect(url_for('index')) # doesn't reload (TBI)
 
-# Sections with Demo return
+# Sections
 
-@app.route('/<string:format>/<string:groupOf>')
-def groupBy(format, groupOf):
-    if format not in ["img", "vid"]:
+@app.route('/<string:fileType>/<string:groupBy>')
+def groupMedia(fileType, groupBy):
+    if fileType not in ["img", "vid"]:
         return redirect(url_for('index'))
-    return render_template('index.html', classDict=classifyPath())
+    return render_template('index.html', classDict=classifyPath(0, fileType))
 
-@app.route('/hidden/<string:groupOf>')
-def hidden(groupOf):
-    return render_template('index.html', classDict=classifyPath())
+@app.route('/hidden/<string:groupBy>')
+def hidden(groupBy):
+    return render_template('index.html', classDict=classifyPath(1, "any"))
 
-@app.route('/trash/<string:groupOf>')
-def trash(groupOf):
-    return render_template('index.html', classDict=classifyPath())
+@app.route('/trash/<string:groupBy>')
+def trash(groupBy):
+    return render_template('index.html', classDict=classifyPath(1, "any")) # 1 instead of -1 for demo (TBI)
 
 # Buttons
 

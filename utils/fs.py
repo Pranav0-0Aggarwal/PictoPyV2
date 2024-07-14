@@ -32,17 +32,30 @@ def isImg(filePath: str) -> bool:
     imgExts = [".jpg", ".jpeg", ".png", ".webp", ".bmp", ".avif"]
     return fileExtension.lower() in imgExts
 
-
-def imgPaths(startPath: str) -> Generator[str, None, None]:
+def isVid(filePath: str) -> bool:
     """
-    Generate path to all images in the given directory and it's subdirectories.
+    Checks if the file is a video.
+
+    Args:
+        filePath: Path to the file.
+
+    Returns:
+        True if the file is a video, False otherwise.
+    """
+    _, fileExtension = os.path.splitext(filePath)
+    vidExts = [".mp4", ".mov", ".avi", ".mkv", ".webm"]
+    return fileExtension.lower() in vidExts
+
+def imgPaths(startPath: str) -> Generator[tuple[str, str, str], None, None]:
+    """
+    Generate paths to all images and videos in the given directory and its subdirectories.
     Ignore hidden directories.
 
     Args:
-        startPath: Path to the directory to search for images.
+        startPath: Path to the directory to search for images and videos.
 
-    Returns:
-        A generator that yields paths to all images in the directory.
+    Yields:
+        Tuple containing (file path, file type ('img' or 'vid'), root directory path).
     """
     for root, dirs, files in os.walk(startPath):
         for dir_name in list(dirs):  # Convert dirs to a list to avoid RuntimeError
@@ -51,7 +64,9 @@ def imgPaths(startPath: str) -> Generator[str, None, None]:
         
         for file in files:
             if isImg(file):
-                yield os.path.join(root, file)
+                yield os.path.join(root, file), "img", root
+            elif isVid(file):
+                yield os.path.join(root, file), "vid", root
                 
 
 # NN
