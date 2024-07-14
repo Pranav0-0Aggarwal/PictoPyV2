@@ -56,7 +56,7 @@ def classifyPath() -> Dict[str, List[str]]:
                 "mediaID INTEGER PRIMARY KEY AUTOINCREMENT", 
                 "hash TEXT UNIQUE", 
                 "path TEXT UNIQUE",
-                "format TEXT CHECK(format IN ('img', 'vid'))",
+                "fileType TEXT CHECK(fileType IN ('img', 'vid'))",
                 "hidden INTEGER"
             ],
             "CLASS": [
@@ -103,9 +103,9 @@ def media(path):
 
 # Sections with Demo return
 
-@app.route('/<string:format>/<string:groupOf>')
-def groupBy(format, groupOf):
-    if format not in ["img", "vid"]:
+@app.route('/<string:fileType>/<string:groupOf>')
+def groupBy(fileType, groupOf):
+    if fileType not in ["img", "vid"]:
         return redirect(url_for('index'))
     return render_template('index.html', classDict=classifyPath())
 
