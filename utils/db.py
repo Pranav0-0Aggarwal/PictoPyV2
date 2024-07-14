@@ -90,7 +90,7 @@ def groupByClass(conn: sqlite3.Connection, hidden: int = 0, groupOf: str = "path
         SELECT c.class, GROUP_CONCAT(i.{groupOf})
         FROM CLASS c
         JOIN JUNCTION j ON c.classID = j.classID 
-        JOIN MEDIA i ON j.imageID = i.imageID 
+        JOIN MEDIA i ON j.mediaID = i.mediaID 
         WHERE i.hidden = ?
         GROUP BY c.class
     """
@@ -204,7 +204,7 @@ def insertIntoDB(conn: sqlite3.Connection, file: str, imgClass: List[str], imgHa
         imgHash: The hash value of the image.
     """
     try:
-        _, imageID = executeQuery(conn, "INSERT INTO MEDIA(hash, path, hidden) VALUES(?, ?, 0)", [imgHash, file], 1)
+        _, mediaID = executeQuery(conn, "INSERT INTO MEDIA(hash, path, hidden) VALUES(?, ?, 0)", [imgHash, file], 1)
 
         for className in imgClass:
             try:
@@ -212,7 +212,7 @@ def insertIntoDB(conn: sqlite3.Connection, file: str, imgClass: List[str], imgHa
             except sqlite3.IntegrityError:
                 classID = executeQuery(conn, "SELECT classID FROM CLASS WHERE class = ?", [className])[0][0]
             
-            executeQuery(conn, "INSERT OR IGNORE INTO JUNCTION(imageID, classID) VALUES(?, ?)", [imageID, classID])
+            executeQuery(conn, "INSERT OR IGNORE INTO JUNCTION(mediaID, classID) VALUES(?, ?)", [mediaID, classID])
 
     except sqlite3.IntegrityError:
         executeQuery(conn, "UPDATE MEDIA SET path = ? WHERE hash = ?", [file, imgHash])

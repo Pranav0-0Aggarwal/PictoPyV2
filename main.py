@@ -52,9 +52,10 @@ def classifyPath() -> Dict[str, List[str]]:
     createSchema(conn, 
         {
             "MEDIA": [
-                "imageID INTEGER PRIMARY KEY AUTOINCREMENT", 
+                "mediaID INTEGER PRIMARY KEY AUTOINCREMENT", 
                 "hash TEXT UNIQUE", 
-                "path TEXT", 
+                "path TEXT UNIQUE",
+                "format TEXT",
                 "hidden INTEGER"
             ],
             "CLASS": [
@@ -62,11 +63,11 @@ def classifyPath() -> Dict[str, List[str]]:
                 "class TEXT UNIQUE"
             ],
             "JUNCTION": [
-                "imageID INTEGER", 
+                "mediaID INTEGER", 
                 "classID INTEGER", 
-                "FOREIGN KEY(imageID) REFERENCES MEDIA(imageID) ON DELETE CASCADE",
+                "FOREIGN KEY(mediaID) REFERENCES MEDIA(mediaID) ON DELETE CASCADE",
                 "FOREIGN KEY(classID) REFERENCES CLASS(classID)",
-                "PRIMARY KEY (imageID, classID)"
+                "PRIMARY KEY (mediaID, classID)"
             ]
         }
     )
