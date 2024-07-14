@@ -1,3 +1,3 @@
 
-from .fs import genHash, isImg, imgPaths, detectFileWithHash, homeDir, deleteFile, pathExist, pathOf
-from .db import createSchema, connectDB, createTable, executeQuery, closeConnection, groupByClass, hashExist, hideByClass, deleteFromDB, cleanDB, insertIntoDB, toggleVisibility
+from .fs import genHash, isImg, imgPaths, homeDir, deleteFile, pathExist, pathOf
+from .db import createSchema, connectDB, createTable, closeConnection, groupByClass, updateMediaPath, hideByClass, deleteFromDB, cleanDB, insertIntoDB, toggleVisibility

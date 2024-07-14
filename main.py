@@ -3,6 +3,7 @@ import os
 import sqlite3
 from typing import Dict, List, Generator, List
 from utils import *
+from media import *
 from yolov8 import detectClasses
 from flask import Flask, render_template, send_file, request, redirect, url_for
 from markupsafe import escape
@@ -15,11 +16,15 @@ def dbPath() -> str:
     Returns:
         str: The path to the database file.
     """
-    return os.path.join(os.path.expanduser("~"), ".pictopy.db")
+    directory = os.path.join(os.path.expanduser("~"), ".pictopy")
+    os.makedirs(directory, exist_ok=True)
+    return os.path.join(directory, "database.db")
 
 def processImgs(conn: sqlite3.Connection, files: Generator[str, None, None]) -> None:
     """
-    Processes images by extracting their hash values, detecting their classes, and storing them in the database.
+    Processes images by extracting their hash values.
+    If hash already exists in the database, just update the path.
+    Otherwise detect classes and insert them into the database.
 
     Args:
         conn: The database connection object.
@@ -29,10 +34,10 @@ def processImgs(conn: sqlite3.Connection, files: Generator[str, None, None]) -> 
     objDetectionModel = pathOf("models/yolov8n.onnx")
     for file in files:
         imgHash = genHash(file)
-        if hashExist(conn, imgHash):
+        if updateMediaPath(conn, file, imgHash):
             continue
         try:
-            imgClass = detectClasses(file, objDetectionModel)
+            imgClass = imageClasses(file, objDetectionModel)
         except Exception as e:
             print(e)
             continue
@@ -49,9 +54,10 @@ def classifyPath() -> Dict[str, List[str]]:
     createSchema(conn, 
         {
             "MEDIA": [
-                "imageID INTEGER PRIMARY KEY AUTOINCREMENT", 
+                "mediaID INTEGER PRIMARY KEY AUTOINCREMENT", 
                 "hash TEXT UNIQUE", 
-                "path TEXT", 
+                "path TEXT UNIQUE",
+                "format TEXT CHECK(format IN ('img', 'vid'))",
                 "hidden INTEGER"
             ],
             "CLASS": [
@@ -59,11 +65,11 @@ def classifyPath() -> Dict[str, List[str]]:
                 "class TEXT UNIQUE"
             ],
             "JUNCTION": [
-                "imageID INTEGER", 
+                "mediaID INTEGER", 
                 "classID INTEGER", 
-                "FOREIGN KEY(imageID) REFERENCES MEDIA(imageID) ON DELETE CASCADE",
+                "FOREIGN KEY(mediaID) REFERENCES MEDIA(mediaID) ON DELETE CASCADE",
                 "FOREIGN KEY(classID) REFERENCES CLASS(classID)",
-                "PRIMARY KEY (imageID, classID)"
+                "PRIMARY KEY (mediaID, classID)"
             ]
         }
     )
