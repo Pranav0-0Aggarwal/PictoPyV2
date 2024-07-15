@@ -189,7 +189,9 @@ def deleteByClass(conn: sqlite3.Connection, classes: List[str]) -> None:
 #             deleteFromDB(conn, path)
 
 def cleanDB(conn: sqlite3.Connection) -> None:
-    """Filter unavailable paths from DB and delete them.
+    """Filter and Delete:
+    - Unavailable paths from DB 
+    - Trash paths older than 30 days
 
     Args:
         conn: sqlite3.Connection object.
@@ -199,6 +201,14 @@ def cleanDB(conn: sqlite3.Connection) -> None:
     for path in executeQuery(conn, query).fetchall():
         if not pathExist(path[0]):
             paths.append(path[0])
+
+    query = """
+    SELECT path FROM MEDIA 
+    WHERE hidden = -1 
+    AND modifiedTime <= DATE('now', '-30 days')
+    """
+    for path in executeQuery(conn, query).fetchall():
+        paths.append(path[0])
     
     if paths:
         print(paths)
