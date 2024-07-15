@@ -3,17 +3,17 @@ import sys
 import hashlib
 from typing import Generator, Union, List
 
-def genHash(imgPath: str) -> str:
+def genHash(path: str) -> str:
     """
     Generates a hash of the image file.
 
     Args:
-        imgPath: Path to the image file.
+        path: Path to the image file.
 
     Returns:
         A hexadecimal string representing the hash of the image file.
     """
-    with open(imgPath, "rb") as f:
+    with open(path, "rb") as f:
         imgData = f.read()
         return hashlib.md5(imgData).hexdigest()
 
