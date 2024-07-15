@@ -32,18 +32,18 @@ def processMedia(conn: sqlite3.Connection, files: Generator[str, None, None]) ->
     
     objDetectionModel = pathOf("models/yolov8n.onnx")
     for file, fileType, parentDir in files:
-        imgHash = genHash(file)
-        if updateMediaPath(conn, file, imgHash):
+        fileHash = genHash(file)
+        if updateMediaPath(conn, file, fileHash):
             continue
         try:
             if fileType == "vid":
-                imgClass = videoClasses(file, objDetectionModel)
+                mediaClass = videoClasses(file, objDetectionModel)
             elif fileType == "img":
-                imgClass = imageClasses(file, objDetectionModel)
+                mediaClass = imageClasses(file, objDetectionModel)
         except Exception as e:
             print(e)
             continue
-        insertIntoDB(conn, imgClass, imgHash, file, fileType)
+        insertIntoDB(conn, mediaClass, fileHash, file, fileType)
 
 def classifyPath(hidden, fileType) -> Dict[str, List[str]]:
     """

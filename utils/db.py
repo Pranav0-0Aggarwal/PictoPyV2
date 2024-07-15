@@ -204,25 +204,25 @@ def cleanDB(conn: sqlite3.Connection) -> None:
         print(paths)
         deleteFromDB(conn, paths)
 
-def updateMediaPath(conn, file, imgHash):
-    if executeQuery(conn, "UPDATE MEDIA SET path = ? WHERE hash = ?", [file, imgHash]).rowcount == 0:
+def updateMediaPath(conn, file, fileHash):
+    if executeQuery(conn, "UPDATE MEDIA SET path = ? WHERE hash = ?", [file, fileHash]).rowcount == 0:
         print("No rows were updated. The hash does not exist.")
         return False
     print("Row updated successfully.")
     return True
 
-def insertIntoDB(conn: sqlite3.Connection, imgClass: List[str], imgHash: str, file: str, fileType: str) -> None:
+def insertIntoDB(conn: sqlite3.Connection, mediaClass: List[str], fileHash: str, file: str, fileType: str) -> None:
     """Inserts image and its classes into the database.
 
     Args:
         conn: sqlite3.Connection object.
         file: The path to the image file.
-        imgClass: A list of classes associated with the image.
-        imgHash: The hash value of the image.
+        mediaClass: A list of classes associated with the image.
+        fileHash: The hash value of the image.
     """
-    mediaID = executeQuery(conn, "INSERT INTO MEDIA(hash, path, fileType, hidden) VALUES(?, ?, ?, 0)", [imgHash, file, fileType]).lastrowid
+    mediaID = executeQuery(conn, "INSERT INTO MEDIA(hash, path, fileType, hidden) VALUES(?, ?, ?, 0)", [fileHash, file, fileType]).lastrowid
 
-    for className in imgClass:
+    for className in mediaClass:
         try:
             classID = executeQuery(conn, "INSERT INTO CLASS(class) VALUES(?)", [className]).lastrowid
         except sqlite3.IntegrityError:
