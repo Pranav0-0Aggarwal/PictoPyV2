@@ -212,13 +212,13 @@ def updateMediaPath(conn, file, fileHash):
     return True
 
 def insertIntoDB(conn: sqlite3.Connection, mediaClass: List[str], fileHash: str, file: str, fileType: str) -> None:
-    """Inserts image and its classes into the database.
+    """Inserts media and its classes into the database.
 
     Args:
         conn: sqlite3.Connection object.
-        file: The path to the image file.
-        mediaClass: A list of classes associated with the image.
-        fileHash: The hash value of the image.
+        file: The path to the media file.
+        mediaClass: A list of classes associated with the media.
+        fileHash: The hash value of the media.
     """
     mediaID = executeQuery(conn, "INSERT INTO MEDIA(hash, path, fileType, hidden) VALUES(?, ?, ?, 0)", [fileHash, file, fileType]).lastrowid
 
