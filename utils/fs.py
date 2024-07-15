@@ -17,33 +17,19 @@ def genHash(path: str) -> str:
         return hashlib.md5(f.read()).hexdigest()
 
 
-def isImg(filePath: str) -> bool:
+def checkExtension(filePath: str, extensions: List[str]) -> bool:
     """
-    Checks if the file is an image.
+    Checks if the file has one of the specified extensions.
 
     Args:
         filePath: Path to the file.
+        extensions: List of allowed extensions.
 
     Returns:
-        True if the file is an image, False otherwise.
+        True if the file has one of the extensions, False otherwise.
     """
     _, fileExtension = os.path.splitext(filePath)
-    imgExts = [".jpg", ".jpeg", ".png", ".webp", ".bmp", ".avif"]
-    return fileExtension.lower() in imgExts
-
-def isVid(filePath: str) -> bool:
-    """
-    Checks if the file is a video.
-
-    Args:
-        filePath: Path to the file.
-
-    Returns:
-        True if the file is a video, False otherwise.
-    """
-    _, fileExtension = os.path.splitext(filePath)
-    vidExts = [".mp4", ".mov", ".avi", ".mkv", ".webm"]
-    return fileExtension.lower() in vidExts
+    return fileExtension.lower() in extensions
 
 def mediaPaths(startPath: str) -> Generator[tuple[str, str, str], None, None]:
     """
@@ -62,9 +48,9 @@ def mediaPaths(startPath: str) -> Generator[tuple[str, str, str], None, None]:
                 dirs.remove(dir_name)
         
         for file in files:
-            if isImg(file):
+            if checkExtension(file, [".jpg", ".jpeg", ".png", ".webp", ".bmp", ".avif"]):
                 yield os.path.join(root, file), "img", root
-            elif isVid(file):
+            elif checkExtension(file, [".mp4", ".mov", ".avi", ".mkv", ".webm"]):
                 yield os.path.join(root, file), "vid", root
                 
 
