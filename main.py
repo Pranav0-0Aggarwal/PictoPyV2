@@ -21,7 +21,7 @@ def dbPath() -> str:
 
 def processMedia(conn: sqlite3.Connection, files: Generator[str, None, None]) -> None:
     """
-    Processes images by extracting their hash values.
+    Processes files by extracting their hash values.
     If hash already exists in the database, just update the path.
     Otherwise detect classes and insert them into the database.
 
@@ -47,7 +47,7 @@ def processMedia(conn: sqlite3.Connection, files: Generator[str, None, None]) ->
 
 def classifyPath(hidden, fileType) -> Dict[str, List[str]]:
     """
-    Classify images in the home directory and store the results in the database.
+    Classify files in the home directory and store the results in the database.
 
     Returns:
         Dict[str, List[str]]: Dictionary mapping class names to lists of file paths.
@@ -125,7 +125,7 @@ def trash(groupBy):
 @app.route('/delete', methods=['POST'])
 def delete():
     data = request.get_json().get('selectedMedia', [])
-    print(f"Deleting images: {data}")
+    print(f"Deleting files: {data}")
     conn = connectDB(dbPath())
     deleteFromDB(conn, data)
     closeConnection(conn)
@@ -134,7 +134,7 @@ def delete():
 @app.route('/hide', methods=['POST'])
 def hide():
     data = request.get_json().get('selectedMedia', [])
-    print(f"Hiding images: {data}")
+    print(f"Hiding files: {data}")
     conn = connectDB(dbPath())
     toggleVisibility(conn, data, 1)
     closeConnection(conn)

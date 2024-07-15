@@ -110,7 +110,7 @@ def groupByClass(conn: sqlite3.Connection, hidden: int = 0, fileType: str = "img
     return result
 
 def toggleVisibility(conn: sqlite3.Connection, paths: List[str], hidden: int) -> None:
-    """Switch visibility of images by changing value of hidden column.
+    """Switch visibility of media by changing value of hidden column.
 
     Args:
         conn: sqlite3.Connection object.
@@ -126,7 +126,7 @@ def listByClass(conn: sqlite3.Connection, classes: List[str], hidden: int = 0, g
     Args:
         conn: sqlite3.Connection object.
         classes: A list of class names.
-        hidden: Filter images by hidden status.
+        hidden: Filter media by hidden status.
         groupOf: The column to be grouped.
 
     Returns:
@@ -140,7 +140,7 @@ def listByClass(conn: sqlite3.Connection, classes: List[str], hidden: int = 0, g
     return result
 
 def hideByClass(conn: sqlite3.Connection, classes: List[str]) -> None:
-    """Hides images by class.
+    """Hides media by class.
 
     Args:
         conn: sqlite3.Connection object.
@@ -149,7 +149,7 @@ def hideByClass(conn: sqlite3.Connection, classes: List[str]) -> None:
     toggleVisibility(conn, listByClass(conn, classes, 0), 1)
 
 def unhideByClass(conn: sqlite3.Connection, classes: List[str]) -> None:
-    """Unhides images by class.
+    """Unhides media by class.
 
     Args:
         conn: sqlite3.Connection object.
@@ -169,7 +169,7 @@ def deleteFromDB(conn: sqlite3.Connection, paths: List[str]) -> None:
     deleteFile(paths)
 
 def deleteByClass(conn: sqlite3.Connection, classes: List[str]) -> None:
-    """Deletes images by class.
+    """Deletes media by class.
 
     Args:
         conn: sqlite3.Connection object.
