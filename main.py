@@ -138,6 +138,7 @@ def toTrash():
     conn = connectDB(dbPath())
     moveToTrash(conn, data)
     closeConnection(conn)
+    return "reload"
 
 @app.route('/delete', methods=['POST'])
 def delete():
@@ -146,7 +147,7 @@ def delete():
     conn = connectDB(dbPath())
     deleteFromDB(conn, data)
     closeConnection(conn)
-    return redirect(url_for('index'))
+    return "reload"
 
 @app.route('/hide', methods=['POST'])
 def hide():
@@ -155,7 +156,7 @@ def hide():
     conn = connectDB(dbPath())
     toggleVisibility(conn, data, 1)
     closeConnection(conn)
-    return redirect(url_for('index'))
+    return "reload"
 
 @app.route('/unhide', methods=['POST'])
 def unhide():
@@ -164,6 +165,7 @@ def unhide():
     conn = connectDB(dbPath())
     toggleVisibility(conn, data, 0)
     closeConnection(conn)
+    return "reload"
 
 @app.route('/restore', methods=['POST'])
 def restore():
@@ -172,6 +174,7 @@ def restore():
     conn = connectDB(dbPath())
     toggleVisibility(conn, data, 0)
     closeConnection(conn)
+    return "reload"
 
 @app.route('/info/<path:path>')
 def info(path):
