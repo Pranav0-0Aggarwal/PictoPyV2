@@ -209,7 +209,7 @@ def updateMediaPath(conn, file, fileHash):
         return False
     return True
 
-def insertIntoDB(conn: sqlite3.Connection, mediaClass: List[str], fileHash: str, file: str, fileType: str) -> None:
+def insertIntoDB(conn: sqlite3.Connection, mediaClass: List[str], fileHash: str, file: str, directory: str, fileType: str) -> None:
     """Inserts media and its classes into the database.
 
     Args:
@@ -218,7 +218,7 @@ def insertIntoDB(conn: sqlite3.Connection, mediaClass: List[str], fileHash: str,
         mediaClass: A list of classes associated with the media.
         fileHash: The hash value of the media.
     """
-    mediaID = executeQuery(conn, "INSERT INTO MEDIA(hash, path, fileType, hidden) VALUES(?, ?, ?, 0)", [fileHash, file, fileType]).lastrowid
+    mediaID = executeQuery(conn, "INSERT INTO MEDIA(hash, path, directory, fileType, hidden) VALUES(?, ?, ?, ?, 0)", [fileHash, file, directory, fileType]).lastrowid
 
     for className in mediaClass:
         try:

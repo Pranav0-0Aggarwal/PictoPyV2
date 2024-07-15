@@ -43,7 +43,7 @@ def processMedia(conn: sqlite3.Connection, files: Generator[str, None, None]) ->
         except Exception as e:
             print(e)
             continue
-        insertIntoDB(conn, mediaClass, fileHash, file, fileType)
+        insertIntoDB(conn, mediaClass, fileHash, file, parentDir, fileType)
 
 def classifyPath(hidden, fileType) -> Dict[str, List[str]]:
     """
