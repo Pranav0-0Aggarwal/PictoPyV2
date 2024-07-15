@@ -46,7 +46,7 @@ def isVid(filePath: str) -> bool:
     vidExts = [".mp4", ".mov", ".avi", ".mkv", ".webm"]
     return fileExtension.lower() in vidExts
 
-def imgPaths(startPath: str) -> Generator[tuple[str, str, str], None, None]:
+def mediaPaths(startPath: str) -> Generator[tuple[str, str, str], None, None]:
     """
     Generate paths to all images and videos in the given directory and its subdirectories.
     Ignore hidden directories.

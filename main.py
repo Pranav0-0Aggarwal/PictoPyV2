@@ -76,7 +76,7 @@ def classifyPath(hidden, fileType) -> Dict[str, List[str]]:
         }
     )
 
-    processMedia(conn, imgPaths(homeDir()))
+    processMedia(conn, mediaPaths(homeDir()))
 
     # Clear unavailable paths from DB
     cleanDB(conn)
