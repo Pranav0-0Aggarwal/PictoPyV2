@@ -5,17 +5,16 @@ from typing import Generator, Union, List
 
 def genHash(path: str) -> str:
     """
-    Generates a hash of the image file.
+    Generates a hash of file.
 
     Args:
-        path: Path to the image file.
+        path: Path to the file.
 
     Returns:
-        A hexadecimal string representing the hash of the image file.
+        A hexadecimal string representing the hash of the file.
     """
     with open(path, "rb") as f:
-        imgData = f.read()
-        return hashlib.md5(imgData).hexdigest()
+        return hashlib.md5(f.read()).hexdigest()
 
 
 def isImg(filePath: str) -> bool:
