@@ -3,50 +3,35 @@ import sys
 import hashlib
 from typing import Generator, Union, List
 
-def genHash(imgPath: str) -> str:
+def genHash(path: str) -> str:
     """
-    Generates a hash of the image file.
+    Generates a hash of file.
 
     Args:
-        imgPath: Path to the image file.
+        path: Path to the file.
 
     Returns:
-        A hexadecimal string representing the hash of the image file.
+        A hexadecimal string representing the hash of the file.
     """
-    with open(imgPath, "rb") as f:
-        imgData = f.read()
-        return hashlib.md5(imgData).hexdigest()
+    with open(path, "rb") as f:
+        return hashlib.md5(f.read()).hexdigest()
 
 
-def isImg(filePath: str) -> bool:
+def checkExtension(filePath: str, extensions: List[str]) -> bool:
     """
-    Checks if the file is an image.
-
-    Args:
-        filePath: Path to the file.
-
-    Returns:
-        True if the file is an image, False otherwise.
-    """
-    _, fileExtension = os.path.splitext(filePath)
-    imgExts = [".jpg", ".jpeg", ".png", ".webp", ".bmp", ".avif"]
-    return fileExtension.lower() in imgExts
-
-def isVid(filePath: str) -> bool:
-    """
-    Checks if the file is a video.
+    Checks if the file has one of the specified extensions.
 
     Args:
         filePath: Path to the file.
+        extensions: List of allowed extensions.
 
     Returns:
-        True if the file is a video, False otherwise.
+        True if the file has one of the extensions, False otherwise.
     """
     _, fileExtension = os.path.splitext(filePath)
-    vidExts = [".mp4", ".mov", ".avi", ".mkv", ".webm"]
-    return fileExtension.lower() in vidExts
+    return fileExtension.lower() in extensions
 
-def imgPaths(startPath: str) -> Generator[tuple[str, str, str], None, None]:
+def mediaPaths(startPath: str) -> Generator[tuple[str, str, str], None, None]:
     """
     Generate paths to all images and videos in the given directory and its subdirectories.
     Ignore hidden directories.
@@ -63,9 +48,9 @@ def imgPaths(startPath: str) -> Generator[tuple[str, str, str], None, None]:
                 dirs.remove(dir_name)
         
         for file in files:
-            if isImg(file):
+            if checkExtension(file, [".jpg", ".jpeg", ".png", ".webp", ".bmp", ".avif"]):
                 yield os.path.join(root, file), "img", root
-            elif isVid(file):
+            elif checkExtension(file, [".mp4", ".mov", ".avi", ".mkv", ".webm"]):
                 yield os.path.join(root, file), "vid", root
                 
 

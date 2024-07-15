@@ -110,7 +110,7 @@ def groupByClass(conn: sqlite3.Connection, hidden: int = 0, fileType: str = "img
     return result
 
 def toggleVisibility(conn: sqlite3.Connection, paths: List[str], hidden: int) -> None:
-    """Switch visibility of images by changing value of hidden column.
+    """Switch visibility of media by changing value of hidden column.
 
     Args:
         conn: sqlite3.Connection object.
@@ -126,7 +126,7 @@ def listByClass(conn: sqlite3.Connection, classes: List[str], hidden: int = 0, g
     Args:
         conn: sqlite3.Connection object.
         classes: A list of class names.
-        hidden: Filter images by hidden status.
+        hidden: Filter media by hidden status.
         groupOf: The column to be grouped.
 
     Returns:
@@ -140,7 +140,7 @@ def listByClass(conn: sqlite3.Connection, classes: List[str], hidden: int = 0, g
     return result
 
 def hideByClass(conn: sqlite3.Connection, classes: List[str]) -> None:
-    """Hides images by class.
+    """Hides media by class.
 
     Args:
         conn: sqlite3.Connection object.
@@ -149,7 +149,7 @@ def hideByClass(conn: sqlite3.Connection, classes: List[str]) -> None:
     toggleVisibility(conn, listByClass(conn, classes, 0), 1)
 
 def unhideByClass(conn: sqlite3.Connection, classes: List[str]) -> None:
-    """Unhides images by class.
+    """Unhides media by class.
 
     Args:
         conn: sqlite3.Connection object.
@@ -169,7 +169,7 @@ def deleteFromDB(conn: sqlite3.Connection, paths: List[str]) -> None:
     deleteFile(paths)
 
 def deleteByClass(conn: sqlite3.Connection, classes: List[str]) -> None:
-    """Deletes images by class.
+    """Deletes media by class.
 
     Args:
         conn: sqlite3.Connection object.
@@ -204,25 +204,23 @@ def cleanDB(conn: sqlite3.Connection) -> None:
         print(paths)
         deleteFromDB(conn, paths)
 
-def updateMediaPath(conn, file, imgHash):
-    if executeQuery(conn, "UPDATE MEDIA SET path = ? WHERE hash = ?", [file, imgHash]).rowcount == 0:
-        print("No rows were updated. The hash does not exist.")
+def updateMediaPath(conn, file, fileHash):
+    if executeQuery(conn, "UPDATE MEDIA SET path = ? WHERE hash = ?", [file, fileHash]).rowcount == 0:
         return False
-    print("Row updated successfully.")
     return True
 
-def insertIntoDB(conn: sqlite3.Connection, imgClass: List[str], imgHash: str, file: str, fileType: str) -> None:
-    """Inserts image and its classes into the database.
+def insertIntoDB(conn: sqlite3.Connection, mediaClass: List[str], fileHash: str, file: str, fileType: str) -> None:
+    """Inserts media and its classes into the database.
 
     Args:
         conn: sqlite3.Connection object.
-        file: The path to the image file.
-        imgClass: A list of classes associated with the image.
-        imgHash: The hash value of the image.
+        file: The path to the media file.
+        mediaClass: A list of classes associated with the media.
+        fileHash: The hash value of the media.
     """
-    mediaID = executeQuery(conn, "INSERT INTO MEDIA(hash, path, fileType, hidden) VALUES(?, ?, ?, 0)", [imgHash, file, fileType]).lastrowid
+    mediaID = executeQuery(conn, "INSERT INTO MEDIA(hash, path, fileType, hidden) VALUES(?, ?, ?, 0)", [fileHash, file, fileType]).lastrowid
 
-    for className in imgClass:
+    for className in mediaClass:
         try:
             classID = executeQuery(conn, "INSERT INTO CLASS(class) VALUES(?)", [className]).lastrowid
         except sqlite3.IntegrityError:
