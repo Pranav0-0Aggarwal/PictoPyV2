@@ -206,9 +206,7 @@ def cleanDB(conn: sqlite3.Connection) -> None:
 
 def updateMediaPath(conn, file, fileHash):
     if executeQuery(conn, "UPDATE MEDIA SET path = ? WHERE hash = ?", [file, fileHash]).rowcount == 0:
-        print("No rows were updated. The hash does not exist.")
         return False
-    print("Row updated successfully.")
     return True
 
 def insertIntoDB(conn: sqlite3.Connection, mediaClass: List[str], fileHash: str, file: str, fileType: str) -> None:
