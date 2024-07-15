@@ -43,9 +43,9 @@ def processMedia(conn: sqlite3.Connection, files: Generator[str, None, None]) ->
         except Exception as e:
             print(e)
             continue
-        insertIntoDB(conn, mediaClass, fileHash, file, fileType)
+        insertIntoDB(conn, mediaClass, fileHash, file, parentDir, fileType)
 
-def classifyPath(hidden, fileType) -> Dict[str, List[str]]:
+def classifyPath(hidden, fileType, groupBy) -> Dict[str, List[str]]:
     """
     Classify files in the home directory and store the results in the database.
 
@@ -59,7 +59,9 @@ def classifyPath(hidden, fileType) -> Dict[str, List[str]]:
                 "mediaID INTEGER PRIMARY KEY AUTOINCREMENT", 
                 "hash TEXT UNIQUE", 
                 "path TEXT UNIQUE",
+                "directory TEXT",
                 "fileType TEXT CHECK(fileType IN ('img', 'vid'))",
+                "modifiedTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP",
                 "hidden INTEGER"
             ],
             "CLASS": [
@@ -81,7 +83,10 @@ def classifyPath(hidden, fileType) -> Dict[str, List[str]]:
     # Clear unavailable paths from DB
     cleanDB(conn)
 
-    result = groupByClass(conn, hidden, fileType)
+    if groupBy == "directory":
+        result = groupByDir(conn, hidden, fileType)
+    else:
+        result = groupByClass(conn, hidden, fileType)
 
     closeConnection(conn)
 
@@ -91,7 +96,7 @@ app = Flask(__name__, template_folder=f"{pathOf('static')}")
 
 @app.route('/')
 def index():
-    return redirect(url_for('groupMedia', fileType='img', groupBy='classes'))
+    return redirect(url_for('groupMedia', fileType='img', groupBy='directory'))
 
 @app.route('/static/<path:path>')
 def staticFile(path):
@@ -108,19 +113,32 @@ def sendFile(path):
 
 @app.route('/<string:fileType>/<string:groupBy>')
 def groupMedia(fileType, groupBy):
-    if fileType not in ["img", "vid"]:
+    if fileType not in ["img", "vid"] or groupBy not in ["class", "directory"]:
         return redirect(url_for('index'))
-    return render_template('index.html', classDict=classifyPath(0, fileType))
+    return render_template('index.html', classDict=classifyPath(0, fileType, groupBy))
 
 @app.route('/hidden/<string:groupBy>')
 def hidden(groupBy):
-    return render_template('index.html', classDict=classifyPath(1, "any"))
+    if groupBy not in ["class", "directory"]:
+        return redirect(url_for('index'))
+    return render_template('index.html', classDict=classifyPath(1, "any", groupBy))
 
 @app.route('/trash/<string:groupBy>')
 def trash(groupBy):
-    return render_template('index.html', classDict=classifyPath(1, "any")) # 1 instead of -1 for demo (TBI)
+    if groupBy not in ["class", "directory"]:
+        return redirect(url_for('index'))
+    return render_template('index.html', classDict=classifyPath(-1, "any", groupBy))
 
 # Buttons
+
+@app.route('/toTrash', methods=['POST'])
+def toTrash():
+    data = request.get_json().get('selectedMedia', [])
+    print(f"Moving files to trash: {data}")
+    conn = connectDB(dbPath())
+    moveToTrash(conn, data)
+    closeConnection(conn)
+    return "reload"
 
 @app.route('/delete', methods=['POST'])
 def delete():
@@ -129,7 +147,7 @@ def delete():
     conn = connectDB(dbPath())
     deleteFromDB(conn, data)
     closeConnection(conn)
-    return redirect(url_for('index'))
+    return "reload"
 
 @app.route('/hide', methods=['POST'])
 def hide():
@@ -138,7 +156,25 @@ def hide():
     conn = connectDB(dbPath())
     toggleVisibility(conn, data, 1)
     closeConnection(conn)
-    return redirect(url_for('index'))
+    return "reload"
+
+@app.route('/unhide', methods=['POST'])
+def unhide():
+    data = request.get_json().get('selectedMedia', [])
+    print(f"Unhiding files: {data}")
+    conn = connectDB(dbPath())
+    toggleVisibility(conn, data, 0)
+    closeConnection(conn)
+    return "reload"
+
+@app.route('/restore', methods=['POST'])
+def restore():
+    data = request.get_json().get('selectedMedia', [])
+    print(f"Restoring files: {data}")
+    conn = connectDB(dbPath())
+    toggleVisibility(conn, data, 0)
+    closeConnection(conn)
+    return "reload"
 
 @app.route('/info/<path:path>')
 def info(path):

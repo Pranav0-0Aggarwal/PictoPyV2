@@ -22,7 +22,14 @@ function callRoute(route) {
         if (response.redirected) {
             window.location.href = response.url;  // Redirect to the new URL
         } else {
-            console.log(response);  // Log the response if not redirected (for debugging)
+            return response.text();  // Get the text response from the server
+        }
+    })
+    .then(text => {
+        if (text && text.trim() === "reload") {  // Check if the response is "reload"
+            location.reload();  // Reload the page
+        } else if (text) {
+            console.log(text);  // Log the response if it's not "reload" (for debugging)
         }
     })
     .catch(error => {

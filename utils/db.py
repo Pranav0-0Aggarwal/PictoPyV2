@@ -91,12 +91,45 @@ def groupByClass(conn: sqlite3.Connection, hidden: int = 0, fileType: str = "img
         fileTypeCondition = "AND i.fileType = ?"
 
     query = f"""
-        SELECT c.class, GROUP_CONCAT(i.{groupOf})
-        FROM CLASS c
-        JOIN JUNCTION j ON c.classID = j.classID 
-        JOIN MEDIA i ON j.mediaID = i.mediaID 
-        WHERE i.hidden = ? {fileTypeCondition}
-        GROUP BY c.class
+    SELECT c.class, GROUP_CONCAT(i.{groupOf})
+    FROM CLASS c
+    JOIN JUNCTION j ON c.classID = j.classID 
+    JOIN MEDIA i ON j.mediaID = i.mediaID 
+    WHERE i.hidden = ? {fileTypeCondition}
+    GROUP BY c.class
+    """
+    result = {}
+    if fileType == "any":
+        cursor = executeQuery(conn, query, [hidden])
+    else:
+        cursor = executeQuery(conn, query, [hidden, fileType])
+    
+    for row in cursor.fetchall():
+        result[row[0]] = row[1].split(',')
+    
+    return result
+
+def groupByDir(conn: sqlite3.Connection, hidden: int = 0, fileType: str = "img", groupOf: str = "path") -> Dict[str, List[str]]:
+    """Returns paths grouped by classes from the database.
+
+    Args:
+        conn: A sqlite3.Connection object.
+        hidden: Filter media by hidden status.
+        fileType: Filter media by file type ('img' or 'vid').
+        groupOf: The column to be grouped.
+
+    Returns:
+        dict: A dictionary where each key is a class name and each value is a list of paths.
+    """
+    if fileType == "any":
+        fileTypeCondition = ""
+    else:
+        fileTypeCondition = "AND fileType = ?"
+
+    query = f"""
+    SELECT directory, GROUP_CONCAT({groupOf}) 
+    FROM MEDIA
+    WHERE hidden = ? {fileTypeCondition}
     """
     result = {}
     if fileType == "any":
@@ -189,7 +222,9 @@ def deleteByClass(conn: sqlite3.Connection, classes: List[str]) -> None:
 #             deleteFromDB(conn, path)
 
 def cleanDB(conn: sqlite3.Connection) -> None:
-    """Filter unavailable paths from DB and delete them.
+    """Filter and Delete:
+    - Unavailable paths from DB 
+    - Trash paths older than 30 days
 
     Args:
         conn: sqlite3.Connection object.
@@ -199,6 +234,14 @@ def cleanDB(conn: sqlite3.Connection) -> None:
     for path in executeQuery(conn, query).fetchall():
         if not pathExist(path[0]):
             paths.append(path[0])
+
+    query = """
+    SELECT path FROM MEDIA 
+    WHERE hidden = -1 
+    AND modifiedTime <= DATE('now', '-30 days')
+    """
+    for path in executeQuery(conn, query).fetchall():
+        paths.append(path[0])
     
     if paths:
         print(paths)
@@ -209,7 +252,7 @@ def updateMediaPath(conn, file, fileHash):
         return False
     return True
 
-def insertIntoDB(conn: sqlite3.Connection, mediaClass: List[str], fileHash: str, file: str, fileType: str) -> None:
+def insertIntoDB(conn: sqlite3.Connection, mediaClass: List[str], fileHash: str, file: str, directory: str, fileType: str) -> None:
     """Inserts media and its classes into the database.
 
     Args:
@@ -218,7 +261,7 @@ def insertIntoDB(conn: sqlite3.Connection, mediaClass: List[str], fileHash: str,
         mediaClass: A list of classes associated with the media.
         fileHash: The hash value of the media.
     """
-    mediaID = executeQuery(conn, "INSERT INTO MEDIA(hash, path, fileType, hidden) VALUES(?, ?, ?, 0)", [fileHash, file, fileType]).lastrowid
+    mediaID = executeQuery(conn, "INSERT INTO MEDIA(hash, path, directory, fileType, hidden) VALUES(?, ?, ?, ?, 0)", [fileHash, file, directory, fileType]).lastrowid
 
     for className in mediaClass:
         try:
@@ -227,3 +270,18 @@ def insertIntoDB(conn: sqlite3.Connection, mediaClass: List[str], fileHash: str,
             classID = executeQuery(conn, "SELECT classID FROM CLASS WHERE class = ?", [className]).fetchall()[0][0]
         
         executeQuery(conn, "INSERT OR IGNORE INTO JUNCTION(mediaID, classID) VALUES(?, ?)", [mediaID, classID])
+
+def moveToTrash(conn: sqlite3.Connection, paths: List[str]) -> None:
+    """Move images to trash by setting the hidden column to -1.
+
+    Args:
+        conn: sqlite3.Connection object.
+        paths: A list of paths to move to trash.
+    """
+    query = f"""
+        UPDATE MEDIA 
+        SET hidden = -1,
+        modifiedTime = CURRENT_TIMESTAMP
+        WHERE path IN ({', '.join('?' * len(paths))})
+    """
+    executeQuery(conn, query, paths)
