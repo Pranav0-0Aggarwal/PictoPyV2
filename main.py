@@ -19,7 +19,7 @@ def dbPath() -> str:
     os.makedirs(directory, exist_ok=True)
     return os.path.join(directory, "database.db")
 
-def processImgs(conn: sqlite3.Connection, files: Generator[str, None, None]) -> None:
+def processMedia(conn: sqlite3.Connection, files: Generator[str, None, None]) -> None:
     """
     Processes images by extracting their hash values.
     If hash already exists in the database, just update the path.
@@ -76,7 +76,7 @@ def classifyPath(hidden, fileType) -> Dict[str, List[str]]:
         }
     )
 
-    processImgs(conn, imgPaths(homeDir()))
+    processMedia(conn, imgPaths(homeDir()))
 
     # Clear unavailable paths from DB
     cleanDB(conn)
