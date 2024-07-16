@@ -272,21 +272,20 @@ def insertMedia(conn: sqlite3.Connection, fileHash: str, file: str, directory: s
 
     Returns:
         A tuple of mediaID, file, and fileType.
-    """
-    return [executeQuery(conn, "INSERT INTO MEDIA(hash, path, directory, fileType, hidden) VALUES(?, ?, ?, ?, 0)", [fileHash, file, directory, fileType]).lastrowid, file, fileType]
-
-def insertClassRelation(conn: sqlite3.Connection, mediaClass: List[str], mediaID) -> None:
-    """Inserts media and its classes into the database.
-
-    Args:
-        conn: sqlite3.Connection object.
-        file: The path to the media file.
-        mediaClass: A list of classes associated with the media.
-        fileHash: The hash value of the media.
 
     Note:
         No need to check if mediaID exist in Junction Table.
         updateMediaPath() won't allow older mediaIDs.
+    """
+    return [executeQuery(conn, "INSERT INTO MEDIA(hash, path, directory, fileType, hidden) VALUES(?, ?, ?, ?, 0)", [fileHash, file, directory, fileType]).lastrowid, file, fileType]
+
+def insertClassRelation(conn: sqlite3.Connection, mediaClass: List[str], mediaID) -> None:
+    """Populates the JUNCTION table with the given class information.
+
+    Args:
+        conn: sqlite3.Connection object.
+        mediaClass: A list of class names.
+        mediaID: The ID of the media file.
     """
     for className in mediaClass:
         try:
