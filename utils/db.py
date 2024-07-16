@@ -247,8 +247,8 @@ def cleanDB(conn: sqlite3.Connection) -> None:
         print(paths)
         deleteFromDB(conn, paths)
 
-def updateMediaPath(conn, file, fileHash):
-    """Updates the path of a media file in the database.
+def updateMediaPath(conn, file, directory, fileHash):
+    """Updates the path and directoryof a media file in the database.
 
     Args:
         conn: sqlite3.Connection object.
@@ -258,7 +258,7 @@ def updateMediaPath(conn, file, fileHash):
     Returns:
         True if the path was updated, False otherwise.
     """
-    if executeQuery(conn, "UPDATE MEDIA SET path = ? WHERE hash = ?", [file, fileHash]).rowcount == 0:
+    if executeQuery(conn, "UPDATE MEDIA SET path = ?, directory = ? WHERE hash = ?", [file, directory, fileHash]).rowcount == 0:
         return False
     return True
 
