@@ -1,9 +1,7 @@
 import os
-import sqlite3
-from typing import Dict, List, Generator
+from typing import Dict, List
 from utils import *
 from media import *
-from yolov8 import detectClasses
 from flask import Flask, render_template, send_file, request, redirect, url_for
 from markupsafe import escape
 
@@ -18,35 +16,6 @@ def dbPath() -> str:
     directory = os.path.join(os.path.expanduser("~"), ".pictopy")
     os.makedirs(directory, exist_ok=True)
     return os.path.join(directory, "database.db")
-
-def processMedia(conn: sqlite3.Connection, files: Generator[str, None, None]) -> None:
-    """
-    Processes files by extracting their hash values.
-    If hash already exists in the database, just update the path.
-    Otherwise detect classes and insert them into the database.
-
-    Args:
-        conn: The database connection object.
-        files: A generator of file paths.
-    """
-    rowsToClassify = []
-    objDetectionModel = pathOf("models/yolov8n.onnx")
-    for file, fileType, parentDir in files:
-        fileHash = genHash(file)
-        if updateMediaPath(conn, file, fileHash):
-            continue
-        rowsToClassify.append(insertMedia(conn, fileHash, file, parentDir, fileType))
-    
-    for mediaID, file, fileType in rowsToClassify:
-        try:
-            if fileType == "vid":
-                mediaClass = videoClasses(file, objDetectionModel)
-            elif fileType == "img":
-                mediaClass = imageClasses(file, objDetectionModel)
-        except Exception as e:
-            print(e)
-            continue
-        insertClassRelation(conn, mediaClass, mediaID)
 
 def classifyPath(hidden, fileType, groupBy) -> Dict[str, List[str]]:
     """
@@ -81,7 +50,7 @@ def classifyPath(hidden, fileType, groupBy) -> Dict[str, List[str]]:
         }
     )
 
-    processMedia(conn, mediaPaths(homeDir()))
+    classifyMedia(conn, populateMediaTable(conn, mediaPaths(homeDir())))
 
     # Clear unavailable paths from DB
     cleanDB(conn)
