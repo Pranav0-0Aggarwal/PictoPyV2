@@ -29,12 +29,15 @@ def processMedia(conn: sqlite3.Connection, files: Generator[str, None, None]) ->
         conn: The database connection object.
         files: A generator of file paths.
     """
-    
+    rowsToClassify = []
     objDetectionModel = pathOf("models/yolov8n.onnx")
     for file, fileType, parentDir in files:
         fileHash = genHash(file)
         if updateMediaPath(conn, file, fileHash):
             continue
+        rowsToClassify.append(populateMediaTable(conn, fileHash, file, parentDir, fileType))
+    
+    for mediaID, file, fileType in rowsToClassify:
         try:
             if fileType == "vid":
                 mediaClass = videoClasses(file, objDetectionModel)
@@ -43,7 +46,7 @@ def processMedia(conn: sqlite3.Connection, files: Generator[str, None, None]) ->
         except Exception as e:
             print(e)
             continue
-        insertIntoDB(conn, mediaClass, fileHash, file, parentDir, fileType)
+        relateClass(conn, mediaClass, mediaID)
 
 def classifyPath(hidden, fileType, groupBy) -> Dict[str, List[str]]:
     """

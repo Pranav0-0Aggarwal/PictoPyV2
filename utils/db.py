@@ -1,5 +1,5 @@
 import sqlite3
-from typing import List, Dict
+from typing import List, Dict, Tuple
 from utils.fs import deleteFile, pathExist
 
 def connectDB(dbPath: str) -> sqlite3.Connection:
@@ -248,11 +248,34 @@ def cleanDB(conn: sqlite3.Connection) -> None:
         deleteFromDB(conn, paths)
 
 def updateMediaPath(conn, file, fileHash):
+    """Updates the path of a media file in the database.
+
+    Args:
+        conn: sqlite3.Connection object.
+        file: The path to the media file.
+        fileHash: The hash value of the media.
+
+    Returns:
+        True if the path was updated, False otherwise.
+    """
     if executeQuery(conn, "UPDATE MEDIA SET path = ? WHERE hash = ?", [file, fileHash]).rowcount == 0:
         return False
     return True
 
-def insertIntoDB(conn: sqlite3.Connection, mediaClass: List[str], fileHash: str, file: str, directory: str, fileType: str) -> None:
+def populateMediaTable(conn: sqlite3.Connection, fileHash: str, file: str, directory: str, fileType: str) -> Tuple[int, str, str]:
+    """Populates the MEDIA table with the given file information.
+
+    Args:
+        conn: sqlite3.Connection object.
+        file: The path to the media file.
+        fileType: The type of the media file.
+
+    Returns:
+        A tuple of mediaID, file, and fileType.
+    """
+    return [executeQuery(conn, "INSERT INTO MEDIA(hash, path, directory, fileType, hidden) VALUES(?, ?, ?, ?, 0)", [fileHash, file, directory, fileType]).lastrowid, file, fileType]
+
+def relateClass(conn: sqlite3.Connection, mediaClass: List[str], mediaID) -> None:
     """Inserts media and its classes into the database.
 
     Args:
@@ -260,9 +283,11 @@ def insertIntoDB(conn: sqlite3.Connection, mediaClass: List[str], fileHash: str,
         file: The path to the media file.
         mediaClass: A list of classes associated with the media.
         fileHash: The hash value of the media.
-    """
-    mediaID = executeQuery(conn, "INSERT INTO MEDIA(hash, path, directory, fileType, hidden) VALUES(?, ?, ?, ?, 0)", [fileHash, file, directory, fileType]).lastrowid
 
+    Note:
+        No need to check if mediaID exist in Junction Table.
+        updateMediaPath() won't allow older mediaIDs.
+    """
     for className in mediaClass:
         try:
             classID = executeQuery(conn, "INSERT INTO CLASS(class) VALUES(?)", [className]).lastrowid
