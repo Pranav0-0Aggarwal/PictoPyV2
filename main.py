@@ -35,7 +35,7 @@ def processMedia(conn: sqlite3.Connection, files: Generator[str, None, None]) ->
         fileHash = genHash(file)
         if updateMediaPath(conn, file, fileHash):
             continue
-        rowsToClassify.append(populateMediaTable(conn, fileHash, file, parentDir, fileType))
+        rowsToClassify.append(insertMedia(conn, fileHash, file, parentDir, fileType))
     
     for mediaID, file, fileType in rowsToClassify:
         try:
@@ -46,7 +46,7 @@ def processMedia(conn: sqlite3.Connection, files: Generator[str, None, None]) ->
         except Exception as e:
             print(e)
             continue
-        relateClass(conn, mediaClass, mediaID)
+        insertClassRelation(conn, mediaClass, mediaID)
 
 def classifyPath(hidden, fileType, groupBy) -> Dict[str, List[str]]:
     """

@@ -262,7 +262,7 @@ def updateMediaPath(conn, file, fileHash):
         return False
     return True
 
-def populateMediaTable(conn: sqlite3.Connection, fileHash: str, file: str, directory: str, fileType: str) -> Tuple[int, str, str]:
+def insertMedia(conn: sqlite3.Connection, fileHash: str, file: str, directory: str, fileType: str) -> Tuple[int, str, str]:
     """Populates the MEDIA table with the given file information.
 
     Args:
@@ -275,7 +275,7 @@ def populateMediaTable(conn: sqlite3.Connection, fileHash: str, file: str, direc
     """
     return [executeQuery(conn, "INSERT INTO MEDIA(hash, path, directory, fileType, hidden) VALUES(?, ?, ?, ?, 0)", [fileHash, file, directory, fileType]).lastrowid, file, fileType]
 
-def relateClass(conn: sqlite3.Connection, mediaClass: List[str], mediaID) -> None:
+def insertClassRelation(conn: sqlite3.Connection, mediaClass: List[str], mediaID) -> None:
     """Inserts media and its classes into the database.
 
     Args:
