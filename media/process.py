@@ -32,7 +32,6 @@ def classifyMedia(conn: sqlite3.Connection, objDetectionModel: str, rowsToClassi
         conn: The database connection object.
         rowsToClassify: A generator of tuples containing mediaID, file, and fileType.
     """
-    objDetectionModel = pathOf("models/yolov8n.onnx")
     for mediaID, file, fileType in rowsToClassify:
         try:
             if fileType == "vid":
