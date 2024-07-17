@@ -1,9 +1,7 @@
 import os
-import sqlite3
-from typing import Dict, List, Generator
+from typing import Dict, List
 from utils import *
 from media import *
-from yolov8 import detectClasses
 from flask import Flask, render_template, send_file, request, redirect, url_for
 from markupsafe import escape
 
@@ -19,33 +17,7 @@ def dbPath() -> str:
     os.makedirs(directory, exist_ok=True)
     return os.path.join(directory, "database.db")
 
-def processMedia(conn: sqlite3.Connection, files: Generator[str, None, None]) -> None:
-    """
-    Processes files by extracting their hash values.
-    If hash already exists in the database, just update the path.
-    Otherwise detect classes and insert them into the database.
-
-    Args:
-        conn: The database connection object.
-        files: A generator of file paths.
-    """
-    
-    objDetectionModel = pathOf("models/yolov8n.onnx")
-    for file, fileType, parentDir in files:
-        fileHash = genHash(file)
-        if updateMediaPath(conn, file, fileHash):
-            continue
-        try:
-            if fileType == "vid":
-                mediaClass = videoClasses(file, objDetectionModel)
-            elif fileType == "img":
-                mediaClass = imageClasses(file, objDetectionModel)
-        except Exception as e:
-            print(e)
-            continue
-        insertIntoDB(conn, mediaClass, fileHash, file, parentDir, fileType)
-
-def classifyPath(hidden, fileType, groupBy) -> Dict[str, List[str]]:
+def groupPaths(hidden, fileType, groupBy) -> Dict[str, List[str]]:
     """
     Classify files in the home directory and store the results in the database.
 
@@ -78,14 +50,19 @@ def classifyPath(hidden, fileType, groupBy) -> Dict[str, List[str]]:
         }
     )
 
-    processMedia(conn, mediaPaths(homeDir()))
+    """
+    Because of classifyMedia() the following that too much time for the initial render.
+    classifyMedia(conn, pathOf("models/yolov8n.onnx"), populateMediaTable(conn, mediaPaths(homeDir())))
+    """
 
-    # Clear unavailable paths from DB
     cleanDB(conn)
 
     if groupBy == "directory":
+        populateMediaTable(conn, mediaPaths(homeDir()))
         result = groupByDir(conn, hidden, fileType)
     else:
+        populateMediaTable(conn, mediaPaths(homeDir()))
+        classifyMedia(conn, pathOf("models/yolov8n.onnx"), getUnlinkedMedia(conn))
         result = groupByClass(conn, hidden, fileType)
 
     closeConnection(conn)
@@ -115,19 +92,19 @@ def sendFile(path):
 def groupMedia(fileType, groupBy):
     if fileType not in ["img", "vid"] or groupBy not in ["class", "directory"]:
         return redirect(url_for('index'))
-    return render_template('index.html', classDict=classifyPath(0, fileType, groupBy))
+    return render_template('index.html', classDict=groupPaths(0, fileType, groupBy))
 
 @app.route('/hidden/<string:groupBy>')
 def hidden(groupBy):
     if groupBy not in ["class", "directory"]:
         return redirect(url_for('index'))
-    return render_template('index.html', classDict=classifyPath(1, "any", groupBy))
+    return render_template('index.html', classDict=groupPaths(1, "any", groupBy))
 
 @app.route('/trash/<string:groupBy>')
 def trash(groupBy):
     if groupBy not in ["class", "directory"]:
         return redirect(url_for('index'))
-    return render_template('index.html', classDict=classifyPath(-1, "any", groupBy))
+    return render_template('index.html', classDict=groupPaths(-1, "any", groupBy))
 
 # Buttons
 
