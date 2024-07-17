@@ -1,8 +1,9 @@
 import os
+import logging
 from typing import Dict, List
 from utils import *
 from media import *
-from flask import Flask, render_template, send_file, request, redirect, url_for
+from flask import Flask, render_template, send_file, request, redirect, url_for, Response
 from markupsafe import escape
 
 
@@ -70,6 +71,10 @@ def groupPaths(hidden, fileType, groupBy) -> Dict[str, List[str]]:
     return result
 
 app = Flask(__name__, template_folder=f"{pathOf('static')}")
+
+# Configure logging
+logging.basicConfig(filename='.debug.log', level=logging.DEBUG,
+                    format='%(asctime)s %(levelname)s %(name)s %(message)s')
 
 @app.route('/')
 def index():
@@ -152,6 +157,15 @@ def restore():
     toggleVisibility(conn, data, 0)
     closeConnection(conn)
     return "reload"
+
+@app.route('/logs')
+def show_logs():
+    try:
+        with open('.debug.log', 'r') as log_file:
+            log_contents = log_file.read()
+        return Response(log_contents, mimetype='text/plain')
+    except FileNotFoundError:
+        return "Log file not found.", 404
 
 @app.route('/info/<path:path>')
 def info(path):
