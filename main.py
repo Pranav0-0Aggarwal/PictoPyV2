@@ -50,14 +50,19 @@ def classifyPath(hidden, fileType, groupBy) -> Dict[str, List[str]]:
         }
     )
 
+    """
+    Because of classifyMedia() the following that too much time for the initial render.
     classifyMedia(conn, pathOf("models/yolov8n.onnx"), populateMediaTable(conn, mediaPaths(homeDir())))
+    """
 
-    # Clear unavailable paths from DB
     cleanDB(conn)
 
     if groupBy == "directory":
+        populateMediaTable(conn, mediaPaths(homeDir()))
         result = groupByDir(conn, hidden, fileType)
     else:
+        populateMediaTable(conn, mediaPaths(homeDir()))
+        classifyMedia(conn, pathOf("models/yolov8n.onnx"), getUnlinkedMedia(conn))
         result = groupByClass(conn, hidden, fileType)
 
     closeConnection(conn)

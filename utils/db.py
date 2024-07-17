@@ -1,5 +1,5 @@
 import sqlite3
-from typing import List, Dict, Tuple
+from typing import List, Dict, Tuple, Generator
 from utils.fs import deleteFile, pathExist
 
 def connectDB(dbPath: str) -> sqlite3.Connection:
@@ -309,3 +309,22 @@ def moveToTrash(conn: sqlite3.Connection, paths: List[str]) -> None:
         WHERE path IN ({', '.join('?' * len(paths))})
     """
     executeQuery(conn, query, paths)
+
+def getUnlinkedMedia(conn: sqlite3.Connection) -> Generator[Tuple[int, str, str], None, None]:
+    """
+    Retrieves mediaID, path, and fileType from MEDIA table where mediaID does not exist in JUNCTION table.
+
+    Args:
+        conn: SQLite database connection object.
+
+    Yields:
+        Tuple[int, str, str]: Generator yielding mediaID, path, and fileType.
+    """
+    query = """
+    SELECT m.mediaID, m.path, m.fileType
+    FROM MEDIA m
+    LEFT JOIN JUNCTION j ON m.mediaID = j.mediaID
+    WHERE j.mediaID IS NULL
+    """
+    for row in executeQuery(conn, query).fetchall():
+        yield row
