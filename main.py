@@ -17,7 +17,7 @@ def dbPath() -> str:
     os.makedirs(directory, exist_ok=True)
     return os.path.join(directory, "database.db")
 
-def classifyPath(hidden, fileType, groupBy) -> Dict[str, List[str]]:
+def groupPaths(hidden, fileType, groupBy) -> Dict[str, List[str]]:
     """
     Classify files in the home directory and store the results in the database.
 
@@ -92,19 +92,19 @@ def sendFile(path):
 def groupMedia(fileType, groupBy):
     if fileType not in ["img", "vid"] or groupBy not in ["class", "directory"]:
         return redirect(url_for('index'))
-    return render_template('index.html', classDict=classifyPath(0, fileType, groupBy))
+    return render_template('index.html', classDict=groupPaths(0, fileType, groupBy))
 
 @app.route('/hidden/<string:groupBy>')
 def hidden(groupBy):
     if groupBy not in ["class", "directory"]:
         return redirect(url_for('index'))
-    return render_template('index.html', classDict=classifyPath(1, "any", groupBy))
+    return render_template('index.html', classDict=groupPaths(1, "any", groupBy))
 
 @app.route('/trash/<string:groupBy>')
 def trash(groupBy):
     if groupBy not in ["class", "directory"]:
         return redirect(url_for('index'))
-    return render_template('index.html', classDict=classifyPath(-1, "any", groupBy))
+    return render_template('index.html', classDict=groupPaths(-1, "any", groupBy))
 
 # Buttons
 
