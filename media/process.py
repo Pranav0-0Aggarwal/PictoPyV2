@@ -16,14 +16,13 @@ def populateMediaTable(conn: sqlite3.Connection, files: Generator[Tuple[str, str
     Yields:
         Tuples containing mediaID, file, and fileType.
     """
-    objDetectionModel = pathOf("models/yolov8n.onnx")
     for file, fileType, parentDir in files:
         fileHash = genHash(file)
         if updateMediaPath(conn, file, parentDir, fileHash):
             continue
         yield insertMedia(conn, fileHash, file, parentDir, fileType)
 
-def classifyMedia(conn: sqlite3.Connection, rowsToClassify: Generator[Tuple[int, str, str], None, None]) -> None:
+def classifyMedia(conn: sqlite3.Connection, objDetectionModel: str, rowsToClassify: Generator[Tuple[int, str, str], None, None]) -> None:
     """
     Classify media files.
     Establish relation between media files and classes,

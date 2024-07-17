@@ -50,7 +50,7 @@ def classifyPath(hidden, fileType, groupBy) -> Dict[str, List[str]]:
         }
     )
 
-    classifyMedia(conn, populateMediaTable(conn, mediaPaths(homeDir())))
+    classifyMedia(conn, pathOf("models/yolov8n.onnx"), populateMediaTable(conn, mediaPaths(homeDir())))
 
     # Clear unavailable paths from DB
     cleanDB(conn)
