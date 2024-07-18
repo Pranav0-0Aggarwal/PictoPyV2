@@ -3,7 +3,7 @@ import logging
 from typing import Dict, List
 from utils import *
 from media import *
-from flask import Flask, render_template, send_file, request, redirect, url_for, Response
+from flask import Flask, render_template, send_file, request, redirect, url_for, Response, jsonify
 from markupsafe import escape
 
 def dataDir() -> str:
