@@ -6,6 +6,16 @@ from media import *
 from flask import Flask, render_template, send_file, request, redirect, url_for, Response
 from markupsafe import escape
 
+def dataDir() -> str:
+    """
+    Data directory is created on the user's home directory.
+
+    Returns:
+        str: The path to the home directory.
+    """
+    directory = os.path.join(os.path.expanduser("~"), ".pictopy")
+    os.makedirs(directory, exist_ok=True)
+    return directory 
 
 def dbPath() -> str:
     """
@@ -14,9 +24,16 @@ def dbPath() -> str:
     Returns:
         str: The path to the database file.
     """
-    directory = os.path.join(os.path.expanduser("~"), ".pictopy")
-    os.makedirs(directory, exist_ok=True)
-    return os.path.join(directory, "database.db")
+    return os.path.join(dataDir(), "database.db")
+
+def logPath() -> str:
+    """
+    Log file is created on the user's home directory.
+
+    Returns:
+        str: The path to the log file.
+    """
+    return os.path.join(dataDir(), "log.txt")
 
 def groupPaths(hidden, fileType, groupBy) -> Dict[str, List[str]]:
     """
@@ -73,7 +90,8 @@ def groupPaths(hidden, fileType, groupBy) -> Dict[str, List[str]]:
 app = Flask(__name__, template_folder=f"{pathOf('static')}")
 
 # Configure logging
-logging.basicConfig(filename='.debug.log', level=logging.DEBUG,
+logging.basicConfig(filename=logPath(),
+                    level=logging.DEBUG,
                     format='%(asctime)s %(levelname)s %(name)s %(message)s')
 
 @app.route('/')
@@ -161,7 +179,7 @@ def restore():
 @app.route('/logs')
 def show_logs():
     try:
-        with open('.debug.log', 'r') as log_file:
+        with open(logPath(), 'r') as log_file:
             log_contents = log_file.read()
         return Response(log_contents, mimetype='text/plain')
     except FileNotFoundError:
