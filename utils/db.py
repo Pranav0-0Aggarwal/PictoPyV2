@@ -73,7 +73,7 @@ def hashExist(conn: sqlite3.Connection, hashValue: str) -> bool:
     result = executeQuery(conn, query, [hashValue])
     return result[0][0] == 1
 
-def groupByClass(conn: sqlite3.Connection, hidden: int = 0, fileType: str = "img", groupOf: str = "path") -> Dict[str, List[str]]:
+def groupByClass(conn: sqlite3.Connection, hidden: int = 0, fileType: str = "img", groupOf: str = "path") -> List[Tuple[str, str]]:
     """Returns paths grouped by classes from the database.
 
     Args:
@@ -83,7 +83,7 @@ def groupByClass(conn: sqlite3.Connection, hidden: int = 0, fileType: str = "img
         groupOf: The column to be grouped.
 
     Returns:
-        dict: A dictionary where each key is a class name and each value is a list of paths.
+        A list of tuples where each tuple contains a class name and a group of paths.
     """
     if fileType == "any":
         fileTypeCondition = ""
@@ -106,8 +106,8 @@ def groupByClass(conn: sqlite3.Connection, hidden: int = 0, fileType: str = "img
     
     return cursor.fetchall()
 
-def groupByDir(conn: sqlite3.Connection, hidden: int = 0, fileType: str = "img", groupOf: str = "path") -> Dict[str, List[str]]:
-    """Returns paths grouped by classes from the database.
+def groupByDir(conn: sqlite3.Connection, hidden: int = 0, fileType: str = "img", groupOf: str = "path") -> List[Tuple[str, str]]:
+    """Returns paths grouped by directories from the database.
 
     Args:
         conn: A sqlite3.Connection object.
@@ -116,7 +116,7 @@ def groupByDir(conn: sqlite3.Connection, hidden: int = 0, fileType: str = "img",
         groupOf: The column to be grouped.
 
     Returns:
-        dict: A dictionary where each key is a class name and each value is a list of paths.
+        A list of tuples where each tuple contains a directory name and a group of paths.
     """
     if fileType == "any":
         fileTypeCondition = ""
@@ -148,7 +148,7 @@ def toggleVisibility(conn: sqlite3.Connection, paths: List[str], hidden: int) ->
     executeQuery(conn, query, [hidden] + paths)
 
 def listByClass(conn: sqlite3.Connection, classes: List[str], hidden: int = 0, groupOf: str = "path") -> List[str]:
-    """Returns list of all paths associated with the given classes.
+    """List all paths associated with the given classes.
 
     Args:
         conn: sqlite3.Connection object.
