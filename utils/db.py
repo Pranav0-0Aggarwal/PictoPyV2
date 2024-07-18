@@ -104,10 +104,7 @@ def groupByClass(conn: sqlite3.Connection, hidden: int = 0, fileType: str = "img
     else:
         cursor = executeQuery(conn, query, [hidden, fileType])
     
-    for row in cursor.fetchall():
-        result[row[0]] = row[1].split(',')
-    
-    return result
+    return cursor.fetchall()
 
 def groupByDir(conn: sqlite3.Connection, hidden: int = 0, fileType: str = "img", groupOf: str = "path") -> Dict[str, List[str]]:
     """Returns paths grouped by classes from the database.
@@ -137,10 +134,7 @@ def groupByDir(conn: sqlite3.Connection, hidden: int = 0, fileType: str = "img",
     else:
         cursor = executeQuery(conn, query, [hidden, fileType])
     
-    for row in cursor.fetchall():
-        result[row[0]] = row[1].split(',')
-    
-    return result
+    return cursor.fetchall()
 
 def toggleVisibility(conn: sqlite3.Connection, paths: List[str], hidden: int) -> None:
     """Switch visibility of media by changing value of hidden column.
