@@ -35,12 +35,12 @@ def logPath() -> str:
     """
     return os.path.join(dataDir(), "log.txt")
 
-def groupPaths(hidden, fileType, groupBy) -> Dict[str, List[str]]:
+def groupPaths(hidden, fileType, groupBy) -> str:
     """
     Classify files in the home directory and store the results in the database.
 
     Returns:
-        Dict[str, List[str]]: Dictionary mapping class names to lists of file paths.
+        JSON created from list of tuples where each tuple contains a directory name and a group of paths.
     """
     conn = connectDB(dbPath())
     createSchema(conn, 
@@ -85,7 +85,7 @@ def groupPaths(hidden, fileType, groupBy) -> Dict[str, List[str]]:
 
     closeConnection(conn)
 
-    return result
+    return jsonify(result)
 
 app = Flask(__name__, template_folder=f"{pathOf('static')}")
 
@@ -115,19 +115,19 @@ def sendFile(path):
 def groupMedia(fileType, groupBy):
     if fileType not in ["img", "vid"] or groupBy not in ["class", "directory"]:
         return redirect(url_for('index'))
-    return render_template('index.html', classDict=groupPaths(0, fileType, groupBy))
+    return groupPaths(0, fileType, groupBy)
 
 @app.route('/hidden/<string:groupBy>')
 def hidden(groupBy):
     if groupBy not in ["class", "directory"]:
         return redirect(url_for('index'))
-    return render_template('index.html', classDict=groupPaths(1, "any", groupBy))
+    return groupPaths(1, "any", groupBy)
 
 @app.route('/trash/<string:groupBy>')
 def trash(groupBy):
     if groupBy not in ["class", "directory"]:
         return redirect(url_for('index'))
-    return render_template('index.html', classDict=groupPaths(-1, "any", groupBy))
+    return groupPaths(-1, "any", groupBy)
 
 # Buttons
 
