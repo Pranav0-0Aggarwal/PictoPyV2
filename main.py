@@ -96,7 +96,7 @@ logging.basicConfig(filename=logPath(),
 
 @app.route('/')
 def index():
-    return redirect(url_for('groupMedia', fileType='img', groupBy='directory'))
+    return render_template('index.html')
 
 @app.route('/static/<path:path>')
 def staticFile(path):
@@ -138,7 +138,7 @@ def toTrash():
     conn = connectDB(dbPath())
     moveToTrash(conn, data)
     closeConnection(conn)
-    return "reload"
+    return jsonify({"success": True})
 
 @app.route('/delete', methods=['POST'])
 def delete():
@@ -147,7 +147,7 @@ def delete():
     conn = connectDB(dbPath())
     deleteFromDB(conn, data)
     closeConnection(conn)
-    return "reload"
+    return jsonify({"success": True})
 
 @app.route('/hide', methods=['POST'])
 def hide():
@@ -156,7 +156,7 @@ def hide():
     conn = connectDB(dbPath())
     toggleVisibility(conn, data, 1)
     closeConnection(conn)
-    return "reload"
+    return jsonify({"success": True})
 
 @app.route('/unhide', methods=['POST'])
 def unhide():
@@ -165,7 +165,7 @@ def unhide():
     conn = connectDB(dbPath())
     toggleVisibility(conn, data, 0)
     closeConnection(conn)
-    return "reload"
+    return jsonify({"success": True})
 
 @app.route('/restore', methods=['POST'])
 def restore():
@@ -174,7 +174,7 @@ def restore():
     conn = connectDB(dbPath())
     toggleVisibility(conn, data, 0)
     closeConnection(conn)
-    return "reload"
+    return jsonify({"success": True})
 
 @app.route('/logs')
 def show_logs():
