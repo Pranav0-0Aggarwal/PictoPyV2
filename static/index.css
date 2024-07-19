@@ -1,24 +1,88 @@
-.mediaSection {
-    margin-bottom: 20px;
+body {
+    font-family: 'Comic Sans MS', cursive, sans-serif;
 }
-.mediaClass {
-    font-size: 24px;
-    font-weight: bold;
-    margin-bottom: 5px;
-}
-.mediaImages {
+.container {
     display: flex;
     flex-wrap: wrap;
-    margin-bottom: 10px;
+    gap: 10px;
 }
-.mediaImages img {
-    max-width: 200px;
-    margin-right: 10px;
-    margin-bottom: 10px;
+.card {
+    border: 1px solid #ddd;
+    padding: 10px;
+    width: 150px;
+    text-align: center;
+    cursor: pointer;
+    border-radius: 10px; 
+    overflow: hidden;
+    position: relative;
 }
-.buttonContainer {
-    margin-top: 10px;
+.thumbnail {
+    width: 100%;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 10px;
 }
-.buttonContainer button {
-    margin-right: 10px;
+.group-name {
+    font-size: 0.9em; 
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    right: 10px;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    padding: 5px;
+    border-radius: 5px;
+}
+.floating-window {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    border: 1px solid #ddd;
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    display: none; /* Hidden by default */
+    width: 90vw;
+    height: 90vh;
+    max-width: 1000px;
+    max-height: 800px;
+}
+.floating-window img, .floating-window video {
+    width: 90vw;
+    height: 90vh;
+    object-fit: contain;
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+}
+.floating-window .close-btn, .floating-window .nav-btn {
+    position: absolute;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 30px;
+    text-align: center;
+    z-index: 1001; /* Ensure button is above media content */
+}
+.floating-window .close-btn {
+    top: -15px;
+    right: -15px;
+}
+.floating-window .nav-btn.left {
+    top: 50%;
+    left: -15px;
+    transform: translateY(-50%);
+}
+.floating-window .nav-btn.right {
+    top: 50%;
+    right: -15px;
+    transform: translateY(-50%);
 }

@@ -9,28 +9,18 @@
     <script src="/static/index.js"></script>
 </head>
 <body>
-    <div class="container">
-         <div class="buttonContainer">
-             <button onclick="callRoute('delete')">Delete</button>
-             <button onclick="callRoute('hide')">Hide</button>
-             <button onclick="callRoute('ShowHidden')">Show Hidden</button>
-         </div>
-         {% for className, paths in classDict.items() %}
-         <div class="mediaSection">
-            <label>
-                <input type="checkbox" id="{{ className }}" onchange="toggleClass('{{ className }}')">
-                <span class="mediaClass">{{ className }}</span>
-            </label>
-            <div class="mediaImages">
-                {% for path in paths %}
-                <div>
-                    <input type="checkbox" name="selectedMedia[]" value="{{ path }}" class="{{ className }}">
-                    <img src="/media/{{ path }}" alt="{{ className }}">
-                </div>
-                {% endfor %}
-            </div>
-        </div>
-        {% endfor %}
-   </div>
+    <div id="dataContainer" class="container"></div>
+
+    <div id="floatingWindow" class="floating-window">
+        <button class="close-btn" onclick="closeMedia()">×</button>
+        <button class="nav-btn left" onclick="prevMedia()">❮</button>
+        <button class="nav-btn right" onclick="nextMedia()">❯</button>
+        <div id="mediaContent"></div>
+    </div>
+
+    <script src="/static/index.js"></script>
+    <script>
+        displayData('/vid/directory');
+    </script>
 </body>
 </html>
