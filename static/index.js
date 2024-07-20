@@ -1,155 +1,113 @@
-let currentMediaIndex = -1;
-let currentMediaArray = [];
-
+// Fetch data from a route
 async function readRoute(route) {
     try {
         const response = await fetch(route);
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
         }
-        const data = await response.json();
-        return data;
+        return await response.json();
     } catch (error) {
         console.error(`Failed to fetch data from ${route}:`, error);
         return null;
     }
 }
 
-/*
-async function generateVideoThumbnail(file) {
-    return new Promise((resolve, reject) => {
-        const video = document.createElement('video');
-        video.src = URL.createObjectURL(file);
-        
-        video.addEventListener('loadedmetadata', () => {
-            video.currentTime = 5;
-        });
-
-        video.addEventListener('seeked', () => {
-            const canvas = document.createElement('canvas');
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-            const thumbnail = canvas.toDataURL('image/jpeg');
-            URL.revokeObjectURL(video.src);
-            resolve(thumbnail);
-        });
-
-        video.addEventListener('error', (e) => {
-            reject(e);
-        });
-
-        video.addEventListener('seeked', () => {
-            video.pause();
-        });
-    });
-}
-
-async function getThumbnail(path) {
-    const extension = path.split('.').pop().toLowerCase();
-    if (['mp4', 'webm', 'ogg'].includes(extension)) {
-        try {
-            const response = await fetch(`/media${path}`);
-            const blob = await response.blob();
-            const thumbnail = await generateVideoThumbnail(blob);
-            return thumbnail;
-        } catch (error) {
-            console.error('Failed to generate video thumbnail:', error);
-            return '/path/to/default/thumbnail.jpg';
-        }
-    } else {
-        return `/media${path}`;
-    }
-}
-*/
-
+// Get thumbnail URL based on the media type
 async function getThumbnail(path, type) {
-    const extension = path.split('.').pop().toLowerCase();
-    if (type === 'video') {
+    if (type === 'vid') {
         return `/thumbnail${path}`;
     } else {
         return `/media${path}`;
     }
 }
 
+// Fetch thumbnails for a list of paths and types
+async function fetchThumbnails(paths, types) {
+    const thumbnailsPromises = paths.map(async (path, index) => {
+        const fileType = types[index];
+        return getThumbnail(path, fileType); 
+    });
+
+    return await Promise.all(thumbnailsPromises);
+}
+
+// Create a card element
+function createCard(type, thumbnailSrc, altText, name = '') {
+    const card = document.createElement('div');
+    card.className = 'card';
+
+    if (type === 'group') {
+        card.classList.add('group');
+        card.innerHTML = `
+            <img src="${thumbnailSrc}" alt="${altText}" class="thumbnail">
+            <div class="group-name">${name}</div>
+        `;
+    } else {
+        card.innerHTML = `
+            <img src="${thumbnailSrc}" alt="${altText}" class="thumbnail">
+        `;
+    }
+
+    return card;
+}
+
+// Display group cards with data
 async function displayData(route) {
     const data = await readRoute(route);
-    if (data === null) {
-        const container = document.getElementById('dataContainer');
-        if (container) {
-            container.textContent = 'Failed to fetch data.';
-        }
+    const container = document.getElementById('dataContainer');
+    
+    if (!data || !container) {
+        if (container) container.textContent = 'Failed to fetch data.';
         return;
     }
 
-    const container = document.getElementById('dataContainer');
-    if (container) {
-        container.innerHTML = '';
+    container.innerHTML = '';
 
-        for (const [groupName, paths, types] of data) {
-            // Assuming paths and types are comma-separated strings
-            const pathsArray = paths.split(',').map(s => s.trim());
-            const typesArray = types.split(',').map(s => s.trim());
+    for (const [groupName, paths, types] of data) {
+        const pathsArray = paths.split(',').map(s => s.trim());
+        const typesArray = types.split(',').map(s => s.trim());
 
-            // Generate thumbnails for each file based on its type
-            const thumbnailsPromises = pathsArray.map(async (path, index) => {
-                const fileType = typesArray[index];
-                const thumbnailPath = await getThumbnail(path, fileType); 
-                return thumbnailPath;
-            });
+        const thumbnails = await fetchThumbnails(pathsArray, typesArray);
 
-            const thumbnails = await Promise.all(thumbnailsPromises);
-
-            // Create group card
-            const groupCard = document.createElement('div');
-            groupCard.className = 'card group';
-            groupCard.innerHTML = `
-                <img src="${thumbnails[0]}" alt="${groupName}" class="thumbnail"> <!-- Using the first thumbnail -->
-                <div class="group-name">${groupName}</div>
-            `;
-            groupCard.addEventListener('click', () => displayGroup(groupName, pathsArray, typesArray));
-            container.appendChild(groupCard);
-        }
-    } else {
-        console.error('Container element not found');
+        const groupCard = createCard('group', thumbnails[0], groupName, groupName);
+        groupCard.addEventListener('click', () => displayGroup(groupName, pathsArray, typesArray));
+        container.appendChild(groupCard);
     }
 }
 
+// Display media cards within a group
 async function displayGroup(groupName, pathsArray, typesArray) {
     const container = document.getElementById('dataContainer');
-    if (container) {
-        container.innerHTML = '';
-
-        for (let i = 0; i < pathsArray.length; i++) {
-            const path = pathsArray[i].trim();
-            const fileType = typesArray[i];
-            const thumbnail = await getThumbnail(path, fileType); 
-            const mediaCard = document.createElement('div');
-            mediaCard.className = 'card';
-            mediaCard.innerHTML = `
-                <img src="${thumbnail}" alt="${groupName}" class="thumbnail">
-            `;
-            mediaCard.addEventListener('click', () => openMedia(pathsArray, i, typesArray));
-            container.appendChild(mediaCard);
-        }
-    } else {
+    
+    if (!container) {
         console.error('Container element not found');
+        return;
+    }
+
+    container.innerHTML = '';
+
+    for (let i = 0; i < pathsArray.length; i++) {
+        const path = pathsArray[i].trim();
+        const fileType = typesArray[i];
+        const thumbnail = await getThumbnail(path, fileType); 
+
+        const mediaCard = createCard('media', thumbnail, groupName);
+        mediaCard.addEventListener('click', () => openMedia(pathsArray, i, typesArray));
+        container.appendChild(mediaCard);
     }
 }
 
+// Open a media file in a floating window
 function openMedia(mediaArray, mediaIndex, typesArray) {
     currentMediaArray = mediaArray;
     currentMediaIndex = mediaIndex;
 
     const mediaUrl = `/media${currentMediaArray[currentMediaIndex]}`;
-    const mediaType = typesArray[currentMediaIndex]; // Get the file type directly
+    const mediaType = typesArray[currentMediaIndex];
     const mediaContent = document.getElementById('mediaContent');
     const floatingWindow = document.getElementById('floatingWindow');
 
-    if (mediaType === 'vid') { // Check if the file is a video
+    if (mediaType === 'vid') {
         mediaContent.innerHTML = `<video src="${mediaUrl}" controls autoplay style="max-width: 100%; max-height: 100%;"></video>`;
     } else {
         mediaContent.innerHTML = `<img src="${mediaUrl}" alt="Media" style="max-width: 100%; max-height: 100%;">`;
@@ -158,20 +116,54 @@ function openMedia(mediaArray, mediaIndex, typesArray) {
     floatingWindow.style.display = 'block';
 }
 
+// Close the floating media window
 function closeMedia() {
     const floatingWindow = document.getElementById('floatingWindow');
     floatingWindow.style.display = 'none';
     document.getElementById('mediaContent').innerHTML = '';
 }
 
+// Navigate to the previous media item
 function prevMedia() {
     if (currentMediaIndex > 0) {
         openMedia(currentMediaArray, currentMediaIndex - 1, currentMediaArray[currentMediaIndex - 1]);
     }
 }
 
+// Navigate to the next media item
 function nextMedia() {
     if (currentMediaIndex < currentMediaArray.length - 1) {
         openMedia(currentMediaArray, currentMediaIndex + 1, currentMediaArray[currentMediaIndex + 1]);
     }
 }
+
+// Toggle grouping of media by directory or class
+function toggleGroup() {
+    groupBy = groupBy === "directory" ? "class" : "directory";
+    displayData(`/${section}${groupBy}`);
+}
+
+// Toggle between displaying images and videos
+function toggleSection() {
+    section = section === "img" ? "vid" : "img";
+    displayData(`/${section}${groupBy}`);
+}
+
+// Display images based on the current section and grouping
+function displayImages() {
+    displayData("/img/directory");
+}
+
+// Display videos based on the current section and grouping
+function displayVideos() {
+    displayData("/vid/directory");
+}
+
+// Initialize variables
+let currentMediaIndex = -1;
+let currentMediaArray = [];
+let section = "img/";
+let groupBy = "directory";
+
+// Initial data display
+displayData(`/${section}${groupBy}`);
