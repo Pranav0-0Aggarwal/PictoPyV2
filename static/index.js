@@ -15,6 +15,7 @@ async function readRoute(route) {
     }
 }
 
+/*
 async function generateVideoThumbnail(file) {
     return new Promise((resolve, reject) => {
         const video = document.createElement('video');
@@ -63,6 +64,16 @@ async function getThumbnail(path) {
         return `/media${path}`;
     }
 }
+*/
+
+async function getThumbnail(path, type) {
+    const extension = path.split('.').pop().toLowerCase();
+    if (type === 'video') {
+        return `/thumbnail${path}`;
+    } else {
+        return `/media${path}`;
+    }
+}
 
 async function displayData(route) {
     const data = await readRoute(route);
@@ -78,18 +89,28 @@ async function displayData(route) {
     if (container) {
         container.innerHTML = '';
 
-        for (const [groupName, paths] of data) {
-            const pathsArray = paths.split(',');
-            const firstMediaPath = pathsArray[0].trim();
-            const thumbnail = await getThumbnail(firstMediaPath);
+        for (const [groupName, paths, types] of data) {
+            // Assuming paths and types are comma-separated strings
+            const pathsArray = paths.split(',').map(s => s.trim());
+            const typesArray = types.split(',').map(s => s.trim());
 
+            // Generate thumbnails for each file based on its type
+            const thumbnailsPromises = pathsArray.map(async (path, index) => {
+                const fileType = typesArray[index];
+                const thumbnailPath = await getThumbnail(path, fileType); 
+                return thumbnailPath;
+            });
+
+            const thumbnails = await Promise.all(thumbnailsPromises);
+
+            // Create group card
             const groupCard = document.createElement('div');
             groupCard.className = 'card group';
             groupCard.innerHTML = `
-                <img src="${thumbnail}" alt="${groupName}" class="thumbnail">
+                <img src="${thumbnails[0]}" alt="${groupName}" class="thumbnail"> <!-- Using the first thumbnail -->
                 <div class="group-name">${groupName}</div>
             `;
-            groupCard.addEventListener('click', () => displayGroup(groupName, pathsArray));
+            groupCard.addEventListener('click', () => displayGroup(groupName, pathsArray, typesArray));
             container.appendChild(groupCard);
         }
     } else {
@@ -97,21 +118,21 @@ async function displayData(route) {
     }
 }
 
-async function displayGroup(groupName, pathsArray) {
+async function displayGroup(groupName, pathsArray, typesArray) {
     const container = document.getElementById('dataContainer');
     if (container) {
         container.innerHTML = '';
 
-        for (const path of pathsArray) {
-            const trimmedPath = path.trim();
-            const thumbnail = await getThumbnail(trimmedPath);
-
+        for (let i = 0; i < pathsArray.length; i++) {
+            const path = pathsArray[i].trim();
+            const fileType = typesArray[i];
+            const thumbnail = await getThumbnail(path, fileType); 
             const mediaCard = document.createElement('div');
             mediaCard.className = 'card';
             mediaCard.innerHTML = `
                 <img src="${thumbnail}" alt="${groupName}" class="thumbnail">
             `;
-            mediaCard.addEventListener('click', () => openMedia(pathsArray, pathsArray.indexOf(trimmedPath)));
+            mediaCard.addEventListener('click', () => openMedia(pathsArray, i, typesArray));
             container.appendChild(mediaCard);
         }
     } else {
