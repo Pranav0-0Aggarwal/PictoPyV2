@@ -12,15 +12,17 @@
     <div id="dataContainer" class="container"></div>
 
     <div id="floatingWindow" class="floating-window">
-        <button class="close-btn" onclick="closeMedia()">×</button>
-        <button class="nav-btn left" onclick="prevMedia()">❮</button>
-        <button class="nav-btn right" onclick="nextMedia()">❯</button>
-        <div id="mediaContent"></div>
+        <div class="button-container">
+            <button class="close-btn" onclick="closeMedia()">×</button>
+            <button class="nav-btn left" onclick="prevMedia()">❮</button>
+            <button class="nav-btn right" onclick="nextMedia()">❯</button>
+        </div>
+        <div class="media-container" id="mediaContent"></div>
     </div>
 
     <script src="/static/index.js"></script>
     <script>
-        displayData('/vid/directory');
+        displayData('/img/directory');
     </script>
 </body>
 </html>
