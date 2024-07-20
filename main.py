@@ -104,6 +104,13 @@ def sendFile(path):
         return send_file(path)
     return redirect(url_for('index')) # doesn't reload (TBI)
 
+@app.route('/thumbnail/<path:path>')
+def thumbnail(path):
+    path = escape(f"/{path}")
+    if pathExist(path):
+        return getThumbnail(path)
+    return redirect(url_for('index')) # doesn't reload (TBI)
+
 # Sections
 
 @app.route('/<string:fileType>/<string:groupBy>')
