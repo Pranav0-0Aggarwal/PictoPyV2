@@ -140,16 +140,16 @@ async function displayGroup(groupName, pathsArray, typesArray) {
     }
 }
 
-function openMedia(mediaArray, mediaIndex) {
+function openMedia(mediaArray, mediaIndex, typesArray) {
     currentMediaArray = mediaArray;
     currentMediaIndex = mediaIndex;
 
     const mediaUrl = `/media${currentMediaArray[currentMediaIndex]}`;
-    const mediaExtension = currentMediaArray[currentMediaIndex].split('.').pop().toLowerCase();
+    const mediaType = typesArray[currentMediaIndex]; // Get the file type directly
     const mediaContent = document.getElementById('mediaContent');
     const floatingWindow = document.getElementById('floatingWindow');
 
-    if (['mp4', 'webm', 'ogg'].includes(mediaExtension)) {
+    if (mediaType === 'vid') { // Check if the file is a video
         mediaContent.innerHTML = `<video src="${mediaUrl}" controls autoplay style="max-width: 100%; max-height: 100%;"></video>`;
     } else {
         mediaContent.innerHTML = `<img src="${mediaUrl}" alt="Media" style="max-width: 100%; max-height: 100%;">`;
@@ -166,12 +166,12 @@ function closeMedia() {
 
 function prevMedia() {
     if (currentMediaIndex > 0) {
-        openMedia(currentMediaArray, currentMediaIndex - 1);
+        openMedia(currentMediaArray, currentMediaIndex - 1, currentMediaArray[currentMediaIndex - 1]);
     }
 }
 
 function nextMedia() {
     if (currentMediaIndex < currentMediaArray.length - 1) {
-        openMedia(currentMediaArray, currentMediaIndex + 1);
+        openMedia(currentMediaArray, currentMediaIndex + 1, currentMediaArray[currentMediaIndex + 1]);
     }
 }
