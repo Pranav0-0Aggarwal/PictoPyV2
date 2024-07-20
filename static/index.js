@@ -101,9 +101,10 @@ async function displayGroup(groupName, pathsArray, typesArray) {
 function openMedia(mediaArray, mediaIndex, typesArray) {
     currentMediaArray = mediaArray;
     currentMediaIndex = mediaIndex;
+    currentMediaTypesArray = typesArray; 
 
     const mediaUrl = `/media${currentMediaArray[currentMediaIndex]}`;
-    const mediaType = typesArray[currentMediaIndex];
+    const mediaType = currentMediaTypesArray[currentMediaIndex]; 
     const mediaContent = document.getElementById('mediaContent');
     const floatingWindow = document.getElementById('floatingWindow');
 
@@ -126,14 +127,14 @@ function closeMedia() {
 // Navigate to the previous media item
 function prevMedia() {
     if (currentMediaIndex > 0) {
-        openMedia(currentMediaArray, currentMediaIndex - 1, currentMediaArray[currentMediaIndex - 1]);
+        openMedia(currentMediaArray, currentMediaIndex - 1, currentMediaTypesArray);
     }
 }
 
 // Navigate to the next media item
 function nextMedia() {
     if (currentMediaIndex < currentMediaArray.length - 1) {
-        openMedia(currentMediaArray, currentMediaIndex + 1, currentMediaArray[currentMediaIndex + 1]);
+        openMedia(currentMediaArray, currentMediaIndex + 1, currentMediaTypesArray);
     }
 }
 
@@ -162,6 +163,7 @@ function displayVideos() {
 // Initialize variables
 let currentMediaIndex = -1;
 let currentMediaArray = [];
+let currentMediaTypesArray = []; 
 let section = "img/";
 let groupBy = "directory";
 
