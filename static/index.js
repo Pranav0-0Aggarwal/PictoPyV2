@@ -237,3 +237,25 @@ function toggleGroupSelection(pathsArray) {
     }
 }
 
+// Send selected media to the backend via POST request
+async function sendSelectedMedia(route) {
+    try {
+        const response = await fetch(route, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ selectedMedia: selectedMedia })
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const result = await response.json();
+        console.log('Server response:', result);
+        return result;
+    } catch (error) {
+        console.error('Failed to send data:', error);
+    }
+}
