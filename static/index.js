@@ -11,38 +11,38 @@ let openedGroup = "";
 // Navbar configuration
 const navConfig = {
     default: [
-        { src: "/static/icons/AI.png", alt: "AI Tags", onclick: "toggleGroup()" },
-        { src: "/static/icons/images.png", alt: "Images", onclick: "displayData('img', 'directory')" },
-        { src: "/static/icons/videos.png", alt: "Videos", onclick: "displayData('vid', 'directory')" },
-        { src: "/static/icons/hidden.png", alt: "Hidden Files", onclick: "displayData('hidden', 'directory')" },
-        { src: "/static/icons/trash.png", alt: "Trash", onclick: "displayData('trash', 'directory')" },
-        { src: "/static/icons/select.png", alt: "Toggle Select", onclick: "toggleSelectionMode()" }
+        { src: "/static/icons/ai.svg", alt: "AI Tags", onclick: "toggleGroup()" },
+        { src: "/static/icons/images.svg", alt: "Images", onclick: "displayData('img', 'directory')" },
+        { src: "/static/icons/videos.svg", alt: "Videos", onclick: "displayData('vid', 'directory')" },
+        { src: "/static/icons/hide.svg", alt: "Hidden Files", onclick: "displayData('hidden', 'directory')" },
+        { src: "/static/icons/delete.svg", alt: "Trash", onclick: "displayData('trash', 'directory')" },
+        { src: "/static/icons/select.svg", alt: "Toggle Select", onclick: "toggleSelectionMode()" }
     ],
     selection: {
         img: [
-            { src: "/static/icons/hide.png", alt: "Hide", onclick: "sendSelectedMedia('/hide')" },
-            { src: "/static/icons/delete.png", alt: "Delete", onclick: "sendSelectedMedia('/toTrash')" }
+            { src: "/static/icons/hide.svg", alt: "Hide", onclick: "sendSelectedMedia('/hide')" },
+            { src: "/static/icons/delete.svg", alt: "Delete", onclick: "sendSelectedMedia('/toTrash')" }
         ],
         vid: [
-            { src: "/static/icons/hide.png", alt: "Hide", onclick: "sendSelectedMedia('/hide')" },
-            { src: "/static/icons/delete.png", alt: "Delete", onclick: "sendSelectedMedia('/toTrash')" }
+            { src: "/static/icons/hide.svg", alt: "Hide", onclick: "sendSelectedMedia('/hide')" },
+            { src: "/static/icons/delete.svg", alt: "Delete", onclick: "sendSelectedMedia('/toTrash')" }
         ],
         hidden: [
-            { src: "/static/icons/unhide.png", alt: "Unhide", onclick: "sendSelectedMedia('/unhide')" },
-            { src: "/static/icons/delete.png", alt: "Delete", onclick: "sendSelectedMedia('/toTrash')" }
+            { src: "/static/icons/unhide.svg", alt: "Unhide", onclick: "sendSelectedMedia('/unhide')" },
+            { src: "/static/icons/delete.svg", alt: "Delete", onclick: "sendSelectedMedia('/toTrash')" }
         ],
         trash: [
-            { src: "/static/icons/restore.png", alt: "Restore", onclick: "sendSelectedMedia('/restore')" },
-            { src: "/static/icons/delete.png", alt: "Delete", onclick: "sendSelectedMedia('/delete')" }
+            { src: "/static/icons/restore.svg", alt: "Restore", onclick: "sendSelectedMedia('/restore')" },
+            { src: "/static/icons/delete.svg", alt: "Delete", onclick: "sendSelectedMedia('/delete')" }
         ],
         toggleSelect: [
-            { src: "/static/icons/select.png", alt: "Toggle Select", onclick: "toggleSelectionMode()" }
+            { src: "/static/icons/select.svg", alt: "Toggle Select", onclick: "toggleSelectionMode()" }
         ]
     },
     media: [
-        { src: "/static/icons/previous.png", alt: "Previous", onclick: "prevMedia()" },
-        { src: "/static/icons/next.png", alt: "Next", onclick: "nextMedia()" },
-        { src: "/static/icons/close.png", alt: "Close", onclick: "closeMedia()" }
+        { src: "/static/icons/previous.svg", alt: "Previous", onclick: "prevMedia()" },
+        { src: "/static/icons/next.svg", alt: "Next", onclick: "nextMedia()" },
+        { src: "/static/icons/close.svg", alt: "Close", onclick: "closeMedia()" }
     ]
 };
 
