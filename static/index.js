@@ -282,7 +282,6 @@ async function sendSelectedMedia(route) {
         }
 
         selectedMedia = [];
-        selectionMode = false;
         displayData(section, groupBy);
     } catch (error) {
         console.error(`Failed to send selected media to ${route}:`, error);
