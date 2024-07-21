@@ -102,7 +102,7 @@ function createCard(type, thumbnailSrc, altText, name = '', pathsArray = [], typ
         card.innerHTML = `
             <img src="${thumbnailSrc}" alt="${altText}" class="thumbnail">
         `;
-        card.addEventListener('click', () => handleMediaClick(pathsArray, index));
+        card.addEventListener('click', () => handleMediaClick(pathsArray, typesArray, index));
     }
 
     return card;
@@ -118,11 +118,11 @@ function handleGroupClick(name, pathsArray, typesArray, index) {
 }
 
 // Handle media card click
-function handleMediaClick(pathsArray, index) {
+function handleMediaClick(pathsArray, typesArray, index) {
     if (selectionMode) {
         toggleMediaSelection(pathsArray[index]);
     } else {
-        openMedia(pathsArray, index, currentMediaTypesArray);
+        openMedia(pathsArray, index, typesArray);
     }
 }
 
@@ -172,7 +172,7 @@ async function displayGroup(groupName, pathsArray, typesArray) {
         const fileType = typesArray[i];
         const thumbnail = await getThumbnail(path, fileType);
 
-        const mediaCard = createCard('media', thumbnail, groupName, '', pathsArray, i);
+        const mediaCard = createCard('media', thumbnail, groupName, '', pathsArray, typesArray, i);
         container.appendChild(mediaCard);
     }
 }
