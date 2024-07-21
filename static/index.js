@@ -8,7 +8,7 @@ let section = "";
 let groupBy = "";
 
 // Initial data display
-displayData("/img/directory");
+displayData("img", "directory");
 
 // Fetch data from a route
 async function readRoute(route) {
@@ -64,8 +64,10 @@ function createCard(type, thumbnailSrc, altText, name = '') {
 }
 
 // Display group cards with data
-async function displayData(route) {
-    const data = await readRoute(route);
+async function displayData(_section, _groupBy) {
+    section = _section
+    groupBy = _groupBy
+    const data = await readRoute(`/${section}/${groupBy}`);
     const container = document.getElementById('dataContainer');
     
     if (!data || !container) {
@@ -165,13 +167,13 @@ function nextMedia() {
 // Toggle grouping of media by directory or class
 function toggleGroup() {
     groupBy = groupBy === "directory" ? "class" : "directory";
-    displayData(`/${section}${groupBy}`);
+    displayData(section, groupBy);
 }
 
 // Toggle between displaying images and videos
 function toggleSection() {
     section = section === "img" ? "vid" : "img";
-    displayData(`/${section}${groupBy}`);
+    displayData(section, groupBy);
 }
 
 // Display images based on the current section and grouping
