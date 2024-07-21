@@ -6,6 +6,7 @@ let selectedMedia = [];
 let selectionMode = false;
 let section = "";
 let groupBy = "";
+let openedGroup = "";
 
 // Initial data display
 displayData("img", "directory");
@@ -92,11 +93,15 @@ async function displayData(_section, _groupBy) {
             }
         });
         container.appendChild(groupCard);
+        if (openedGroup === groupName) {
+            displayGroup(groupName, pathsArray, typesArray);
+        }
     }
 }
 
 // Display media cards within a group
 async function displayGroup(groupName, pathsArray, typesArray) {
+    openedGroup = groupName;
     const container = document.getElementById('dataContainer');
     
     if (!container) {
@@ -254,6 +259,7 @@ async function sendSelectedMedia(route) {
 
         const result = await response.json();
         console.log('Server response:', result);
+        displayData(section, groupBy);
         return result;
     } catch (error) {
         console.error('Failed to send data:', error);
