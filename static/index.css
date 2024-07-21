@@ -100,30 +100,35 @@ body {
 
 /* General styling for the floating navigation card */
 .floating-nav-card {
-    position: fixed;
-    z-index: 1000;
-    width: 80px;
-    height: 400px;
-    background: white;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    transform: translateY(-20%);
-}
-
-/* Horizontal orientation */
-.floating-nav-card.horizontal {
     display: flex;
     flex-direction: row;
     justify-content: center;
     align-items: center;
+    position: fixed;
+    z-index: 1000;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.floating-nav-card.vertical {
+    width: 80px;
+    height: 400px;
+    left: 10px;
+    border-radius: 10px;
+    bottom: 50%;
+    transform: translateY(50%);
+}
+
+/* Horizontal orientation */
+.floating-nav-card.horizontal {
     width: 400px;
     height: 80px;
     bottom: 10px;
-    left: 0;
     border-radius: 10px;
-    transform: translateX(-50%);
     left: 50%;
+    transform: translateX(-50%);
 }
 
 /* Styling for navigation sections */
