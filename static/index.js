@@ -181,16 +181,6 @@ function toggleSection() {
     displayData(section, groupBy);
 }
 
-// Display images based on the current section and grouping
-function displayImages() {
-    displayData("/img/directory");
-}
-
-// Display videos based on the current section and grouping
-function displayVideos() {
-    displayData("/vid/directory");
-}
-
 // Toggle selection mode
 function toggleSelectionMode() {
     selectionMode = !selectionMode;
