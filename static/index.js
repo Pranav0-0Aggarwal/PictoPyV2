@@ -255,3 +255,21 @@ async function sendSelectedMedia(route) {
         console.error('Failed to send data:', error);
     }
 }
+
+// Initialize floating navigation card
+function updateNavCardOrientation() {
+    const navCard = document.getElementById('floatingNavCard');
+    if (window.innerHeight < window.innerWidth) {
+        navCard.classList.remove('horizontal');
+        navCard.classList.add('vertical');
+    } else {
+        navCard.classList.remove('vertical');
+        navCard.classList.add('horizontal');
+    }
+}
+
+// Adjust the orientation on window resize
+window.addEventListener('resize', updateNavCardOrientation);
+
+// Initialize orientation on page load
+updateNavCardOrientation();

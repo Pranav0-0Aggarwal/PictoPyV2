@@ -97,3 +97,46 @@ body {
     line-height: 30px;
     text-align: center;
 }
+
+/* General styling for the floating navigation card */
+.floating-nav-card {
+    position: fixed;
+    z-index: 1000;
+    width: 80px;
+    height: 400px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transform: translateY(-20%);
+}
+
+/* Horizontal orientation */
+.floating-nav-card.horizontal {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 400px;
+    height: 80px;
+    bottom: 10px;
+    left: 0;
+    border-radius: 10px;
+    transform: translateX(-50%);
+    left: 50%;
+}
+
+/* Styling for navigation sections */
+.nav-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.nav-icon {
+    width: 50px;
+    height: 50px;
+    padding: 10px;
+}

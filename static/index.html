@@ -20,6 +20,22 @@
         <div class="media-container" id="mediaContent"></div>
     </div>
 
+    <!-- Floating Navigation Card -->
+    <div id="floatingNavCard" class="floating-nav-card">
+        <div class="nav-section" onclick="displayData('img', 'directory')">
+            <img src="/static/icons/images-icon.png" alt="Images" class="nav-icon">
+        </div>
+        <div class="nav-section" onclick="displayData('vid', 'directory')">
+            <img src="/static/icons/videos-icon.png" alt="Videos" class="nav-icon">
+        </div>
+        <div class="nav-section" onclick="displayData('hidden', 'directory')">
+            <img src="/static/icons/hidden-icon.png" alt="Hidden Files" class="nav-icon">
+        </div>
+        <div class="nav-section" onclick="displayData('trash', 'directory')">
+            <img src="/static/icons/trash-icon.png" alt="Trash" class="nav-icon">
+        </div>
+    </div>
+
     <script src="/static/index.js"></script>
 </body>
 </html>
