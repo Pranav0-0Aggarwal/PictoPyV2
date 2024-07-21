@@ -1,3 +1,15 @@
+// Initialize variables
+let currentMediaIndex = -1;
+let currentMediaArray = [];
+let currentMediaTypesArray = []; 
+let selectedMedia = [];
+let selectionMode = false;
+let section = "";
+let groupBy = "";
+
+// Initial data display
+displayData("/img/directory");
+
 // Fetch data from a route
 async function readRoute(route) {
     try {
@@ -70,7 +82,13 @@ async function displayData(route) {
         const thumbnails = await fetchThumbnails(pathsArray, typesArray);
 
         const groupCard = createCard('group', thumbnails[0], groupName, groupName);
-        groupCard.addEventListener('click', () => displayGroup(groupName, pathsArray, typesArray));
+        groupCard.addEventListener('click', () => {
+            if (selectionMode) {
+                toggleGroupSelection(pathsArray);
+            } else {
+                displayGroup(groupName, pathsArray, typesArray);
+            }
+        });
         container.appendChild(groupCard);
     }
 }
@@ -92,7 +110,13 @@ async function displayGroup(groupName, pathsArray, typesArray) {
         const thumbnail = await getThumbnail(path, fileType); 
 
         const mediaCard = createCard('media', thumbnail, groupName);
-        mediaCard.addEventListener('click', () => openMedia(pathsArray, i, typesArray));
+        mediaCard.addEventListener('click', () => {
+            if (selectionMode) {
+                toggleMediaSelection(path);
+            } else {
+                openMedia(pathsArray, i, typesArray);
+            }
+        });
         container.appendChild(mediaCard);
     }
 }
@@ -160,12 +184,54 @@ function displayVideos() {
     displayData("/vid/directory");
 }
 
-// Initialize variables
-let currentMediaIndex = -1;
-let currentMediaArray = [];
-let currentMediaTypesArray = []; 
-let section = "img/";
-let groupBy = "directory";
+// Toggle selection mode
+function toggleSelectionMode() {
+    selectionMode = !selectionMode;
+    if (selectionMode) {
+        console.log('Selection mode activated');
+    } else {
+        selectedMedia = [];
+        console.log('Selection mode deactivated');
+    }
+}
 
-// Initial data display
-displayData(`/${section}${groupBy}`);
+// Toggle selection of a single media file
+function toggleMediaSelection(path) {
+    const index = selectedMedia.indexOf(path);
+    if (index === -1) {
+        selectedMedia.push(path);
+        console.log('Selected media:', path);
+    } else {
+        selectedMedia.splice(index, 1);
+        console.log('Deselected media:', path);
+    }
+}
+
+// Toggle selection of all media files in a group
+function toggleGroupSelection(pathsArray) {
+    let allSelected = true;
+    pathsArray.forEach(path => {
+        if (!selectedMedia.includes(path)) {
+            allSelected = false;
+        }
+    });
+
+    if (allSelected) {
+        pathsArray.forEach(path => {
+            const index = selectedMedia.indexOf(path);
+            if (index !== -1) {
+                selectedMedia.splice(index, 1);
+                console.log('Deselected media:', path);
+            }
+        });
+    } else {
+        // Select all if not all are selected
+        pathsArray.forEach(path => {
+            if (!selectedMedia.includes(path)) {
+                selectedMedia.push(path);
+                console.log('Selected media:', path);
+            }
+        });
+    }
+}
+
