@@ -101,7 +101,6 @@ body {
 /* General styling for the floating navigation card */
 .floating-nav-card {
     display: flex;
-    flex-direction: row;
     justify-content: center;
     align-items: center;
     position: fixed;
@@ -113,6 +112,7 @@ body {
 }
 
 .floating-nav-card.vertical {
+    flex-direction: column;
     width: 80px;
     height: 400px;
     left: 10px;
@@ -123,6 +123,7 @@ body {
 
 /* Horizontal orientation */
 .floating-nav-card.horizontal {
+    flex-direction: row;
     width: 400px;
     height: 80px;
     bottom: 10px;

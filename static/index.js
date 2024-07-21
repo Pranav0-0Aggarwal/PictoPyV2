@@ -11,6 +11,10 @@ let openedGroup = "";
 // Initial data display
 displayData("img", "directory");
 
+// Call adjustNavCard on window resize and on initial load
+window.addEventListener('resize', adjustNavCard);
+window.addEventListener('load', adjustNavCard);
+
 // Fetch data from a route
 async function readRoute(route) {
     try {
@@ -256,9 +260,10 @@ async function sendSelectedMedia(route) {
     }
 }
 
-// Initialize floating navigation card
-function updateNavCardOrientation() {
+function adjustNavCard() {
     const navCard = document.getElementById('floatingNavCard');
+    if (!navCard) return;
+
     if (window.innerHeight < window.innerWidth) {
         navCard.classList.remove('horizontal');
         navCard.classList.add('vertical');
@@ -267,9 +272,3 @@ function updateNavCardOrientation() {
         navCard.classList.add('horizontal');
     }
 }
-
-// Adjust the orientation on window resize
-window.addEventListener('resize', updateNavCardOrientation);
-
-// Initialize orientation on page load
-updateNavCardOrientation();
