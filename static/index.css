@@ -9,7 +9,6 @@ body {
 .container {
     display: flex;
     flex-wrap: wrap;
-    justify-content: center;
     gap: 10px;
 }
 
@@ -98,10 +97,9 @@ body {
     text-align: center;
 }
 
-/* General styling for the floating navigation card */
 .floating-nav-card {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
     position: fixed;
     z-index: 1000;
@@ -109,23 +107,7 @@ body {
     border: 1px solid #ddd;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-.floating-nav-card.vertical {
-    flex-direction: column;
-    width: 80px;
-    height: 400px;
-    left: 10px;
-    border-radius: 10px;
-    bottom: 50%;
-    transform: translateY(50%);
-}
-
-/* Horizontal orientation */
-.floating-nav-card.horizontal {
     flex-direction: row;
-    width: 400px;
-    height: 80px;
     bottom: 10px;
     border-radius: 10px;
     left: 50%;

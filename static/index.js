@@ -11,10 +11,6 @@ let openedGroup = "";
 // Initial data display
 displayData("img", "directory");
 
-// Call adjustNavCard on window resize and on initial load
-window.addEventListener('resize', adjustNavCard);
-window.addEventListener('load', adjustNavCard);
-
 // Fetch data from a route
 async function readRoute(route) {
     try {
@@ -257,18 +253,5 @@ async function sendSelectedMedia(route) {
         return result;
     } catch (error) {
         console.error('Failed to send data:', error);
-    }
-}
-
-function adjustNavCard() {
-    const navCard = document.getElementById('floatingNavCard');
-    if (!navCard) return;
-
-    if (window.innerHeight < window.innerWidth) {
-        navCard.classList.remove('horizontal');
-        navCard.classList.add('vertical');
-    } else {
-        navCard.classList.remove('vertical');
-        navCard.classList.add('horizontal');
     }
 }
