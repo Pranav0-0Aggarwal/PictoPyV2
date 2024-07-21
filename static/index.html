@@ -22,17 +22,23 @@
 
     <!-- Floating Navigation Card -->
     <div id="floatingNavCard" class="floating-nav-card">
+        <div class="nav-section" onclick="toggleGroup()">
+            <img src="/static/icons/AI.png" alt="AI Tags" class="nav-icon">
+        </div>
         <div class="nav-section" onclick="displayData('img', 'directory')">
-            <img src="/static/icons/images-icon.png" alt="Images" class="nav-icon">
+            <img src="/static/icons/images.png" alt="Images" class="nav-icon">
         </div>
         <div class="nav-section" onclick="displayData('vid', 'directory')">
-            <img src="/static/icons/videos-icon.png" alt="Videos" class="nav-icon">
+            <img src="/static/icons/videos.png" alt="Videos" class="nav-icon">
         </div>
         <div class="nav-section" onclick="displayData('hidden', 'directory')">
-            <img src="/static/icons/hidden-icon.png" alt="Hidden Files" class="nav-icon">
+            <img src="/static/icons/hidden.png" alt="Hidden Files" class="nav-icon">
         </div>
         <div class="nav-section" onclick="displayData('trash', 'directory')">
-            <img src="/static/icons/trash-icon.png" alt="Trash" class="nav-icon">
+            <img src="/static/icons/trash.png" alt="Trash" class="nav-icon">
+        </div>
+        <div class="nav-section" onclick="toggleSelectionMode()">
+            <img src="/static/icons/select.png" alt="Toggle Select" class="nav-icon">
         </div>
     </div>
 
