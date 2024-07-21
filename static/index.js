@@ -1,12 +1,53 @@
 // Initialize variables
 let currentMediaIndex = -1;
 let currentMediaArray = [];
-let currentMediaTypesArray = []; 
+let currentMediaTypesArray = [];
 let selectedMedia = [];
 let selectionMode = false;
 let section = "";
 let groupBy = "";
 let openedGroup = "";
+
+// Navbar configuration
+const navConfig = {
+    default: [
+        { src: "/static/icons/AI.png", alt: "AI Tags", onclick: "toggleGroup()" },
+        { src: "/static/icons/images.png", alt: "Images", onclick: "displayData('img', 'directory')" },
+        { src: "/static/icons/videos.png", alt: "Videos", onclick: "displayData('vid', 'directory')" },
+        { src: "/static/icons/hidden.png", alt: "Hidden Files", onclick: "displayData('hidden', 'directory')" },
+        { src: "/static/icons/trash.png", alt: "Trash", onclick: "displayData('trash', 'directory')" },
+        { src: "/static/icons/select.png", alt: "Toggle Select", onclick: "toggleSelectionMode()" }
+    ],
+    selection: {
+        img: [
+            { src: "/static/icons/hide.png", alt: "Hide", onclick: "sendSelectedMedia('/hide')" },
+            { src: "/static/icons/delete.png", alt: "Delete", onclick: "sendSelectedMedia('/toTrash')" }
+        ],
+        vid: [
+            { src: "/static/icons/hide.png", alt: "Hide", onclick: "sendSelectedMedia('/hide')" },
+            { src: "/static/icons/delete.png", alt: "Delete", onclick: "sendSelectedMedia('/toTrash')" }
+        ],
+        hidden: [
+            { src: "/static/icons/unhide.png", alt: "Unhide", onclick: "sendSelectedMedia('/unhide')" },
+            { src: "/static/icons/delete.png", alt: "Delete", onclick: "sendSelectedMedia('/toTrash')" }
+        ],
+        trash: [
+            { src: "/static/icons/restore.png", alt: "Restore", onclick: "sendSelectedMedia('/restore')" },
+            { src: "/static/icons/delete.png", alt: "Delete", onclick: "sendSelectedMedia('/delete')" }
+        ],
+        toggleSelect: [
+            { src: "/static/icons/select.png", alt: "Toggle Select", onclick: "toggleSelectionMode()" }
+        ]
+    },
+    media: [
+        { src: "/static/icons/previous.png", alt: "Previous", onclick: "prevMedia()" },
+        { src: "/static/icons/next.png", alt: "Next", onclick: "nextMedia()" },
+        { src: "/static/icons/close.png", alt: "Close", onclick: "closeMedia()" }
+    ]
+};
+
+// Initial navbar
+requestAnimationFrame(updateNavbar);
 
 // Initial data display
 displayData("img", "directory");
@@ -38,7 +79,7 @@ async function getThumbnail(path, type) {
 async function fetchThumbnails(paths, types) {
     const thumbnailsPromises = paths.map(async (path, index) => {
         const fileType = types[index];
-        return getThumbnail(path, fileType); 
+        return getThumbnail(path, fileType);
     });
 
     return await Promise.all(thumbnailsPromises);
@@ -66,8 +107,8 @@ function createCard(type, thumbnailSrc, altText, name = '') {
 
 // Display group cards with data
 async function displayData(_section, _groupBy) {
-    section = _section
-    groupBy = _groupBy
+    section = _section;
+    groupBy = _groupBy;
     const data = await readRoute(`/${section}/${groupBy}`);
     const container = document.getElementById('dataContainer');
     
@@ -114,7 +155,7 @@ async function displayGroup(groupName, pathsArray, typesArray) {
     for (let i = 0; i < pathsArray.length; i++) {
         const path = pathsArray[i].trim();
         const fileType = typesArray[i];
-        const thumbnail = await getThumbnail(path, fileType); 
+        const thumbnail = await getThumbnail(path, fileType);
 
         const mediaCard = createCard('media', thumbnail, groupName);
         mediaCard.addEventListener('click', () => {
@@ -130,6 +171,7 @@ async function displayGroup(groupName, pathsArray, typesArray) {
 
 // Open a media file in a floating window
 function openMedia(mediaArray, mediaIndex, typesArray) {
+    updateNavbar('media');
     currentMediaArray = mediaArray;
     currentMediaIndex = mediaIndex;
     currentMediaTypesArray = typesArray; 
@@ -153,6 +195,9 @@ function closeMedia() {
     const floatingWindow = document.getElementById('floatingWindow');
     floatingWindow.style.display = 'none';
     document.getElementById('mediaContent').innerHTML = '';
+
+    // Update navbar immediately after closing the media window
+    updateNavbar();
 }
 
 // Navigate to the previous media item
@@ -169,89 +214,102 @@ function nextMedia() {
     }
 }
 
-// Toggle grouping of media by directory or class
+// Toggle grouping of media
 function toggleGroup() {
-    groupBy = groupBy === "directory" ? "class" : "directory";
-    displayData(section, groupBy);
-}
-
-// Toggle between displaying images and videos
-function toggleSection() {
-    section = section === "img" ? "vid" : "img";
-    displayData(section, groupBy);
+    const newGroupBy = (groupBy === 'class') ? 'directory' : 'class';
+    displayData(section, newGroupBy);
 }
 
 // Toggle selection mode
 function toggleSelectionMode() {
     selectionMode = !selectionMode;
-    if (selectionMode) {
-        console.log('Selection mode activated');
-    } else {
-        selectedMedia = [];
-        console.log('Selection mode deactivated');
-    }
+    selectedMedia = [];
+    // Deferred navbar update
+    requestAnimationFrame(updateNavbar);
 }
 
-// Toggle selection of a single media file
+// Toggle selection of a media item
 function toggleMediaSelection(path) {
     const index = selectedMedia.indexOf(path);
     if (index === -1) {
         selectedMedia.push(path);
-        console.log('Selected media:', path);
     } else {
         selectedMedia.splice(index, 1);
-        console.log('Deselected media:', path);
     }
+    updateCardSelection(path);
 }
 
-// Toggle selection of all media files in a group
+// Toggle selection of all media items in a group
 function toggleGroupSelection(pathsArray) {
-    let allSelected = true;
-    pathsArray.forEach(path => {
-        if (!selectedMedia.includes(path)) {
-            allSelected = false;
-        }
-    });
-
-    if (allSelected) {
-        pathsArray.forEach(path => {
-            const index = selectedMedia.indexOf(path);
-            if (index !== -1) {
-                selectedMedia.splice(index, 1);
-                console.log('Deselected media:', path);
-            }
-        });
-    } else {
-        // Select all if not all are selected
-        pathsArray.forEach(path => {
-            if (!selectedMedia.includes(path)) {
-                selectedMedia.push(path);
-                console.log('Selected media:', path);
-            }
-        });
+    for (const path of pathsArray) {
+        toggleMediaSelection(path.trim());
     }
 }
 
-// Send selected media to the backend via POST request
+// Update the selection status of a card
+function updateCardSelection(path) {
+    const cards = document.getElementsByClassName('card');
+    for (const card of cards) {
+        if (card.querySelector('img').src.endsWith(path)) {
+            card.classList.toggle('selected', selectedMedia.includes(path));
+        }
+    }
+}
+
+// Send selected media items to a route
 async function sendSelectedMedia(route) {
+    if (selectedMedia.length === 0) return;
+
     try {
         const response = await fetch(route, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ selectedMedia: selectedMedia })
+            body: JSON.stringify({ paths: selectedMedia })
         });
 
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
         }
 
-        const result = await response.json();
-        console.log('Server response:', result);
+        selectedMedia = [];
+        selectionMode = false;
         displayData(section, groupBy);
-        return result;
     } catch (error) {
-        console.error('Failed to send data:', error);
+        console.error(`Failed to send selected media to ${route}:`, error);
     }
+}
+
+// Update the navigation bar based on the current state
+function updateNavbar(mode = 'default') {
+    const floatingNavCard = document.getElementById('floatingNavCard');
+    floatingNavCard.innerHTML = '';
+
+    let navItems = [];
+
+    if (mode === 'media') {
+        navItems = navConfig.media;
+    } else if (selectionMode && navConfig.selection[section]) {
+        navItems = [...navConfig.selection[section], ...navConfig.selection.toggleSelect];
+    } else {
+        navItems = navConfig.default;
+    }
+
+    // Use DocumentFragment to minimize DOM manipulations
+    const fragment = document.createDocumentFragment();
+    navItems.forEach(item => {
+        const navIcon = document.createElement('img');
+        navIcon.src = item.src;
+        navIcon.alt = item.alt;
+        navIcon.onclick = new Function(item.onclick);
+
+        const navItem = document.createElement('div');
+        navItem.className = 'nav-icon';
+        navItem.appendChild(navIcon);
+
+        fragment.appendChild(navItem);
+    });
+
+    floatingNavCard.appendChild(fragment);
 }

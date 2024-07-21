@@ -12,35 +12,10 @@
     <div id="dataContainer" class="container"></div>
 
     <div id="floatingWindow" class="floating-window">
-        <div class="button-container">
-            <button class="close-btn" onclick="closeMedia()">×</button>
-            <button class="nav-btn left" onclick="prevMedia()">❮</button>
-            <button class="nav-btn right" onclick="nextMedia()">❯</button>
-        </div>
         <div class="media-container" id="mediaContent"></div>
     </div>
 
-    <!-- Floating Navigation Card -->
-    <div id="floatingNavCard" class="floating-nav-card">
-        <div class="nav-section" onclick="toggleGroup()">
-            <img src="/static/icons/AI.png" alt="AI Tags" class="nav-icon">
-        </div>
-        <div class="nav-section" onclick="displayData('img', 'directory')">
-            <img src="/static/icons/images.png" alt="Images" class="nav-icon">
-        </div>
-        <div class="nav-section" onclick="displayData('vid', 'directory')">
-            <img src="/static/icons/videos.png" alt="Videos" class="nav-icon">
-        </div>
-        <div class="nav-section" onclick="displayData('hidden', 'directory')">
-            <img src="/static/icons/hidden.png" alt="Hidden Files" class="nav-icon">
-        </div>
-        <div class="nav-section" onclick="displayData('trash', 'directory')">
-            <img src="/static/icons/trash.png" alt="Trash" class="nav-icon">
-        </div>
-        <div class="nav-section" onclick="toggleSelectionMode()">
-            <img src="/static/icons/select.png" alt="Toggle Select" class="nav-icon">
-        </div>
-    </div>
+    <div id="floatingNavCard" class="floating-nav-card"></div>
 
     <script src="/static/index.js"></script>
 </body>
