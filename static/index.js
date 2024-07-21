@@ -274,7 +274,7 @@ async function sendSelectedMedia(route) {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ paths: selectedMedia })
+            body: JSON.stringify({ selectedMedia: selectedMedia })
         });
 
         if (!response.ok) {
