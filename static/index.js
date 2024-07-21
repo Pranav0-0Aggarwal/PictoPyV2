@@ -86,9 +86,10 @@ async function fetchThumbnails(paths, types) {
 }
 
 // Create a card element
-function createCard(type, thumbnailSrc, altText, name = '') {
+function createCard(type, thumbnailSrc, altText, name = '', pathsArray = [], index = -1) {
     const card = document.createElement('div');
     card.className = 'card';
+    card.dataset.type = type;
 
     if (type === 'group') {
         card.classList.add('group');
@@ -96,13 +97,33 @@ function createCard(type, thumbnailSrc, altText, name = '') {
             <img src="${thumbnailSrc}" alt="${altText}" class="thumbnail">
             <div class="group-name">${name}</div>
         `;
+        card.addEventListener('click', () => handleGroupClick(name, pathsArray, index));
     } else {
         card.innerHTML = `
             <img src="${thumbnailSrc}" alt="${altText}" class="thumbnail">
         `;
+        card.addEventListener('click', () => handleMediaClick(pathsArray, index));
     }
 
     return card;
+}
+
+// Handle group card click
+function handleGroupClick(name, pathsArray, index) {
+    if (selectionMode) {
+        toggleGroupSelection(pathsArray);
+    } else {
+        displayGroup(name, pathsArray, index);
+    }
+}
+
+// Handle media card click
+function handleMediaClick(pathsArray, index) {
+    if (selectionMode) {
+        toggleMediaSelection(pathsArray[index]);
+    } else {
+        openMedia(pathsArray, index, currentMediaTypesArray);
+    }
 }
 
 // Display group cards with data
@@ -125,15 +146,9 @@ async function displayData(_section, _groupBy) {
 
         const thumbnails = await fetchThumbnails(pathsArray, typesArray);
 
-        const groupCard = createCard('group', thumbnails[0], groupName, groupName);
-        groupCard.addEventListener('click', () => {
-            if (selectionMode) {
-                toggleGroupSelection(pathsArray);
-            } else {
-                displayGroup(groupName, pathsArray, typesArray);
-            }
-        });
+        const groupCard = createCard('group', thumbnails[0], groupName, groupName, pathsArray);
         container.appendChild(groupCard);
+
         if (openedGroup === groupName) {
             displayGroup(groupName, pathsArray, typesArray);
         }
@@ -157,14 +172,7 @@ async function displayGroup(groupName, pathsArray, typesArray) {
         const fileType = typesArray[i];
         const thumbnail = await getThumbnail(path, fileType);
 
-        const mediaCard = createCard('media', thumbnail, groupName);
-        mediaCard.addEventListener('click', () => {
-            if (selectionMode) {
-                toggleMediaSelection(path);
-            } else {
-                openMedia(pathsArray, i, typesArray);
-            }
-        });
+        const mediaCard = createCard('media', thumbnail, groupName, '', pathsArray, i);
         container.appendChild(mediaCard);
     }
 }
