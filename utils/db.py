@@ -91,7 +91,7 @@ def groupByClass(conn: sqlite3.Connection, hidden: int = 0, fileType: str = "img
         fileTypeCondition = "AND i.fileType = ?"
 
     query = f"""
-    SELECT c.class, GROUP_CONCAT(i.{groupOf})
+    SELECT c.class, GROUP_CONCAT(i.{groupOf}), GROUP_CONCAT(i.fileType)
     FROM CLASS c
     JOIN JUNCTION j ON c.classID = j.classID 
     JOIN MEDIA i ON j.mediaID = i.mediaID 
@@ -124,7 +124,7 @@ def groupByDir(conn: sqlite3.Connection, hidden: int = 0, fileType: str = "img",
         fileTypeCondition = "AND fileType = ?"
 
     query = f"""
-    SELECT directory, GROUP_CONCAT({groupOf}) 
+    SELECT directory, GROUP_CONCAT({groupOf}), GROUP_CONCAT(fileType) 
     FROM MEDIA
     WHERE hidden = ? {fileTypeCondition}
     """

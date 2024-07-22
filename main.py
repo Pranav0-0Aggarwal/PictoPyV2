@@ -89,11 +89,6 @@ def groupPaths(hidden, fileType, groupBy) -> str:
 
 app = Flask(__name__, template_folder=f"{pathOf('static')}")
 
-# Configure logging
-logging.basicConfig(filename=logPath(),
-                    level=logging.DEBUG,
-                    format='%(asctime)s %(levelname)s %(name)s %(message)s')
-
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -107,6 +102,13 @@ def sendFile(path):
     path = escape(f"/{path}")
     if pathExist(path):
         return send_file(path)
+    return redirect(url_for('index')) # doesn't reload (TBI)
+
+@app.route('/thumbnail/<path:path>')
+def thumbnail(path):
+    path = escape(f"/{path}")
+    if pathExist(path):
+        return getThumbnail(path)
     return redirect(url_for('index')) # doesn't reload (TBI)
 
 # Sections
@@ -175,15 +177,6 @@ def restore():
     toggleVisibility(conn, data, 0)
     closeConnection(conn)
     return jsonify({"success": True})
-
-@app.route('/logs')
-def show_logs():
-    try:
-        with open(logPath(), 'r') as log_file:
-            log_contents = log_file.read()
-        return Response(log_contents, mimetype='text/plain')
-    except FileNotFoundError:
-        return "Log file not found.", 404
 
 @app.route('/info/<path:path>')
 def info(path):

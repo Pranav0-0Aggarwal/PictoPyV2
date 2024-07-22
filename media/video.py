@@ -88,3 +88,37 @@ def videoClasses(inputPath: str, modelPath: str, outputPath: str = None) -> Set[
         allClasses.update(classes)
     
     return allClasses
+
+def getThumbnail(inputPath: str) -> bytes:
+    """
+    Get a single frame from the video and return it as a thumbnail.
+
+    Args:
+    - inputPath: Path to the input video file.
+
+    Returns:
+    - bytes: Thumbnail image in bytes format.
+    """
+    cap = cv2.VideoCapture(inputPath)
+    
+    # Ensure the video was opened successfully
+    if not cap.isOpened():
+        raise ValueError("Unable to open the video file.")
+    
+    # Read the first frame
+    ret, frame = cap.read()
+    cap.release()
+
+    if not ret:
+        raise ValueError("Unable to read the video file.")
+
+    # Encode the frame to JPEG format
+    success, encodedImage = cv2.imencode('.jpg', frame)
+    
+    if not success:
+        raise ValueError("Failed to encode the image.")
+
+    # Convert the encoded image to bytes
+    thumbnailBytes = encodedImage.tobytes()
+
+    return thumbnailBytes
