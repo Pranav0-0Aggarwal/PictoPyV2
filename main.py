@@ -3,7 +3,7 @@ import logging
 from typing import Dict, List
 from utils import *
 from media import *
-from flask import Flask, render_template, send_file, request, redirect, url_for, Response
+from flask import Flask, render_template, send_file, request, redirect, url_for, Response, jsonify
 from markupsafe import escape
 
 def dataDir() -> str:
@@ -35,12 +35,12 @@ def logPath() -> str:
     """
     return os.path.join(dataDir(), "log.txt")
 
-def groupPaths(hidden, fileType, groupBy) -> Dict[str, List[str]]:
+def groupPaths(hidden, fileType, groupBy) -> str:
     """
     Classify files in the home directory and store the results in the database.
 
     Returns:
-        Dict[str, List[str]]: Dictionary mapping class names to lists of file paths.
+        JSON created from list of tuples where each tuple contains a directory name and a group of paths.
     """
     conn = connectDB(dbPath())
     createSchema(conn, 
@@ -85,7 +85,7 @@ def groupPaths(hidden, fileType, groupBy) -> Dict[str, List[str]]:
 
     closeConnection(conn)
 
-    return result
+    return jsonify(result)
 
 app = Flask(__name__, template_folder=f"{pathOf('static')}")
 
@@ -96,7 +96,7 @@ logging.basicConfig(filename=logPath(),
 
 @app.route('/')
 def index():
-    return redirect(url_for('groupMedia', fileType='img', groupBy='directory'))
+    return render_template('index.html')
 
 @app.route('/static/<path:path>')
 def staticFile(path):
@@ -115,19 +115,19 @@ def sendFile(path):
 def groupMedia(fileType, groupBy):
     if fileType not in ["img", "vid"] or groupBy not in ["class", "directory"]:
         return redirect(url_for('index'))
-    return render_template('index.html', classDict=groupPaths(0, fileType, groupBy))
+    return groupPaths(0, fileType, groupBy)
 
 @app.route('/hidden/<string:groupBy>')
 def hidden(groupBy):
     if groupBy not in ["class", "directory"]:
         return redirect(url_for('index'))
-    return render_template('index.html', classDict=groupPaths(1, "any", groupBy))
+    return groupPaths(1, "any", groupBy)
 
 @app.route('/trash/<string:groupBy>')
 def trash(groupBy):
     if groupBy not in ["class", "directory"]:
         return redirect(url_for('index'))
-    return render_template('index.html', classDict=groupPaths(-1, "any", groupBy))
+    return groupPaths(-1, "any", groupBy)
 
 # Buttons
 
@@ -138,7 +138,7 @@ def toTrash():
     conn = connectDB(dbPath())
     moveToTrash(conn, data)
     closeConnection(conn)
-    return "reload"
+    return jsonify({"success": True})
 
 @app.route('/delete', methods=['POST'])
 def delete():
@@ -147,7 +147,7 @@ def delete():
     conn = connectDB(dbPath())
     deleteFromDB(conn, data)
     closeConnection(conn)
-    return "reload"
+    return jsonify({"success": True})
 
 @app.route('/hide', methods=['POST'])
 def hide():
@@ -156,7 +156,7 @@ def hide():
     conn = connectDB(dbPath())
     toggleVisibility(conn, data, 1)
     closeConnection(conn)
-    return "reload"
+    return jsonify({"success": True})
 
 @app.route('/unhide', methods=['POST'])
 def unhide():
@@ -165,7 +165,7 @@ def unhide():
     conn = connectDB(dbPath())
     toggleVisibility(conn, data, 0)
     closeConnection(conn)
-    return "reload"
+    return jsonify({"success": True})
 
 @app.route('/restore', methods=['POST'])
 def restore():
@@ -174,7 +174,7 @@ def restore():
     conn = connectDB(dbPath())
     toggleVisibility(conn, data, 0)
     closeConnection(conn)
-    return "reload"
+    return jsonify({"success": True})
 
 @app.route('/logs')
 def show_logs():
