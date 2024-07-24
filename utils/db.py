@@ -11,7 +11,15 @@ def connectDB(dbPath: str) -> sqlite3.Connection:
     Returns:
         A sqlite3.Connection object.
     """
-    return sqlite3.connect(dbPath)
+    conn = sqlite3.connect(dbPath)
+    for pragma in [
+        "PRAGMA journal_mode = WAL", 
+        "PRAGMA foreign_keys = ON", 
+        "PRAGMA synchronous = OFF", 
+        "PRAGMA cache_shared_enable;"
+        ]:
+        executeQuery(conn, pragma)
+    return conn
 
 def createTable(conn: sqlite3.Connection, tableID: str, columns: List[str]) -> None:
     """Creates a table in the database with the given name and columns.
@@ -46,7 +54,10 @@ def executeQuery(conn: sqlite3.Connection, query: str, params: List = ()) -> sql
         A sqlite3.Cursor object.        
     """
     cursor = conn.cursor()
-    cursor.execute(query, params)
+    try:
+        cursor.execute(query, params)
+    except sqlite3.OperationalError:
+        conn.rollback
     return cursor
 
 def closeConnection(conn: sqlite3.Connection) -> None:
