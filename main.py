@@ -42,8 +42,9 @@ def groupPaths(hidden, fileType, groupBy) -> str:
     Returns:
         JSON created from list of tuples where each tuple contains a directory name and a group of paths.
     """
-    conn = connectDB(dbPath())
-    createSchema(conn, 
+    writeConn = connectDB(dbPath())
+    readConn = connectDB(dbPath())
+    createSchema(writeConn, 
         {
             "MEDIA": [
                 "mediaID INTEGER PRIMARY KEY AUTOINCREMENT", 
@@ -70,20 +71,21 @@ def groupPaths(hidden, fileType, groupBy) -> str:
 
     """
     Because of classifyMedia() the following that too much time for the initial render.
-    classifyMedia(conn, pathOf("models/yolov8n.onnx"), populateMediaTable(conn, mediaPaths(homeDir())))
+    classifyMedia(writeConn, pathOf("models/yolov8n.onnx"), populateMediaTable(writeConn, mediaPaths(homeDir())))
     """
 
-    cleanDB(conn)
+    cleanDB(writeConn)
 
     if groupBy == "directory":
-        populateMediaTable(conn, mediaPaths(homeDir()))
-        result = groupByDir(conn, hidden, fileType)
+        populateMediaTable(writeConn, mediaPaths(homeDir()))
+        result = groupByDir(readConn, hidden, fileType)
     else:
-        populateMediaTable(conn, mediaPaths(homeDir()))
-        classifyMedia(conn, pathOf("models/yolov8n.onnx"), getUnlinkedMedia(conn))
-        result = groupByClass(conn, hidden, fileType)
+        populateMediaTable(writeConn, mediaPaths(homeDir()))
+        classifyMedia(writeConn, pathOf("models/yolov8n.onnx"), getUnlinkedMedia(readConn))
+        result = groupByClass(readConn, hidden, fileType)
 
-    closeConnection(conn)
+    closeConnection(readConn)
+    closeConnection(writeConn)
 
     return jsonify(result)
 
