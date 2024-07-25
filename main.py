@@ -35,15 +35,8 @@ def logPath() -> str:
     """
     return os.path.join(dataDir(), "log.txt")
 
-def groupPaths(hidden, fileType, groupBy) -> str:
-    """
-    Classify files in the home directory and store the results in the database.
-
-    Returns:
-        JSON created from list of tuples where each tuple contains a directory name and a group of paths.
-    """
+def updateDB(groupBy: str = None):
     writeConn = connectDB(dbPath())
-    readConn = connectDB(dbPath())
     createSchema(writeConn, 
         {
             "MEDIA": [
@@ -74,18 +67,27 @@ def groupPaths(hidden, fileType, groupBy) -> str:
     classifyMedia(writeConn, pathOf("models/yolov8n.onnx"), populateMediaTable(writeConn, mediaPaths(homeDir())))
     """
 
+    populateMediaTable(writeConn, mediaPaths(homeDir()))
+    if groupBy == "class":
+        classifyMedia(writeConn, pathOf("models/yolov8n.onnx"), getUnlinkedMedia(readConn))
     cleanDB(writeConn)
+    closeConnection(writeConn)
 
+def groupPaths(hidden, fileType, groupBy) -> str:
+    """
+    Classify files in the home directory and store the results in the database.
+
+    Returns:
+        JSON created from list of tuples where each tuple contains a directory name and a group of paths.
+    """
+    readConn = connectDB(dbPath())
     if groupBy == "directory":
-        populateMediaTable(writeConn, mediaPaths(homeDir()))
+        updateDB()
         result = groupByDir(readConn, hidden, fileType)
     else:
-        populateMediaTable(writeConn, mediaPaths(homeDir()))
-        classifyMedia(writeConn, pathOf("models/yolov8n.onnx"), getUnlinkedMedia(readConn))
+        updateDB(groupBy)
         result = groupByClass(readConn, hidden, fileType)
-
     closeConnection(readConn)
-    closeConnection(writeConn)
 
     return jsonify(result)
 
