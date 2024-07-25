@@ -35,7 +35,17 @@ def logPath() -> str:
     """
     return os.path.join(dataDir(), "log.txt")
 
-def updateDB(groupBy: str = None):
+def updateDB(groupBy: str = None) -> None:
+    """
+    Updates the database schema and populates the media table.
+    Populates the media table with paths from the home directory.
+    Optionally classifies media by class if specified.
+    Cleans the database.
+    Closes the database connection.
+
+    Args:
+        groupBy (str, optional): Specifies whether to classify media by 'class'. Defaults to None.
+    """
     writeConn = connectDB(dbPath())
     createSchema(writeConn, 
         {
@@ -62,11 +72,6 @@ def updateDB(groupBy: str = None):
         }
     )
 
-    """
-    Because of classifyMedia() the following that too much time for the initial render.
-    classifyMedia(writeConn, pathOf("models/yolov8n.onnx"), populateMediaTable(writeConn, mediaPaths(homeDir())))
-    """
-
     populateMediaTable(writeConn, mediaPaths(homeDir()))
     if groupBy == "class":
         classifyMedia(writeConn, pathOf("models/yolov8n.onnx"), getUnlinkedMedia(readConn))
@@ -75,10 +80,15 @@ def updateDB(groupBy: str = None):
 
 def groupPaths(hidden, fileType, groupBy) -> str:
     """
-    Classify files in the home directory and store the results in the database.
+    Groups media paths by directory or class and returns them as JSON.
+
+    Args:
+        hidden (int): Specifies whether to include hidden files.
+        fileType (str): Specifies the type of files to include ('img' or 'vid').
+        groupBy (str): Specifies the grouping method ('directory' or 'class').
 
     Returns:
-        JSON created from list of tuples where each tuple contains a directory name and a group of paths.
+        str: JSON created from a list of tuples where each tuple contains a group name and a group of paths.
     """
     readConn = connectDB(dbPath())
     if groupBy == "directory":
