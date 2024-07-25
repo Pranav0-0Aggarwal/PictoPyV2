@@ -1,10 +1,11 @@
 import os
-import logging
 from typing import Dict, List
 from utils import *
 from media import *
 from flask import Flask, render_template, send_file, request, redirect, url_for, Response, jsonify
 from markupsafe import escape
+
+writing = False
 
 def dataDir() -> str:
     """
@@ -46,6 +47,8 @@ def updateDB(groupBy: str = None) -> None:
     Args:
         groupBy (str, optional): Specifies whether to classify media by 'class'. Defaults to None.
     """
+    global writing 
+    writing = True
     writeConn = connectDB(dbPath())
     createSchema(writeConn, 
         {
@@ -77,6 +80,7 @@ def updateDB(groupBy: str = None) -> None:
         classifyMedia(writeConn, pathOf("models/yolov8n.onnx"), getUnlinkedMedia(connectDB(dbPath())))
     cleanDB(writeConn)
     closeConnection(writeConn)
+    writing = False
 
 def groupPaths(hidden, fileType, groupBy) -> str:
     """
@@ -90,12 +94,15 @@ def groupPaths(hidden, fileType, groupBy) -> str:
     Returns:
         str: JSON created from a list of tuples where each tuple contains a group name and a group of paths.
     """
+    global writing
     readConn = connectDB(dbPath())
     if groupBy == "directory":
-        updateDB()
+        if not writing:
+            updateDB()
         result = groupByDir(readConn, hidden, fileType)
     else:
-        updateDB(groupBy)
+        if not writing:
+            updateDB(groupBy)
         result = groupByClass(readConn, hidden, fileType)
     closeConnection(readConn)
 
