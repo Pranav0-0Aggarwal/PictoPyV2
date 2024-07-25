@@ -74,7 +74,7 @@ def updateDB(groupBy: str = None) -> None:
 
     populateMediaTable(writeConn, mediaPaths(homeDir()))
     if groupBy == "class":
-        classifyMedia(writeConn, pathOf("models/yolov8n.onnx"), getUnlinkedMedia(readConn))
+        classifyMedia(writeConn, pathOf("models/yolov8n.onnx"), getUnlinkedMedia(connectDB(dbPath())))
     cleanDB(writeConn)
     closeConnection(writeConn)
 
