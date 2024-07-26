@@ -231,6 +231,9 @@ function toggleGroup() {
 // Toggle selection mode
 function toggleSelectionMode() {
     selectionMode = !selectionMode;
+    for (const card of document.getElementsByClassName('card')) {
+        card.classList.toggle('selected', selectedMedia.includes(card.querySelector('img').src));
+    }
     selectedMedia = [];
     // Deferred navbar update
     requestAnimationFrame(updateNavbar);
