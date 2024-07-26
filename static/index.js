@@ -148,7 +148,7 @@ async function displayData(_section) {
         const groupCard = createCard('group', thumbnails[0], groupName, groupName, pathsArray, typesArray);
         container.appendChild(groupCard);
 
-        if (openedGroup === groupName) {
+        if (openedGroup === groupName && selectionMode) {
             displayGroup(groupName, pathsArray, typesArray);
         }
     }
