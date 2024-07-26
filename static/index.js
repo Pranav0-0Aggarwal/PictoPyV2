@@ -5,17 +5,17 @@ let currentMediaTypesArray = [];
 let selectedMedia = [];
 let selectionMode = false;
 let section = "";
-let groupBy = "";
+let groupBy = "directory";
 let openedGroup = "";
 
 // Navbar configuration
 const navConfig = {
     default: [
         { src: "/static/icons/ai.svg", alt: "AI Tags", onclick: "toggleGroup()" },
-        { src: "/static/icons/images.svg", alt: "Images", onclick: "displayData('img', 'directory')" },
-        { src: "/static/icons/videos.svg", alt: "Videos", onclick: "displayData('vid', 'directory')" },
-        { src: "/static/icons/hide.svg", alt: "Hidden Files", onclick: "displayData('hidden', 'directory')" },
-        { src: "/static/icons/delete.svg", alt: "Trash", onclick: "displayData('trash', 'directory')" },
+        { src: "/static/icons/images.svg", alt: "Images", onclick: "displayData('img')" },
+        { src: "/static/icons/videos.svg", alt: "Videos", onclick: "displayData('vid')" },
+        { src: "/static/icons/hide.svg", alt: "Hidden Files", onclick: "displayData('hidden')" },
+        { src: "/static/icons/delete.svg", alt: "Trash", onclick: "displayData('trash')" },
         { src: "/static/icons/select.svg", alt: "Toggle Select", onclick: "toggleSelectionMode()" }
     ],
     selection: {
@@ -50,7 +50,7 @@ const navConfig = {
 requestAnimationFrame(updateNavbar);
 
 // Initial data display
-displayData("img", "directory");
+displayData("img");
 
 // Fetch data from a route
 async function readRoute(route) {
@@ -127,9 +127,8 @@ function handleMediaClick(pathsArray, typesArray, index) {
 }
 
 // Display group cards with data
-async function displayData(_section, _groupBy) {
+async function displayData(_section) {
     section = _section;
-    groupBy = _groupBy;
     const data = await readRoute(`/${section}/${groupBy}`);
     const container = document.getElementById('dataContainer');
     
@@ -149,8 +148,9 @@ async function displayData(_section, _groupBy) {
         const groupCard = createCard('group', thumbnails[0], groupName, groupName, pathsArray, typesArray);
         container.appendChild(groupCard);
 
-        if (openedGroup === groupName) {
+        if (openedGroup === groupName && selectionMode) {
             displayGroup(groupName, pathsArray, typesArray);
+            break;
         }
     }
 }
@@ -224,8 +224,8 @@ function nextMedia() {
 
 // Toggle grouping of media
 function toggleGroup() {
-    const newGroupBy = (groupBy === 'class') ? 'directory' : 'class';
-    displayData(section, newGroupBy);
+    groupBy = (groupBy === 'class') ? 'directory' : 'class';
+    displayData(section);
 }
 
 // Toggle selection mode
@@ -282,7 +282,7 @@ async function sendSelectedMedia(route) {
         }
 
         selectedMedia = [];
-        displayData(section, groupBy);
+        displayData(section);
     } catch (error) {
         console.error(`Failed to send selected media to ${route}:`, error);
     }
