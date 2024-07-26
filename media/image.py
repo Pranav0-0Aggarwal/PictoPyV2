@@ -15,7 +15,7 @@ def saveImage(image: cv2.Mat, filename: str) -> None:
 
 def imageClasses(imgPath: str, model_path: str, outputPath: str = None) -> List[str]:
     img = cv2.imread(imgPath)
+    _classes, processedImg = detectClasses(img, model_path)
     if outputPath:
-        saveImage(detectClasses(img, model_path)[1], outputPath)
-    return detectClasses(img, model_path)[0]
-    
+        saveImage(processedImg, outputPath)
+    return _classes  
