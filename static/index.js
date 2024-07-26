@@ -150,6 +150,7 @@ async function displayData(_section) {
 
         if (openedGroup === groupName && selectionMode) {
             displayGroup(groupName, pathsArray, typesArray);
+            break;
         }
     }
 }
