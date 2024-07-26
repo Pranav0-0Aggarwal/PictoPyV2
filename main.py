@@ -1,10 +1,11 @@
 import os
-import logging
 from typing import Dict, List
 from utils import *
 from media import *
 from flask import Flask, render_template, send_file, request, redirect, url_for, Response, jsonify
 from markupsafe import escape
+
+writing = False
 
 def dataDir() -> str:
     """
@@ -35,15 +36,18 @@ def logPath() -> str:
     """
     return os.path.join(dataDir(), "log.txt")
 
-def groupPaths(hidden, fileType, groupBy) -> str:
+def updateDB(groupBy: str = None) -> None:
     """
-    Classify files in the home directory and store the results in the database.
+    Updates the database schema and populates the media table.
+    Populates the media table with paths from the home directory.
+    Optionally classifies media by class if specified.
+    Cleans the database.
 
-    Returns:
-        JSON created from list of tuples where each tuple contains a directory name and a group of paths.
+    Args:
+        groupBy (str, optional): Specifies whether to classify media by 'class'. Defaults to None.
     """
-    conn = connectDB(dbPath())
-    createSchema(conn, 
+    writeConn = connectDB(dbPath())
+    createSchema(writeConn, 
         {
             "MEDIA": [
                 "mediaID INTEGER PRIMARY KEY AUTOINCREMENT", 
@@ -68,22 +72,36 @@ def groupPaths(hidden, fileType, groupBy) -> str:
         }
     )
 
-    """
-    Because of classifyMedia() the following that too much time for the initial render.
-    classifyMedia(conn, pathOf("models/yolov8n.onnx"), populateMediaTable(conn, mediaPaths(homeDir())))
-    """
+    populateMediaTable(writeConn, mediaPaths(homeDir()))
+    if groupBy == "class":
+        classifyMedia(writeConn, pathOf("models/yolov8n.onnx"), getUnlinkedMedia(connectDB(dbPath())))
+    cleanDB(writeConn)
+    closeConnection(writeConn)
 
-    cleanDB(conn)
+def groupPaths(hidden, fileType, groupBy) -> str:
+    """
+    Groups media paths by directory or class and returns them as JSON.
 
+    Args:
+        hidden (int): Specifies whether to include hidden files.
+        fileType (str): Specifies the type of files to include ('img' or 'vid').
+        groupBy (str): Specifies the grouping method ('directory' or 'class').
+
+    Returns:
+        str: JSON created from a list of tuples where each tuple contains a group name and a group of paths.
+    """
+    global writing
+    if not writing:
+        writing = True
+        updateDB(groupBy)
+        writing = False
+    
+    readConn = connectDB(dbPath())
     if groupBy == "directory":
-        populateMediaTable(conn, mediaPaths(homeDir()))
-        result = groupByDir(conn, hidden, fileType)
+        result = groupByDir(readConn, hidden, fileType)
     else:
-        populateMediaTable(conn, mediaPaths(homeDir()))
-        classifyMedia(conn, pathOf("models/yolov8n.onnx"), getUnlinkedMedia(conn))
-        result = groupByClass(conn, hidden, fileType)
-
-    closeConnection(conn)
+        result = groupByClass(readConn, hidden, fileType)
+    closeConnection(readConn)
 
     return jsonify(result)
 

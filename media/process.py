@@ -41,6 +41,8 @@ def classifyMedia(conn: sqlite3.Connection, objDetectionModel: str, rowsToClassi
                 mediaClass = videoClasses(file, objDetectionModel)
             elif fileType == "img":
                 mediaClass = imageClasses(file, objDetectionModel)
+            if not mediaClass:
+                mediaClass = ["unidentified"]
         except Exception as e:
             print(e)
             continue
