@@ -4,7 +4,7 @@ let currentMediaArray = [];
 let currentMediaTypesArray = [];
 let selectedMedia = [];
 let selectionMode = false;
-let section = "";
+let section = "img";
 let groupBy = "directory";
 let openedGroup = "";
 
@@ -50,7 +50,7 @@ const navConfig = {
 requestAnimationFrame(updateNavbar);
 
 // Initial data display
-displayData("img");
+displayData(section);
 
 // Fetch data from a route
 async function readRoute(route) {
