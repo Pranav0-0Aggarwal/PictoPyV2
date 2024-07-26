@@ -23,15 +23,15 @@ body {
     position: relative;
 }
 
-.card:hover {
-    transform: scale(1.05)
-}
-
 .thumbnail {
     width: 100%;
     height: 200px;
     object-fit: cover;
     border-radius: 10px;
+}
+
+.thumbnail:hover {
+    transform: scale(1.05)
 }
 
 .group-name {
