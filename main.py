@@ -42,13 +42,10 @@ def updateDB(groupBy: str = None) -> None:
     Populates the media table with paths from the home directory.
     Optionally classifies media by class if specified.
     Cleans the database.
-    Closes the database connection.
 
     Args:
         groupBy (str, optional): Specifies whether to classify media by 'class'. Defaults to None.
     """
-    global writing 
-    writing = True
     writeConn = connectDB(dbPath())
     createSchema(writeConn, 
         {
@@ -80,7 +77,6 @@ def updateDB(groupBy: str = None) -> None:
         classifyMedia(writeConn, pathOf("models/yolov8n.onnx"), getUnlinkedMedia(connectDB(dbPath())))
     cleanDB(writeConn)
     closeConnection(writeConn)
-    writing = False
 
 def groupPaths(hidden, fileType, groupBy) -> str:
     """
@@ -95,14 +91,15 @@ def groupPaths(hidden, fileType, groupBy) -> str:
         str: JSON created from a list of tuples where each tuple contains a group name and a group of paths.
     """
     global writing
+    if not writing:
+        writing = True
+        updateDB(groupBy)
+        writing = False
+    
     readConn = connectDB(dbPath())
     if groupBy == "directory":
-        if not writing:
-            updateDB()
         result = groupByDir(readConn, hidden, fileType)
     else:
-        if not writing:
-            updateDB(groupBy)
         result = groupByClass(readConn, hidden, fileType)
     closeConnection(readConn)
 
