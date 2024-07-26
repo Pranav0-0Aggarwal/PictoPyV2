@@ -264,7 +264,7 @@ function updateCardSelection(path) {
     }
 }
 
-// Send selected media items to a route
+// Send selected media paths to the specified route
 async function sendSelectedMedia(route) {
     if (selectedMedia.length === 0) return;
 
