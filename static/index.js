@@ -16,7 +16,7 @@ const navConfig = {
         { src: "/static/icons/videos.svg", alt: "Videos", onclick: "displayData('vid')" },
         { src: "/static/icons/hide.svg", alt: "Hidden Files", onclick: "displayData('hidden')" },
         { src: "/static/icons/delete.svg", alt: "Trash", onclick: "displayData('trash')" },
-        { src: "/static/icons/select.svg", alt: "Toggle Select", onclick: "toggleSelectionMode()" }
+        { src: "/static/icons/select.svg", alt: "Enable Selection Mode", onclick: "toggleSelectionMode()" }
     ],
     selection: {
         img: [
@@ -36,7 +36,7 @@ const navConfig = {
             { src: "/static/icons/delete.svg", alt: "Delete", onclick: "sendSelectedMedia('/delete')" }
         ],
         toggleSelect: [
-            { src: "/static/icons/select.svg", alt: "Toggle Select", onclick: "toggleSelectionMode()" }
+            { src: "/static/icons/select.svg", alt: "Disable Selection Mode", onclick: "toggleSelectionMode()" }
         ]
     },
     media: [
@@ -312,6 +312,7 @@ function updateNavbar(mode = 'default') {
         const navIcon = document.createElement('img');
         navIcon.src = item.src;
         navIcon.alt = item.alt;
+        navIcon.title = item.alt;
         navIcon.onclick = new Function(item.onclick);
 
         const navItem = document.createElement('div');
