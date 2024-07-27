@@ -2,7 +2,7 @@ import cv2
 from yolov8 import detectClasses
 from typing import Generator, Tuple, Set
 
-def extractFrames(inputPath: str, skip: int = 20) -> Generator:
+def extractFrames(inputPath: str, skip: int = 50) -> Generator:
     """
     Extract frames from a video file.
 
