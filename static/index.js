@@ -12,38 +12,38 @@ let fetchController;
 // Navbar configuration
 const navConfig = {
     default: [
-        { src: "/static/icons/ai.svg", alt: "AI Tags", onclick: "toggleGroup(this)" },
-        { src: "/static/icons/images.svg", alt: "Images", onclick: "displayData('img', this)" },
-        { src: "/static/icons/videos.svg", alt: "Videos", onclick: "displayData('vid', this)" },
-        { src: "/static/icons/hide.svg", alt: "Hidden Files", onclick: "displayData('hidden', this)" },
-        { src: "/static/icons/delete.svg", alt: "Trash", onclick: "displayData('trash', this)" },
-        { src: "/static/icons/select.svg", alt: "Enable Selection Mode", onclick: "toggleSelectionMode()" }
+        { src: "/static/icons/ai.svg", alt: "AI Tags", class: "toggle", onclick: "toggleGroup(this)" },
+        { src: "/static/icons/images.svg", alt: "Images", class: "section", onclick: "displayData('img', this)" },
+        { src: "/static/icons/videos.svg", alt: "Videos", class: "section", onclick: "displayData('vid', this)" },
+        { src: "/static/icons/hide.svg", alt: "Hidden Files", class: "section", onclick: "displayData('hidden', this)" },
+        { src: "/static/icons/delete.svg", alt: "Trash", class: "section", onclick: "displayData('trash', this)" },
+        { src: "/static/icons/select.svg", alt: "Enable Selection Mode", class: "toggle", onclick: "toggleSelectionMode()" }
     ],
     selection: {
         img: [
-            { src: "/static/icons/hide.svg", alt: "Hide", onclick: "sendSelectedMedia('/hide')" },
-            { src: "/static/icons/delete.svg", alt: "Delete", onclick: "sendSelectedMedia('/toTrash')" }
+            { src: "/static/icons/hide.svg", alt: "Hide", class: "button", onclick: "sendSelectedMedia('/hide')" },
+            { src: "/static/icons/delete.svg", alt: "Delete", class: "button", onclick: "sendSelectedMedia('/toTrash')" }
         ],
         vid: [
-            { src: "/static/icons/hide.svg", alt: "Hide", onclick: "sendSelectedMedia('/hide')" },
-            { src: "/static/icons/delete.svg", alt: "Delete", onclick: "sendSelectedMedia('/toTrash')" }
+            { src: "/static/icons/hide.svg", alt: "Hide", class: "button", onclick: "sendSelectedMedia('/hide')" },
+            { src: "/static/icons/delete.svg", alt: "Delete", class: "button", onclick: "sendSelectedMedia('/toTrash')" }
         ],
         hidden: [
-            { src: "/static/icons/unhide.svg", alt: "Unhide", onclick: "sendSelectedMedia('/unhide')" },
-            { src: "/static/icons/delete.svg", alt: "Delete", onclick: "sendSelectedMedia('/toTrash')" }
+            { src: "/static/icons/unhide.svg", alt: "Unhide", class: "button", onclick: "sendSelectedMedia('/unhide')" },
+            { src: "/static/icons/delete.svg", alt: "Delete", class: "button", onclick: "sendSelectedMedia('/toTrash')" }
         ],
         trash: [
-            { src: "/static/icons/restore.svg", alt: "Restore", onclick: "sendSelectedMedia('/restore')" },
-            { src: "/static/icons/delete.svg", alt: "Delete", onclick: "sendSelectedMedia('/delete')" }
+            { src: "/static/icons/restore.svg", alt: "Restore", class: "button", onclick: "sendSelectedMedia('/restore')" },
+            { src: "/static/icons/delete.svg", alt: "Delete", class: "button", onclick: "sendSelectedMedia('/delete')" }
         ],
         toggleSelect: [
-            { src: "/static/icons/select.svg", alt: "Disable Selection Mode", onclick: "toggleSelectionMode()" }
+            { src: "/static/icons/select.svg", alt: "Disable Selection Mode", class: "toggle", onclick: "toggleSelectionMode()" }
         ]
     },
     media: [
-        { src: "/static/icons/previous.svg", alt: "Previous", onclick: "prevMedia()" },
-        { src: "/static/icons/next.svg", alt: "Next", onclick: "nextMedia()" },
-        { src: "/static/icons/close.svg", alt: "Close", onclick: "closeMedia()" }
+        { src: "/static/icons/previous.svg", alt: "Previous", class: "button", onclick: "prevMedia()" },
+        { src: "/static/icons/next.svg", alt: "Next", class: "button", onclick: "nextMedia()" },
+        { src: "/static/icons/close.svg", alt: "Close", class: "button", onclick: "closeMedia()" }
     ]
 };
 
@@ -339,6 +339,7 @@ function updateNavbar(mode = 'default') {
         navIcon.src = item.src;
         navIcon.alt = item.alt;
         navIcon.title = item.alt;
+        navIcon.className = item.class;
         navIcon.onclick = new Function(item.onclick);
 
         const navItem = document.createElement('div');
