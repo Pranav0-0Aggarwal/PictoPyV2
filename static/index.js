@@ -11,11 +11,11 @@ let openedGroup = "";
 // Navbar configuration
 const navConfig = {
     default: [
-        { src: "/static/icons/ai.svg", alt: "AI Tags", onclick: "toggleGroup()" },
-        { src: "/static/icons/images.svg", alt: "Images", onclick: "displayData('img')" },
-        { src: "/static/icons/videos.svg", alt: "Videos", onclick: "displayData('vid')" },
-        { src: "/static/icons/hide.svg", alt: "Hidden Files", onclick: "displayData('hidden')" },
-        { src: "/static/icons/delete.svg", alt: "Trash", onclick: "displayData('trash')" },
+        { src: "/static/icons/ai.svg", alt: "AI Tags", onclick: "toggleGroup(this)" },
+        { src: "/static/icons/images.svg", alt: "Images", onclick: "displayData('img', this)" },
+        { src: "/static/icons/videos.svg", alt: "Videos", onclick: "displayData('vid', this)" },
+        { src: "/static/icons/hide.svg", alt: "Hidden Files", onclick: "displayData('hidden', this)" },
+        { src: "/static/icons/delete.svg", alt: "Trash", onclick: "displayData('trash', this)" },
         { src: "/static/icons/select.svg", alt: "Enable Selection Mode", onclick: "toggleSelectionMode()" }
     ],
     selection: {
@@ -50,20 +50,35 @@ const navConfig = {
 requestAnimationFrame(updateNavbar);
 
 // Initial data display
-displayData(section);
+// displayData(section);
 
 // Fetch data from a route
-async function readRoute(route) {
+async function readRoute(route, button) {
     try {
+        const { originalSrc, originalCursor } = showLoading(button); 
         const response = await fetch(route);
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
         }
+        hideLoading(button, originalSrc, originalCursor); 
         return await response.json();
     } catch (error) {
         console.error(`Failed to fetch data from ${route}:`, error);
         return null;
     }
+}
+
+function showLoading(button) {
+    const originalSrc = button.getAttribute('src');
+    const originalCursor = button.style.cursor;
+    button.setAttribute('src', '/static/icons/loading.svg'); 
+    button.style.cursor = 'wait'; 
+    return { originalSrc, originalCursor };
+}
+
+function hideLoading(button, originalSrc, originalCursor) {
+    button.setAttribute('src', originalSrc);
+    button.style.cursor = originalCursor;
 }
 
 // Get thumbnail URL based on the media type
@@ -127,11 +142,11 @@ function handleMediaClick(pathsArray, typesArray, index) {
 }
 
 // Display group cards with data
-async function displayData(_section) {
+async function displayData(_section, button) {
     section = _section;
-    const data = await readRoute(`/${section}/${groupBy}`);
+    const data = await readRoute(`/${section}/${groupBy}`, button);
     const container = document.getElementById('dataContainer');
-    
+
     if (!data || !container) {
         if (container) container.textContent = 'Failed to fetch data.';
         return;
@@ -223,9 +238,9 @@ function nextMedia() {
 }
 
 // Toggle grouping of media
-function toggleGroup() {
+function toggleGroup(button) {
     groupBy = (groupBy === 'class') ? 'directory' : 'class';
-    displayData(section);
+    displayData(section, button);
 }
 
 // Toggle selection mode
