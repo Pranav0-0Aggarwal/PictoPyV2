@@ -299,6 +299,7 @@ def insertClassRelation(conn: sqlite3.Connection, mediaClass: List[str], mediaID
             classID = executeQuery(conn, "SELECT classID FROM CLASS WHERE class = ?", [className]).fetchall()[0][0]
         
         executeQuery(conn, "INSERT OR IGNORE INTO JUNCTION(mediaID, classID) VALUES(?, ?)", [mediaID, classID])
+    conn.commit()
 
 def moveToTrash(conn: sqlite3.Connection, paths: List[str]) -> None:
     """Move images to trash by setting the hidden column to -1.
