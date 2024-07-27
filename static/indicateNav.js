@@ -3,12 +3,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const target = event.target;
 
         if (target.classList.contains('section')) {
-            document.querySelectorAll('img.section').forEach(otherImg => {
-                if (otherImg !== target) {
-                    otherImg.classList.remove('clicked');
-                }
-            });
-            target.classList.toggle('clicked');
+            if (!target.classList.contains('clicked')) {
+                document.querySelectorAll('img.section.clicked').forEach(clickedImg => {
+                    clickedImg.classList.remove('clicked');
+                });
+
+                target.classList.add('clicked');
+            }
         }
 
         if (target.classList.contains('toggle')) {
