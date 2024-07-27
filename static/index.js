@@ -7,6 +7,7 @@ let selectionMode = false;
 let section = "img";
 let groupBy = "directory";
 let openedGroup = "";
+let fetchController;
 
 // Navbar configuration
 const navConfig = {
@@ -54,9 +55,15 @@ displayData(section, null);
 
 // Fetch data from a route
 async function readRoute(route, button) {
+    if (fetchController !== undefined) { 
+        fetchController.abort(); 
+    }
+    fetchController = new AbortController(); 
+    const { originalSrc, originalCursor } = showLoading(button);
     try {
-        const { originalSrc, originalCursor } = showLoading(button);
-        const response = await fetch(route);
+        // const { signal } = fetchController; 
+        // const response = await fetch(route, { signal });
+        const response = await fetch(route, { signal: fetchController.signal });
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
         }
