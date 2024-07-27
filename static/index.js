@@ -49,18 +49,18 @@ const navConfig = {
 // Initial navbar
 requestAnimationFrame(updateNavbar);
 
-// Initial data display
-// displayData(section);
+// Display default section
+displayData(section, null);
 
 // Fetch data from a route
 async function readRoute(route, button) {
     try {
-        const { originalSrc, originalCursor } = showLoading(button); 
+        const { originalSrc, originalCursor } = showLoading(button);
         const response = await fetch(route);
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
         }
-        hideLoading(button, originalSrc, originalCursor); 
+        hideLoading(button, originalSrc, originalCursor);
         return await response.json();
     } catch (error) {
         console.error(`Failed to fetch data from ${route}:`, error);
@@ -69,14 +69,18 @@ async function readRoute(route, button) {
 }
 
 function showLoading(button) {
+    if (!button) return { originalSrc: '', originalCursor: '' };
+
     const originalSrc = button.getAttribute('src');
     const originalCursor = button.style.cursor;
-    button.setAttribute('src', '/static/icons/loading.svg'); 
-    button.style.cursor = 'wait'; 
+    button.setAttribute('src', '/static/icons/loading.svg');
+    button.style.cursor = 'wait';
     return { originalSrc, originalCursor };
 }
 
 function hideLoading(button, originalSrc, originalCursor) {
+    if (!button) return;
+
     button.setAttribute('src', originalSrc);
     button.style.cursor = originalCursor;
 }
