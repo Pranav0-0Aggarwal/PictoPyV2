@@ -37,7 +37,7 @@ const navConfig = {
             { src: "/static/icons/delete.svg", alt: "Delete", class: "button", onclick: "sendSelectedMedia('/delete')" }
         ],
         toggleSelect: [
-            { src: "/static/icons/select.svg", alt: "Disable Selection Mode", class: "toggle", onclick: "toggleSelectionMode()" }
+            { src: "/static/icons/select.svg", alt: "Disable Selection Mode", class: "select", onclick: "toggleSelectionMode()" }
         ]
     },
     media: [
