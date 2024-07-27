@@ -70,7 +70,7 @@ def videoClasses(inputPath: str, modelPath: str, outputPath: str = None) -> Set[
     fps = cv2.VideoCapture(inputPath).get(cv2.CAP_PROP_FPS)
     firstFrameClasses, firstFrame = next(processFrames(frames, modelPath))
 
-    def combinedFrames() -> Generator:
+    def combinedFrames() -> Generator[bytes, None, None]:
         yield firstFrame
         for _, frame in processFrames(frames, modelPath):
             yield frame
