@@ -2,7 +2,7 @@ import cv2
 from yolov8 import detectClasses
 from typing import Generator, Tuple, Set
 
-def extractFrames(inputPath: str, skip: int = 20) -> Generator:
+def extractFrames(inputPath: str, skip: int = 50) -> Generator[bytes, None, None]:
     """
     Extract frames from a video file.
 
@@ -24,7 +24,7 @@ def extractFrames(inputPath: str, skip: int = 20) -> Generator:
         frameCount += 1
     cap.release()
 
-def processFrames(frames: Generator, modelPath: str) -> Generator:
+def processFrames(frames: Generator, modelPath: str) -> Generator[Tuple[str, bytes], None, None]:
     """
     Process frames using a detection model.
 
@@ -38,7 +38,7 @@ def processFrames(frames: Generator, modelPath: str) -> Generator:
     for frame in frames:
         yield detectClasses(frame, modelPath)
 
-def saveVideo(outputPath: str, frames: Generator, fps: float, frameSize: Tuple[int, int]):
+def saveVideo(outputPath: str, frames: Generator, fps: float, frameSize: Tuple[int, int]) -> None:
     """
     Save frames as a video file.
 
@@ -70,7 +70,7 @@ def videoClasses(inputPath: str, modelPath: str, outputPath: str = None) -> Set[
     fps = cv2.VideoCapture(inputPath).get(cv2.CAP_PROP_FPS)
     firstFrameClasses, firstFrame = next(processFrames(frames, modelPath))
 
-    def combinedFrames() -> Generator:
+    def combinedFrames() -> Generator[bytes, None, None]:
         yield firstFrame
         for _, frame in processFrames(frames, modelPath):
             yield frame
