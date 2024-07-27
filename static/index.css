@@ -5,6 +5,7 @@ html {
 body {
     font-family: 'Comic Sans MS', sans-serif;
     background-color: rgba(0, 0, 0, 0.8);
+    transition: background-color 0.3s ease;
 }
 
 .container {
@@ -22,6 +23,7 @@ body {
     border-radius: 10px; 
     overflow: hidden;
     position: relative;
+    transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .card.selected {
@@ -37,6 +39,7 @@ body {
 
 .card:hover {
     transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .group-name {
@@ -49,6 +52,7 @@ body {
     color: white;
     padding: 6px;
     border-radius: 10px;
+    transition: background 0.3s ease, color 0.3s ease;
 }
 
 .floating-window {
@@ -66,6 +70,7 @@ body {
     width: 95vw;
     height: 95vh;
     overflow: hidden; /* Prevents overflow */
+    transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
 .floating-window .media-container {
@@ -84,28 +89,6 @@ body {
     border-radius: 10px;
 }
 
-.floating-window .button-container {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    display: flex;
-    gap: 10px;
-    z-index: 1001; /* Ensure buttons are above media content */
-}
-
-.floating-window .close-btn, .floating-window .nav-btn {
-    background: rgba(0, 0, 0, 0.8);
-    color: white;
-    border: none;
-    border-radius: 50%;
-    width: 30px;
-    height: 30px;
-    cursor: pointer;
-    font-size: 16px;
-    line-height: 30px;
-    text-align: center;
-}
-
 /* Styling for navigation sections */
 .floating-nav-card {
     display: flex;
@@ -122,6 +105,7 @@ body {
     border-radius: 20px;
     left: 50%;
     transform: translateX(-50%);
+    transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
 }
 
 .nav-section {
@@ -139,6 +123,7 @@ body {
     height: 50px;
     cursor: pointer;
     padding: 6px;
+    transition: transform 0.3s ease;
 }
 
 .nav-icon img:hover {
