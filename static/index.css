@@ -35,7 +35,7 @@ body {
     border-radius: 10px;
 }
 
-.thumbnail:hover {
+.card:hover {
     transform: scale(1.05);
 }
 
