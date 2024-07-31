@@ -4,7 +4,7 @@ html {
 
 body {
     font-family: 'Comic Sans MS', sans-serif;
-    background-color: rgba(0, 0, 0, 0.8);
+    background-color: rgba(0, 0, 0, 0.95);
     transition: background-color 0.3s ease;
 }
 
@@ -39,7 +39,9 @@ body {
 
 .card:hover {
     transform: scale(1.05);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    /*
+    box-shadow: 0 4px 8px rgba(255, 255, 255, 0.2);
+    */
 }
 
 .group-name {
@@ -61,10 +63,12 @@ body {
     left: 50%;
     transform: translate(-50%, -50%);
     background: rgba(0, 0, 0, 1);
-    border: 2px solid rgba(0, 0, 0, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.2);
     padding: 0;
     border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+    /*
+    box-shadow: 0 4px 8px rgba(255, 255, 255, 0.4);
+    */
     z-index: 1000;
     display: none; /* Hidden by default */
     width: 95vw;
@@ -97,9 +101,11 @@ body {
     position: fixed;
     z-index: 1000;
     background: rgba(0, 0, 0, 0.8);
-    border: 4px solid white;
+    border: 4px solid rgba(255, 255, 255, 0.9);
     border-radius: 10px;
+    /*
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    */
     flex-direction: row;
     bottom: 10px;
     border-radius: 20px;
@@ -136,7 +142,7 @@ img.toggle.enabled,
 img.button.clicked,
 img.select {
     border-radius: 10px;
-    background-color: rgba(0, 0, 0, 0.6); 
+    background-color: rgba(255, 255, 255, 0.2); 
     transition: transform 0.3s ease, background-color 0.3s ease; 
 }
 
