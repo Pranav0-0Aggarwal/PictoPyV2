@@ -213,7 +213,11 @@ def restore():
 
 @app.route('/info/<path:path>')
 def info(path):
-    return os.stat(path)
+    conn = connectDB(dbPath())
+    info = getInfoByPath(conn, decodeLinkPath(path))
+    info["Tags"] = getClassesForMediaID(conn, getMediaIDForPath(conn, decodeLinkPath(path)))
+    closeConnection(conn)
+    return jsonify(info)
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
