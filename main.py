@@ -215,7 +215,6 @@ def restore():
 def info(path):
     conn = connectDB(dbPath())
     info = getInfoByPath(conn, decodeLinkPath(path))
-    info["Tags"] = getClassesForMediaID(conn, getMediaIDForPath(conn, decodeLinkPath(path)))
     closeConnection(conn)
     return jsonify(info)
 
