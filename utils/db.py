@@ -334,3 +334,65 @@ def getUnlinkedMedia(conn: sqlite3.Connection) -> Generator[Tuple[int, str, str]
     """
     for row in executeQuery(conn, query).fetchall():
         yield row
+
+def getClassesForMediaID(conn: sqlite3.Connection, mediaID: int) -> List[str] :
+    """
+    Get classes related to a media ID.
+    Args:
+        conn: sqlite3.Connection object.
+        mediaID: The ID of the media file.
+    Returns:
+        A list of class names.
+    """
+    
+    query = """
+    SELECT CLASS.class
+    FROM CLASS
+    JOIN JUNCTION ON CLASS.classID = JUNCTION.classID
+    WHERE JUNCTION.mediaID = ?
+    """
+    return executeQuery(conn, query, [mediaID]).fetchall()
+
+def getMediaIDForPath(conn: sqlite3.Connection, path: str) -> int:
+    """
+    Get media ID for a given path.
+    Args:
+        conn: sqlite3.Connection object.
+        path: The path of the media file.
+    Returns:
+        The media ID.
+    """
+    
+    query = """
+    SELECT mediaID
+    FROM MEDIA
+    WHERE path = ?
+    """
+    
+    mediaID = executeQuery(conn, query, [path]).fetchone()
+    
+    if mediaID:
+        return mediaID[0]
+    else:
+        return None
+
+def getInfoByPath(conn: sqlite3.Connection, path: str) -> Dict[str, str]:
+    """
+    Get row for a given path.
+    Args:
+        conn: sqlite3.Connection object.
+        path: The path of the media file.
+    Returns:
+        A dictionary of row values.
+    """
+    query = """
+    SELECT path, fileType, lastModified
+    FROM MEDIA
+    WHERE path = ?
+    """
+    row = executeQuery(conn, query, [path]).fetchone()
+    return row
+    if row:
+        return {"Path": row[0], "Type": row[1], "Date": row[2], "Tags": getClassesForMediaID(conn, getMediaIDForPath(conn, path))}
+    else:
+        return {"Error": "No matching record found"}
