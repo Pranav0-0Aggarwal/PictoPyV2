@@ -4,6 +4,7 @@ from utils import *
 from media import *
 from flask import Flask, render_template, send_file, request, redirect, url_for, Response, jsonify
 from markupsafe import escape
+from urllib.parse import unquote
 
 writing = False
 
@@ -105,6 +106,26 @@ def groupPaths(hidden, fileType, groupBy) -> str:
 
     return jsonify(result)
 
+def decodeLinkPath(path: str) -> str:
+    """
+    Decodes a URL-encoded path and attempts to find the corresponding file or directory.
+    If the file or directory exists under either the Unix-style path or the relative path,
+    it returns the absolute path. Otherwise, it should redirect to the index page.
+    
+    Args:
+        path: The URL-encoded path to decode and locate.
+
+    Returns:
+        The absolute path if found, or a redirect to the index page if not.
+    """
+    path = escape(unquote(path))
+    unixPath = f"/{path}"
+    if pathExist(unixPath):
+        return unixPath
+    elif pathExist(path):
+        return path
+    return redirect(url_for('index')) # doesn't reload (TBI)
+
 app = Flask(__name__, template_folder=f"{pathOf('static')}")
 
 @app.route('/')
@@ -117,17 +138,11 @@ def staticFile(path):
 
 @app.route('/media/<path:path>')
 def sendFile(path):
-    path = escape(f"/{path}")
-    if pathExist(path):
-        return send_file(path)
-    return redirect(url_for('index')) # doesn't reload (TBI)
+    return send_file(decodeLinkPath(path))
 
 @app.route('/thumbnail/<path:path>')
 def thumbnail(path):
-    path = escape(f"/{path}")
-    if pathExist(path):
-        return getThumbnail(path)
-    return redirect(url_for('index')) # doesn't reload (TBI)
+    return getThumbnail(decodeLinkPath(path))
 
 # Sections
 

@@ -95,9 +95,9 @@ function hideLoading(button, originalSrc, originalCursor) {
 // Get thumbnail URL based on the media type
 async function getThumbnail(path, type) {
     if (type === 'vid') {
-        return `/thumbnail${path}`;
+        return `/thumbnail/${path}`;
     } else {
-        return `/media${path}`;
+        return `/media/${path}`;
     }
 }
 
@@ -210,7 +210,7 @@ function openMedia(mediaArray, mediaIndex, typesArray) {
     currentMediaIndex = mediaIndex;
     currentMediaTypesArray = typesArray; 
 
-    const mediaUrl = `/media${currentMediaArray[currentMediaIndex]}`;
+    const mediaUrl = `/media/${currentMediaArray[currentMediaIndex]}`;
     const mediaType = currentMediaTypesArray[currentMediaIndex]; 
     const mediaContent = document.getElementById('mediaContent');
     const floatingWindow = document.getElementById('floatingWindow');
