@@ -56,7 +56,7 @@ def updateDB(groupBy: str = None) -> None:
                 "path TEXT UNIQUE",
                 "directory TEXT",
                 "fileType TEXT CHECK(fileType IN ('img', 'vid'))",
-                "modifiedTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP",
+                "timeStamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP",
                 "hidden INTEGER"
             ],
             "CLASS": [

@@ -243,7 +243,7 @@ def cleanDB(conn: sqlite3.Connection) -> None:
     query = """
     SELECT path FROM MEDIA 
     WHERE hidden = -1 
-    AND modifiedTime <= DATE('now', '-30 days')
+    AND timeStamp <= DATE('now', '-30 days')
     """
     for path in executeQuery(conn, query).fetchall():
         paths.append(path[0])
@@ -311,7 +311,7 @@ def moveToTrash(conn: sqlite3.Connection, paths: List[str]) -> None:
     query = f"""
         UPDATE MEDIA 
         SET hidden = -1,
-        modifiedTime = CURRENT_TIMESTAMP
+        timeStamp = CURRENT_TIMESTAMP
         WHERE path IN ({', '.join('?' * len(paths))})
     """
     executeQuery(conn, query, paths)
@@ -386,7 +386,7 @@ def getInfoByPath(conn: sqlite3.Connection, path: str) -> Dict[str, str]:
         A dictionary of row values.
     """
     query = """
-    SELECT path, fileType, lastModified
+    SELECT path, fileType, timeStamp
     FROM MEDIA
     WHERE path = ?
     """
