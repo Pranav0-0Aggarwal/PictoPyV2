@@ -391,7 +391,6 @@ def getInfoByPath(conn: sqlite3.Connection, path: str) -> Dict[str, str]:
     WHERE path = ?
     """
     row = executeQuery(conn, query, [path]).fetchone()
-    return row
     if row:
         return {"Path": row[0], "Type": row[1], "Date": row[2], "Tags": getClassesForMediaID(conn, getMediaIDForPath(conn, path))}
     else:
