@@ -8,6 +8,7 @@ let section = "img";
 let groupBy = "directory";
 let openedGroup = "";
 let fetchController;
+let isShowingInfo = false;
 
 // Navbar configuration
 const navConfig = {
@@ -41,7 +42,7 @@ const navConfig = {
         ]
     },
     media: [
-        { src: "/static/icons/info.svg", alt: "Info", class: "toggle", onclick: "showInfo()" },
+        { src: "/static/icons/info.svg", alt: "Info", class: "toggle", onclick: "toggleInfo()" },
         { src: "/static/icons/previous.svg", alt: "Previous", class: "button", onclick: "prevMedia()" },
         { src: "/static/icons/next.svg", alt: "Next", class: "button", onclick: "nextMedia()" },
         { src: "/static/icons/close.svg", alt: "Close", class: "button", onclick: "closeMedia()" }
@@ -215,11 +216,24 @@ function openMedia(mediaArray, mediaIndex, typesArray) {
     const mediaType = currentMediaTypesArray[currentMediaIndex]; 
     const mediaContent = document.getElementById('mediaContent');
     const floatingWindow = document.getElementById('floatingWindow');
-
-    if (mediaType === 'vid') {
-        mediaContent.innerHTML = `<video src="${mediaUrl}" controls autoplay style="max-width: 100%; max-height: 100%;"></video>`;
+    if (isShowingInfo) {
+        // Info View
+        fetchMediaInfo().then(info => {
+            mediaContent.innerHTML = `
+                <h2>Media Information</h2>
+                <p>Date: ${info.Date}</p>
+                <p>Path: ${info.Path}</p>
+                <p>Tags: ${info.Tags.join(', ')}</p>
+                <p>Type: ${info.Type}</p>
+            `;
+        });
     } else {
-        mediaContent.innerHTML = `<img src="${mediaUrl}" alt="Media" style="max-width: 100%; max-height: 100%;">`;
+        // Media View
+        if (mediaType === 'vid') {
+            mediaContent.innerHTML = `<video src="${mediaUrl}" controls autoplay style="max-width: 100%; max-height: 100%;"></video>`;
+        } else {
+            mediaContent.innerHTML = `<img src="${mediaUrl}" alt="Media" style="max-width: 100%; max-height: 100%;">`;
+        }
     }
 
     floatingWindow.style.display = 'block';
@@ -227,6 +241,7 @@ function openMedia(mediaArray, mediaIndex, typesArray) {
 
 // Close the floating media window
 function closeMedia() {
+    isShowingInfo = false;
     const floatingWindow = document.getElementById('floatingWindow');
     floatingWindow.style.display = 'none';
     document.getElementById('mediaContent').innerHTML = '';
@@ -237,6 +252,7 @@ function closeMedia() {
 
 // Navigate to the previous media item
 function prevMedia() {
+    // isShowingInfo = false;
     if (currentMediaIndex > 0) {
         openMedia(currentMediaArray, currentMediaIndex - 1, currentMediaTypesArray);
     }
@@ -244,6 +260,7 @@ function prevMedia() {
 
 // Navigate to the next media item
 function nextMedia() {
+    // isShowingInfo = false;
     if (currentMediaIndex < currentMediaArray.length - 1) {
         openMedia(currentMediaArray, currentMediaIndex + 1, currentMediaTypesArray);
     }
@@ -351,4 +368,20 @@ function updateNavbar(mode = 'default') {
     });
 
     floatingNavCard.appendChild(fragment);
+}
+
+// Fetch Media information
+async function fetchMediaInfo() {
+    if (currentMediaIndex === -1) return {}; // Return empty object if no media is selected
+
+    const mediaPath = `/info/${currentMediaArray[currentMediaIndex]}`;
+    const mediaInfo = await readRoute(mediaPath);
+
+    return mediaInfo;
+}
+
+// Toggle between media and info
+function toggleInfo() {
+    isShowingInfo = !isShowingInfo;
+    openMedia(currentMediaArray, currentMediaIndex, currentMediaTypesArray);
 }
