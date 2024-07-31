@@ -41,6 +41,7 @@ const navConfig = {
         ]
     },
     media: [
+        { src: "/static/icons/info.svg", alt: "Info", class: "toggle", onclick: "showInfo()" },
         { src: "/static/icons/previous.svg", alt: "Previous", class: "button", onclick: "prevMedia()" },
         { src: "/static/icons/next.svg", alt: "Next", class: "button", onclick: "nextMedia()" },
         { src: "/static/icons/close.svg", alt: "Close", class: "button", onclick: "closeMedia()" }
