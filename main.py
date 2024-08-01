@@ -53,10 +53,10 @@ def updateDB(groupBy: str = None) -> None:
             "MEDIA": [
                 "mediaID INTEGER PRIMARY KEY AUTOINCREMENT", 
                 "hash TEXT UNIQUE", 
-                "path TEXT UNIQUE",
+                "path TEXT",
                 "directory TEXT",
                 "fileType TEXT CHECK(fileType IN ('img', 'vid'))",
-                "modifiedTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP",
+                "timeStamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP",
                 "hidden INTEGER"
             ],
             "CLASS": [
@@ -119,11 +119,17 @@ def decodeLinkPath(path: str) -> str:
         The absolute path if found, or a redirect to the index page if not.
     """
     path = escape(unquote(path))
+
+    # Convert the path to Windows-style path for checking
     unixPath = f"/{path}"
     if pathExist(unixPath):
         return unixPath
-    elif pathExist(path):
-        return path
+
+    # Convert the path to Windows-style path for checking
+    windowsPath = path.replace('/', '\\')
+    if pathExist(windowsPath):
+        return windowsPath
+
     return redirect(url_for('index')) # doesn't reload (TBI)
 
 app = Flask(__name__, template_folder=f"{pathOf('static')}")
@@ -213,7 +219,10 @@ def restore():
 
 @app.route('/info/<path:path>')
 def info(path):
-    return os.stat(path)
+    conn = connectDB(dbPath())
+    info = getInfoByPath(conn, decodeLinkPath(path))
+    closeConnection(conn)
+    return jsonify(info)
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
