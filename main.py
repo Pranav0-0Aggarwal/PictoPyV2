@@ -53,7 +53,7 @@ def updateDB(groupBy: str = None) -> None:
             "MEDIA": [
                 "mediaID INTEGER PRIMARY KEY AUTOINCREMENT", 
                 "hash TEXT UNIQUE", 
-                "path TEXT UNIQUE",
+                "path TEXT",
                 "directory TEXT",
                 "fileType TEXT CHECK(fileType IN ('img', 'vid'))",
                 "timeStamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP",
