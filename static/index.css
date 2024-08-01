@@ -170,7 +170,7 @@ Info View
     border-collapse: collapse;
     border-radius: 10px;
     overflow: hidden; /* To apply rounded corners to the table */
-    padding: 50px;
+    color: white;
 }
 
 .info-table th, .info-table td {
@@ -179,11 +179,11 @@ Info View
 }
 
 .info-table th {
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: rgba(255, 255, 255, 0.2);
 }
 
 .info-table td {
-    background-color: rgba(255, 255, 255, 0.05);
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
 .tag-button {
@@ -199,5 +199,3 @@ Info View
 .tag-button :hover {
     background-color: rgba(0, 0, 0, 0.0);
 }
-
-
