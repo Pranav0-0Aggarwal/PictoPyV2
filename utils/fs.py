@@ -48,10 +48,13 @@ def mediaPaths(startPath: str) -> Generator[tuple[str, str, str], None, None]:
                 dirs.remove(dir_name)
         
         for file in files:
+            fileType = None
             if checkExtension(file, [".jpg", ".jpeg", ".png", ".webp", ".bmp", ".avif"]):
-                yield os.path.join(root, file), "img", root
+                fileType = "img"
             elif checkExtension(file, [".mp4", ".mov", ".avi", ".mkv", ".webm"]):
-                yield os.path.join(root, file), "vid", root
+                fileType = "vid"
+            if fileType:
+                yield os.path.join(root, file), fileType, root
                 
 
 # NN
