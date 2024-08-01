@@ -119,11 +119,17 @@ def decodeLinkPath(path: str) -> str:
         The absolute path if found, or a redirect to the index page if not.
     """
     path = escape(unquote(path))
+
+    # Convert the path to Windows-style path for checking
     unixPath = f"/{path}"
     if pathExist(unixPath):
         return unixPath
-    elif pathExist(path):
-        return path
+
+    # Convert the path to Windows-style path for checking
+    windowsPath = path.replace('/', '\\')
+    if pathExist(windowsPath):
+        return windowsPath
+
     return redirect(url_for('index')) # doesn't reload (TBI)
 
 app = Flask(__name__, template_folder=f"{pathOf('static')}")
