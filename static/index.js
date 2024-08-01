@@ -217,16 +217,7 @@ function openMedia(mediaArray, mediaIndex, typesArray) {
     const mediaContent = document.getElementById('mediaContent');
     const floatingWindow = document.getElementById('floatingWindow');
     if (isShowingInfo) {
-        // Info View
-        fetchMediaInfo().then(info => {
-            mediaContent.innerHTML = `
-                <h2>Media Information</h2>
-                <p>Date: ${info.Date}</p>
-                <p>Path: ${info.Path}</p>
-                <p>Tags: ${info.Tags.join(', ')}</p>
-                <p>Type: ${info.Type}</p>
-            `;
-        });
+        showInfo(mediaContent)
     } else {
         // Media View
         if (mediaType === 'vid') {
@@ -384,4 +375,39 @@ async function fetchMediaInfo() {
 function toggleInfo() {
     isShowingInfo = !isShowingInfo;
     openMedia(currentMediaArray, currentMediaIndex, currentMediaTypesArray);
+}
+
+// Info View
+function showInfo(mediaContent) {
+    fetchMediaInfo().then(info => {
+        let infoHtml = `
+            <table class="info-table">
+                <tbody>
+        `;
+
+        for (const [key, value] of Object.entries(info)) {
+            if (Array.isArray(value)) {
+                infoHtml += `
+                    <tr>
+                        <th>${key}</th>
+                        <td>${value.map(tag => `<span class="tag-button">${tag}</span>`).join('')}</td>
+                    </tr>
+                `;
+            } else {
+                infoHtml += `
+                    <tr>
+                        <th>${key}</th>
+                        <td>${value}</td>
+                    </tr>
+                `;
+            }
+        }
+
+        infoHtml += `
+                </tbody>
+            </table>
+        `;
+
+        mediaContent.innerHTML = infoHtml;
+    });
 }
