@@ -12,6 +12,7 @@ body {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
+    justify-content: center;
 }
 
 .card {
@@ -196,6 +197,6 @@ Info View
     cursor: pointer;
 }
 
-.tag-button :hover {
+.tag-button:hover {
     background-color: rgba(0, 0, 0, 0.0);
 }
