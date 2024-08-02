@@ -138,6 +138,7 @@ def groupByDir(conn: sqlite3.Connection, hidden: int = 0, fileType: str = "img",
     SELECT directory, GROUP_CONCAT({groupOf}), GROUP_CONCAT(fileType) 
     FROM MEDIA
     WHERE hidden = ? {fileTypeCondition}
+    GROUP BY directory
     """
     result = {}
     if fileType == "any":
