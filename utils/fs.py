@@ -44,7 +44,7 @@ def mediaPaths(startPath: str) -> Generator[tuple[str, str, str], None, None]:
     """
     for root, dirs, files in os.walk(startPath):
         for dir_name in list(dirs):  # Convert dirs to a list to avoid RuntimeError
-            if dir_name.startswith('.'):
+            if dir_name.startswith(('.', 'AppData')):
                 dirs.remove(dir_name)
         
         for file in files:
