@@ -51,7 +51,7 @@ def mediaPaths(startPath: str) -> Generator[tuple[str, str, str], None, None]:
             fileType = None
             if checkExtension(file, [".jpg", ".jpeg", ".png", ".webp", ".bmp", ".avif"]):
                 fileType = "img"
-            elif checkExtension(file, [".mp4", ".mov", ".avi", ".mkv", ".webm"]):
+            elif checkExtension(file, [".mp4", ".mkv", ".webm"]):
                 fileType = "vid"
             if fileType:
                 yield os.path.join(root, file), fileType, root
