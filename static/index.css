@@ -185,7 +185,10 @@ Info View
 
 .info-table td {
     background-color: rgba(255, 255, 255, 0.1);
+    word-break: break-all; /* Force long words to break */
+    white-space: normal; /* Allow content to wrap */
 }
+
 
 .tag-button {
     display: inline-block;
