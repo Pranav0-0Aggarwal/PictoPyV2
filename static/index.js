@@ -52,8 +52,6 @@ const navConfig = {
 // Initial navbar
 requestAnimationFrame(updateNavbar);
 
-// Display default section
-displayData(section, null);
 
 // Fetch data from a route
 async function readRoute(route, button) {
