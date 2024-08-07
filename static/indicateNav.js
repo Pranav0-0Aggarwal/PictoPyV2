@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Highlight and display default navbar section upon page reload 
     requestAnimationFrame(() => {
+        if(!defaultSectionValue) return 
         const defaultSection = document.getElementById(defaultSectionValue)
         defaultSection.click()
     })
