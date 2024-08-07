@@ -13,12 +13,12 @@ let isShowingInfo = false;
 // Navbar configuration
 const navConfig = {
     default: [
-        { src: "/static/icons/ai.svg", alt: "AI Tags", class: "toggle", onclick: "toggleGroup(this)" },
+        { src: "/static/icons/ai.svg", alt: "AI Tags", class: "toggle", id: "ai-tags", onclick: "toggleGroup(this)" },
         { src: "/static/icons/images.svg", alt: "Images", class: "section", id: "img", onclick: "displayData('img', this)" },
         { src: "/static/icons/videos.svg", alt: "Videos", class: "section", id: "vid", onclick: "displayData('vid', this)" },
         { src: "/static/icons/hide.svg", alt: "Hidden Files", class: "section", id: "hidden", onclick: "displayData('hidden', this)" },
         { src: "/static/icons/delete.svg", alt: "Trash", class: "section", id: "trash", onclick: "displayData('trash', this)" },
-        { src: "/static/icons/select.svg", alt: "Enable Selection Mode", class: "toggle", onclick: "toggleSelectionMode()" }
+        { src: "/static/icons/select.svg", alt: "Enable Selection Mode", class: "toggle", id: "selection-mode", onclick: "toggleSelectionMode()" }
     ],
     selection: {
         img: [
@@ -353,8 +353,7 @@ function updateNavbar(mode = 'default') {
         navIcon.title = item.alt;
         navIcon.className = item.class;
         navIcon.onclick = new Function(item.onclick);
-
-        if(item.id) navIcon.id = item.id
+        navIcon.id = item.id
 
         const navItem = document.createElement('div');
         navItem.className = 'nav-icon';
