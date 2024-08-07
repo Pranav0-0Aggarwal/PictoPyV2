@@ -4,7 +4,7 @@ let currentMediaArray = [];
 let currentMediaTypesArray = [];
 let selectedMedia = [];
 let selectionMode = false;
-let section = localStorage.getItem('default') || "img";
+let section = localStorage.getItem('defaultSection') || "img";
 let groupBy = "directory";
 let openedGroup = "";
 let fetchController;
@@ -154,7 +154,7 @@ function handleMediaClick(pathsArray, typesArray, index) {
 // Display group cards with data
 async function displayData(_section, button) {
     section = _section;
-    localStorage.setItem('default', section)
+    localStorage.setItem('defaultSection', section)
 
     const data = await readRoute(`/${section}/${groupBy}`, button);
     const container = document.getElementById('dataContainer');
