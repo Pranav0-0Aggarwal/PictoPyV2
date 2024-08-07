@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     // Get default section value
-    const defaultSectionValue = localStorage.getItem('default')
+    const defaultSectionValue = section
 
     // Highlight and display default navbar section upon page reload 
     requestAnimationFrame(() => {
