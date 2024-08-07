@@ -4,7 +4,7 @@ let currentMediaArray = [];
 let currentMediaTypesArray = [];
 let selectedMedia = [];
 let selectionMode = false;
-let section = localStorage.getItem('defaultSection') || "img";
+let section = localStorage.getItem('defaultSection') || null;
 let groupBy = "directory";
 let openedGroup = "";
 let fetchController;
