@@ -353,7 +353,8 @@ function updateNavbar(mode = 'default') {
         navIcon.title = item.alt;
         navIcon.className = item.class;
         navIcon.onclick = new Function(item.onclick);
-        navIcon.id = item.id
+        
+        if(item.id) navIcon.id = item.id
 
         const navItem = document.createElement('div');
         navItem.className = 'nav-icon';
