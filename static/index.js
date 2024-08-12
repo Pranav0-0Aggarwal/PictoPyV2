@@ -166,6 +166,17 @@ async function displayData(_section, button) {
 
     container.innerHTML = '';
 
+    if (data.length === 0) {
+        const emptyMessage = document.createElement('div');
+        emptyMessage.textContent = 'No content available';
+        emptyMessage.style.textAlign = 'center';
+        emptyMessage.style.marginTop = '40px';
+        emptyMessage.style.fontSize = '18px';
+        emptyMessage.style.color = '#888';
+        container.appendChild(emptyMessage);
+        return;
+    }
+
     for (const [groupName, paths, types] of data) {
         const pathsArray = paths.split(',').map(s => s.trim());
         const typesArray = types.split(',').map(s => s.trim());
