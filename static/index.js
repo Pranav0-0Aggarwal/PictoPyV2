@@ -167,13 +167,37 @@ async function displayData(_section, button) {
     container.innerHTML = '';
 
     if (data.length === 0) {
-        const emptyMessage = document.createElement('div');
-        emptyMessage.textContent = 'No content available';
-        emptyMessage.style.textAlign = 'center';
-        emptyMessage.style.marginTop = '40px';
-        emptyMessage.style.fontSize = '18px';
-        emptyMessage.style.color = '#888';
-        container.appendChild(emptyMessage);
+        const emptyContent = document.createElement('div')
+
+        emptyContent.className = 'empty-content'
+
+        const emptyMessageIcon = document.createElement('i');
+        emptyMessageIcon.className = 'fas fa-exclamation-circle empty-message-icon'
+
+        emptyContent.appendChild(emptyMessageIcon)
+
+        const textMessage = document.createElement('span');
+
+        switch(section){
+            case 'trash':
+                textMessage.textContent = 'Nothing in Trash'
+                break;
+            case 'hidden':
+                textMessage.textContent = "You've got Nothing to Hide"
+                break;
+            case 'vid':
+                textMessage.textContent = 'No Videos were Found'
+                break;
+            case 'img':
+                textMessage.textContent = 'No Images were Found'
+                break;
+            default:
+                textMessage.textContent = 'No Content Available'
+        }
+
+        emptyContent.appendChild(textMessage)
+
+        container.appendChild(emptyContent)
         return;
     }
 
