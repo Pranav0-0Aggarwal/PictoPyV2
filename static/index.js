@@ -171,8 +171,10 @@ async function displayData(_section, button) {
 
         emptyContent.className = 'empty-content'
 
-        const emptyMessageIcon = document.createElement('i');
-        emptyMessageIcon.className = 'fas fa-exclamation-circle empty-message-icon'
+        const emptyMessageIcon = document.createElement('img');
+        emptyMessageIcon.src = '/static/icons/emptyMessageIcon.svg';
+
+        emptyMessageIcon.className = 'empty-message-icon'
 
         emptyContent.appendChild(emptyMessageIcon)
 
