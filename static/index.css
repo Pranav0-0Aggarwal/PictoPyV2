@@ -203,3 +203,23 @@ Info View
 .tag-button:hover {
     background-color: rgba(0, 0, 0, 0.0);
 }
+
+
+.empty-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color:  rgba(255, 255, 255, 0.9);
+    font-size: 34px; 
+    font-weight: bold; 
+    margin-top: 150px;
+    text-align: center;
+}
+
+.empty-message-icon {
+    width: 60px;
+    height: 60px;
+    margin-bottom: 20px;
+}

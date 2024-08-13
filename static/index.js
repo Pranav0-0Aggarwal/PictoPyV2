@@ -166,6 +166,43 @@ async function displayData(_section, button) {
 
     container.innerHTML = '';
 
+    if (data.length === 0) {
+        const emptyContent = document.createElement('div')
+
+        emptyContent.className = 'empty-content'
+
+        const emptyMessageIcon = document.createElement('img');
+        emptyMessageIcon.src = '/static/icons/emptyMessageIcon.svg';
+
+        emptyMessageIcon.className = 'empty-message-icon'
+
+        emptyContent.appendChild(emptyMessageIcon)
+
+        const textMessage = document.createElement('span');
+
+        switch(section){
+            case 'trash':
+                textMessage.textContent = 'Nothing in Trash'
+                break;
+            case 'hidden':
+                textMessage.textContent = "You've got Nothing to Hide"
+                break;
+            case 'vid':
+                textMessage.textContent = 'No Videos were Found'
+                break;
+            case 'img':
+                textMessage.textContent = 'No Images were Found'
+                break;
+            default:
+                textMessage.textContent = 'No Content Available'
+        }
+
+        emptyContent.appendChild(textMessage)
+
+        container.appendChild(emptyContent)
+        return;
+    }
+
     for (const [groupName, paths, types] of data) {
         const pathsArray = paths.split(',').map(s => s.trim());
         const typesArray = types.split(',').map(s => s.trim());
