@@ -185,6 +185,23 @@ def setup_logging() -> logging.Logger:
 
     return listener
 
+
+def sendFile(filePath: str) -> Response:
+    """
+    Send a file specified by `filePath` to the client, after sanitizing it. 
+
+    Args:
+        filePath (str): The path to the file that should be sent to the client.
+
+    Returns:
+        File, or a custom error message with a 500 status code if an error occurs.
+    """
+    try:
+        return send_file(decodeLinkPath(filePath))
+    except Exception as e:
+        app.logger.error(f"Error serving file: {e}")
+        return "An error occurred while serving the file.", 500
+
 app = Flask(__name__, template_folder=f"{pathOf('static')}")
 
 @app.route("/")
@@ -194,12 +211,13 @@ def index():
 
 @app.route("/static/<path:path>")
 def staticFile(path):
-    return app.send_static_file(pathOf(path))
+    return sendFile(pathOf(path))
 
 
-@app.route("/media/<path:path>")
-def sendFile(path):
-    return send_file(decodeLinkPath(path))
+
+@app.route('/media/<path:path>')
+def mediaFile(path):
+    return sendFile(path)
 
 
 @app.route("/thumbnail/<path:path>")
