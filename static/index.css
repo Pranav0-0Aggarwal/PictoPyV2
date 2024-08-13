@@ -211,7 +211,7 @@ Info View
     align-items: center;
     justify-content: center;
     height: 100%;
-    color: #888; 
+    color:  rgba(255, 255, 255, 0.9);
     font-size: 34px; 
     font-weight: bold; 
     margin-top: 150px;
