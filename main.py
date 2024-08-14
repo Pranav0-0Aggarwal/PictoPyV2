@@ -2,13 +2,15 @@ import os
 import sys
 import queue
 import logging
+from time import time
 from utils import *
 from media import *
 from atexit import register
 from markupsafe import escape
 from typing import Dict, List
 from urllib.parse import unquote
-from utils.log import StreamToLogger, LOG_CONFIG
+from utils.log import StreamToLogger
+from utils.config import LOG_CONFIG
 from flask import (
     Flask,
     render_template,
@@ -184,6 +186,7 @@ def setup_logging() -> logging.Logger:
 
 
     return listener
+
 
 
 def sendFile(filePath: str) -> Response:

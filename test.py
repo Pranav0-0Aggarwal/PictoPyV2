@@ -1,12 +1,7 @@
 import logging
 import logging.config
-import logging.handlers
 import sys
 import os
-from atexit import register
-import queue
-from time import time
-
 
 def logPath() -> str:
     """
@@ -48,10 +43,35 @@ class StreamToLogger(object):
         pass  # StreamHandler does not require flush implementation
 
 
+class LoggerHandler(logging.Handler):
+    """
+    A custom logging handler that emits logs to the StreamToLogger.
+    """
+    def __init__(self, stream_logger):
+        super().__init__()
+        self.stream_logger = stream_logger
+
+    def emit(self, record):
+        try:
+            msg = self.format(record)
+            self.stream_logger.write(msg + '\n')
+        except Exception:
+            self.handleError(record)
+
+    def flush(self):
+        """
+        Ensure that any buffered output has been flushed.
+        """
+        self.stream_logger.flush()
+
+
 LOG_CONFIG = {
     "version": 1,
     "disable_existing_loggers": False,
     "formatters": {
+        'console': {
+            'format': '[%(levelname)s] %(message)s',
+        },
         "standard": {
             "format": "[%(levelname)s|%(module)s|L%(lineno)d] %(asctime)s: %(message)s",
             "datefmt": "%Y-%m-%dT%H:%M:%S%z",
@@ -60,7 +80,7 @@ LOG_CONFIG = {
     "handlers": {
         "default": {
             "level": "INFO",
-            "formatter": "standard",
+            "formatter": "console",
             "class": "logging.StreamHandler",
             "stream": sys.stdout,  # Output to stdout
         },
@@ -69,8 +89,10 @@ LOG_CONFIG = {
             "formatter": "standard",
             "class": "logging.handlers.RotatingFileHandler",
             "filename": logPath(),
-            "maxBytes": 1024 * 1024 * 5,  # 5 MB
-            "backupCount": 5,
+            "maxBytes": 15 * 1024,  # 15 MB for testing
+            "backupCount": 10,
+            "delay":True,
+            "mode": 'w',
         },
     },
     "loggers": {
@@ -81,46 +103,14 @@ LOG_CONFIG = {
     },
 }
 
+# Example usage of logging config
+logging.config.dictConfig(LOG_CONFIG)
+logger = logging.getLogger(__name__)
 
-def setup_logging() -> logging.Logger:
-    """
-    Sets up the logging system, redirects stdout/stderr to the logger,
-    and returns the logger instance.
+# Redirect stdout and stderr to the logger
+sys.stdout = StreamToLogger(logger, logging.INFO)
+sys.stderr = StreamToLogger(logger, logging.ERROR)
 
-    Returns:
-        logging.Logger: The configured logger instance.
-    """
-    logger = logging.getLogger("app")
-
-    # Redirect stdout and stderr to logger
-    sys.stdout = StreamToLogger(logger, logging.INFO)
-    sys.stderr = StreamToLogger(logger, logging.ERROR)
-
-    # Configure the logger
-    logging.config.dictConfig(LOG_CONFIG)
-
-    log_queue = queue.Queue()
-    queue_handler = logging.handlers.QueueHandler(log_queue)
-    listener = logging.handlers.QueueListener(log_queue, *logger.handlers)
-    logger.addHandler(queue_handler)
-
-    # Start the listener
-    listener.start()
-
-    # Register the listener stop to be called on exit
-    register(listener.stop)
-
-    return logger
-
-
-# Example usage
-if __name__ == "__main__":
-    logger = setup_logging()
-
-    # Example log messages
-    start = time()
-    for i in range(1000):
-        logger.info(f"{i} {time() - start}")
-
-    # Test log messages
-    print("test")
+# Example log messages
+logger.info("This is an info message.")
+logger.error("This is an error message.")
