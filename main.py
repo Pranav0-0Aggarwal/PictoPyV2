@@ -10,7 +10,7 @@ from markupsafe import escape
 from typing import Dict, List
 from urllib.parse import unquote
 from utils.log import StreamToLogger
-from utils.config import LOG_CONFIG
+from utils.config import LOG_CONFIG, dbPath
 from flask import (
     Flask,
     render_template,
@@ -37,25 +37,6 @@ def dataDir() -> str:
     os.makedirs(directory, exist_ok=True)
     return directory
 
-
-def dbPath() -> str:
-    """
-    Database is created on the user's home directory.
-
-    Returns:
-        str: The path to the database file.
-    """
-    return os.path.join(dataDir(), "database.db")
-
-
-def logPath() -> str:
-    """
-    Log file is created on the user's home directory.
-
-    Returns:
-        str: The path to the log file.
-    """
-    return os.path.join(dataDir(), "log.txt")
 
 
 def updateDB(groupBy: str = None) -> None:
