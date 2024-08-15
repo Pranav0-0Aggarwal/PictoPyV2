@@ -1,5 +1,10 @@
 import os
 import sys  
+from typing import Dict
+
+"""
+Functions are being used instead of variables to ensure that the values cannot be altered by any means.
+"""
 
 def logPath() -> str:
     """
@@ -29,6 +34,43 @@ def dataDir() -> str:
     directory = os.path.join(os.path.expanduser("~"), ".pictopy")
     os.makedirs(directory, exist_ok=True)
     return directory
+
+def dbSchema() -> Dict:
+    """
+    Returns the database schema as a string.
+
+    Returns:
+        Dict: The database schema.
+    """
+    return {
+      "MEDIA": [
+          "mediaID INTEGER PRIMARY KEY AUTOINCREMENT",
+          "hash TEXT UNIQUE",
+          "path TEXT",
+          "directory TEXT",
+          "fileType TEXT CHECK(fileType IN ('img', 'vid'))",
+          "timeStamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP",
+          "hidden INTEGER",
+      ],
+      "CLASS": ["classID INTEGER PRIMARY KEY AUTOINCREMENT", "class TEXT UNIQUE"],
+      "JUNCTION": [
+          "mediaID INTEGER",
+          "classID INTEGER",
+          "FOREIGN KEY(mediaID) REFERENCES MEDIA(mediaID) ON DELETE CASCADE",
+          "FOREIGN KEY(classID) REFERENCES CLASS(classID)",
+          "PRIMARY KEY (mediaID, classID)",
+      ],
+    }
+            
+def yoloModelPath() -> str:
+    """
+    Returns the path to the YOLO model.
+
+    Returns:
+        str: The path to the YOLO model.
+    """
+    return "models/yolov8n.onnx"
+
 
 LOG_CONFIG = {
     "version": 1,

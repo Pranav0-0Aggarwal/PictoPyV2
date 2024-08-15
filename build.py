@@ -7,7 +7,8 @@ import sys
 import webview
 from threading import Thread, Event
 from main import app
-from utils import LOG_CONFIG, StreamToLogger
+from utils import StreamToLogger
+from config import *
 
 
 # This event will be set when we need to stop the Flask server

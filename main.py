@@ -1,8 +1,7 @@
+from config import *
 from utils import *
 from media import *
-from markupsafe import escape
 from typing import Dict, List
-from urllib.parse import unquote
 from flask import (
     Flask,
     render_template,
@@ -28,34 +27,13 @@ def updateDB(groupBy: str = None) -> None:
         groupBy (str, optional): Specifies whether to classify media by 'class'. Defaults to None.
     """
     writeConn = connectDB(dbPath())
-    createSchema(
-        writeConn,
-        {
-            "MEDIA": [
-                "mediaID INTEGER PRIMARY KEY AUTOINCREMENT",
-                "hash TEXT UNIQUE",
-                "path TEXT",
-                "directory TEXT",
-                "fileType TEXT CHECK(fileType IN ('img', 'vid'))",
-                "timeStamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP",
-                "hidden INTEGER",
-            ],
-            "CLASS": ["classID INTEGER PRIMARY KEY AUTOINCREMENT", "class TEXT UNIQUE"],
-            "JUNCTION": [
-                "mediaID INTEGER",
-                "classID INTEGER",
-                "FOREIGN KEY(mediaID) REFERENCES MEDIA(mediaID) ON DELETE CASCADE",
-                "FOREIGN KEY(classID) REFERENCES CLASS(classID)",
-                "PRIMARY KEY (mediaID, classID)",
-            ],
-        },
-    )
+    createSchema(writeConn, dbSchema())
 
     populateMediaTable(writeConn, mediaPaths(homeDir()))
     if groupBy == "class":
         classifyMedia(
             writeConn,
-            pathOf("models/yolov8n.onnx"),
+            pathOf(yoloModelPath()),
             getUnlinkedMedia(connectDB(dbPath())),
         )
     cleanDB(writeConn)
@@ -88,33 +66,6 @@ def groupPaths(hidden, fileType, groupBy) -> str:
     closeConnection(readConn)
 
     return jsonify(result)
-
-
-def decodeLinkPath(path: str) -> str:
-    """
-    Decodes a URL-encoded path and attempts to find the corresponding file or directory.
-    If the file or directory exists under either the Unix-style path or the relative path,
-    it returns the absolute path. Otherwise, it should redirect to the index page.
-
-    Args:
-        path: The URL-encoded path to decode and locate.
-
-    Returns:
-        The absolute path if found, or a redirect to the index page if not.
-    """
-    path = escape(unquote(path))
-
-    # Convert the path to Windows-style path for checking
-    unixPath = f"/{path}"
-    if pathExist(unixPath):
-        return unixPath
-
-    # Convert the path to Windows-style path for checking
-    windowsPath = path.replace("/", "\\")
-    if pathExist(windowsPath):
-        return windowsPath
-
-    return redirect(url_for("index"))  # doesn't reload (TBI)
 
 
 def sendFile(filePath: str) -> Response:
