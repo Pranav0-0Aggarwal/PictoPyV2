@@ -140,11 +140,18 @@ body {
 /* Interaction with Nav Icons */
 img.section.clicked,
 img.toggle.enabled,
-img.button.clicked,
+/* img.button.clicked, */
 img.select {
     border-radius: 10px;
     background-color: rgba(255, 255, 255, 0.2); 
     transition: transform 0.3s ease, background-color 0.3s ease; 
+}
+
+/* Click effect */
+img:active {
+    border-radius: 10px;
+    transform: scale(0.9);
+    background-color: rgba(255, 255, 255, 0.2); 
 }
 
 /* Additional animations */
