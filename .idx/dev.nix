@@ -17,6 +17,7 @@
     pkgs.glib
     pkgs.sqlite
     pkgs.fastfetch
+    pkgs.gh
   ];
 
   # Sets environment variables in the workspace
