@@ -2,6 +2,10 @@ import os
 import sys  
 from typing import Dict
 
+"""
+Functions are being used instead of variables to ensure that the values cannot be altered by any means.
+"""
+
 def logPath() -> str:
     """
     Log file is created in the user's home directory.
@@ -57,6 +61,15 @@ def dbSchema() -> Dict:
           "PRIMARY KEY (mediaID, classID)",
       ],
     }
+            
+def yoloModelPath() -> str:
+    """
+    Returns the path to the YOLO model.
+
+    Returns:
+        str: The path to the YOLO model.
+    """
+    return "models/yolov8n.onnx"
 
 
 LOG_CONFIG = {

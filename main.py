@@ -35,7 +35,7 @@ def updateDB(groupBy: str = None) -> None:
     if groupBy == "class":
         classifyMedia(
             writeConn,
-            pathOf("models/yolov8n.onnx"),
+            pathOf(yoloModelPath()),
             getUnlinkedMedia(connectDB(dbPath())),
         )
     cleanDB(writeConn)
