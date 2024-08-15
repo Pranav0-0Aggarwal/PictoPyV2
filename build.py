@@ -1,12 +1,15 @@
 # Credit: https://github.com/thewilltejeda/htmx-desktop-app-01/blob/main/run.py
 
 import logging
+import logging.config
 import queue
 import sys
 import webview
 from threading import Thread, Event
 from main import app
-from test import LOG_CONFIG, StreamToLogger
+from utils.config import LOG_CONFIG
+from utils.log import StreamToLogger
+
 
 # This event will be set when we need to stop the Flask server
 stopEvent = Event()
