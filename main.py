@@ -29,28 +29,7 @@ def updateDB(groupBy: str = None) -> None:
         groupBy (str, optional): Specifies whether to classify media by 'class'. Defaults to None.
     """
     writeConn = connectDB(dbPath())
-    createSchema(
-        writeConn,
-        {
-            "MEDIA": [
-                "mediaID INTEGER PRIMARY KEY AUTOINCREMENT",
-                "hash TEXT UNIQUE",
-                "path TEXT",
-                "directory TEXT",
-                "fileType TEXT CHECK(fileType IN ('img', 'vid'))",
-                "timeStamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP",
-                "hidden INTEGER",
-            ],
-            "CLASS": ["classID INTEGER PRIMARY KEY AUTOINCREMENT", "class TEXT UNIQUE"],
-            "JUNCTION": [
-                "mediaID INTEGER",
-                "classID INTEGER",
-                "FOREIGN KEY(mediaID) REFERENCES MEDIA(mediaID) ON DELETE CASCADE",
-                "FOREIGN KEY(classID) REFERENCES CLASS(classID)",
-                "PRIMARY KEY (mediaID, classID)",
-            ],
-        },
-    )
+    createSchema(writeConn, dbSchema())
 
     populateMediaTable(writeConn, mediaPaths(homeDir()))
     if groupBy == "class":
