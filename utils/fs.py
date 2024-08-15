@@ -2,6 +2,8 @@ import os
 import sys
 import hashlib
 from typing import Generator, Union, List
+from markupsafe import escape
+from urllib.parse import unquote
 
 def genHash(path: str) -> str:
     """
@@ -128,3 +130,27 @@ def pathOf(path) -> str:
     if pathExist(path):
         return path
     return f"{sys._MEIPASS}/{path}" 
+
+def decodeLinkPath(path: str) -> str:
+    """
+    Decodes a URL-encoded path and attempts to find the corresponding file or directory.
+    If the file or directory exists under either the Unix-style path or the relative path,
+    it returns the absolute path. Otherwise, it should redirect to the index page.
+
+    Args:
+        path: The URL-encoded path to decode and locate.
+
+    Returns:
+        The absolute path if found, or a redirect to the index page if not.
+    """
+    path = escape(unquote(path))
+
+    # Convert the path to Windows-style path for checking
+    unixPath = f"/{path}"
+    if pathExist(unixPath):
+        return unixPath
+
+    # Convert the path to Windows-style path for checking
+    windowsPath = path.replace("/", "\\")
+    if pathExist(windowsPath):
+        return windowsPath
