@@ -1,12 +1,5 @@
-import os
-import sys
-import queue
-import logging
-import logging.config
-from time import time
 from utils import *
 from media import *
-from atexit import register
 from markupsafe import escape
 from typing import Dict, List
 from urllib.parse import unquote
@@ -122,37 +115,6 @@ def decodeLinkPath(path: str) -> str:
         return windowsPath
 
     return redirect(url_for("index"))  # doesn't reload (TBI)
-
-def setup_logging() -> logging.Logger:
-    """
-    Sets up the logging system, redirects stdout/stderr to the logger,
-    and returns the listner instance.
-
-    Logger instance isnt required since it i 
-
-    Returns:
-        logging.Logger: The configured logger instance.
-    """
-    logger = logging.getLogger("app")
-
-    # Redirect stdout and stderr to logger
-    sys.stdout = StreamToLogger(logger, logging.INFO)
-    sys.stderr = StreamToLogger(logger, logging.ERROR)
-
-    # Configure the logger
-    logging.config.dictConfig(LOG_CONFIG)
-
-    log_queue = queue.Queue()
-    queue_handler = logging.handlers.QueueHandler(log_queue)
-    listener = logging.handlers.QueueListener(log_queue, *logger.handlers)
-    logger.addHandler(queue_handler)
-
-    # Start the listener
-    listener.start()
-
-
-    return listener
-
 
 
 def sendFile(filePath: str) -> Response:
@@ -280,9 +242,7 @@ def info(path):
 
 
 if __name__ == "__main__":
-    listner = setup_logging()
-    app.run(debug=True, host="0.0.0.0")
 
+    app.run(debug=True, host="0.0.0.0")
     # On the off chance something occurs listner still stops after run is done
-    listner.stop()
     print("Exiting Application, Listener stopped") 
