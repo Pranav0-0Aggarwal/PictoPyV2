@@ -2,6 +2,7 @@ import os
 import sys
 import queue
 import logging
+import logging.config
 from time import time
 from utils import *
 from media import *
