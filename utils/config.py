@@ -10,6 +10,14 @@ def logPath() -> str:
     """
     return os.path.join(dataDir(), "log.txt")
 
+def dbPath() -> str:
+    """
+    Database is created on the user's home directory.
+
+    Returns:
+        str: The path to the database file.
+    """
+    return os.path.join(dataDir(), "database.db")
 
 def dataDir() -> str:
     """

@@ -10,8 +10,6 @@ from atexit import register
 from markupsafe import escape
 from typing import Dict, List
 from urllib.parse import unquote
-from utils.log import StreamToLogger
-from utils.config import LOG_CONFIG, dataDir
 from flask import (
     Flask,
     render_template,
@@ -24,17 +22,6 @@ from flask import (
 )
 
 writing = False
-
-
-
-def dbPath() -> str:
-    """
-    Database is created on the user's home directory.
-
-    Returns:
-        str: The path to the database file.
-    """
-    return os.path.join(dataDir(), "database.db")
 
 
 def updateDB(groupBy: str = None) -> None:
