@@ -10,7 +10,7 @@ on:
       - master
 
 jobs:
-  upload:
+  build-desktop:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
