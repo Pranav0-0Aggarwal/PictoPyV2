@@ -8,6 +8,8 @@ from urllib.parse import unquote
 def genHash(path: str) -> str:
     """
     Generates a hash of file.
+    Why hash and not uuid?
+    Hashes are based on content and not on name/path.
 
     Args:
         path: Path to the file.
