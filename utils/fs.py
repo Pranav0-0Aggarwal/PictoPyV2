@@ -1,13 +1,16 @@
 import os
 import sys
-import hashlib
+import xxhash
+import mmap
 from typing import Generator, Union, List
 from markupsafe import escape
 from urllib.parse import unquote
 
 def genHash(path: str) -> str:
     """
-    Generates a hash of file.
+    Generates a fast, non-cryptographic hash of a file using xxHash 
+    And memory mapping making file's content to be accessible as if 
+    it were part of the program's memory, but it's actually stored on disk. 
     Why hash and not uuid?
     Hashes are based on content and not on name/path.
 
@@ -17,9 +20,15 @@ def genHash(path: str) -> str:
     Returns:
         A hexadecimal string representing the hash of the file.
     """
-    with open(path, "rb") as f:
-        return hashlib.md5(f.read()).hexdigest()
-
+    try:
+        hash_xx = xxhash.xxh64()
+        with open(path, "rb") as f:
+            with mmap.mmap(f.fileno(), 0, access=mmap.ACCESS_READ) as mm:
+                hash_xx.update(mm)
+        return hash_xx.hexdigest()
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return None
 
 def checkExtension(filePath: str, extensions: List[str]) -> bool:
     """
