@@ -167,6 +167,17 @@ async function displayData(_section, button) {
     container.innerHTML = '';
 
     if (data.length === 0) {
+
+        /*
+        If media is being processed by models, revert to directory grouping 
+        to avoid false positives indicating that the section is empty.
+        */
+
+        if (groupBy === 'class') {
+            toggleGroup(button);
+            return;
+        }
+
         const emptyContent = document.createElement('div')
 
         emptyContent.className = 'empty-content'
