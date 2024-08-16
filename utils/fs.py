@@ -1,13 +1,13 @@
 import os
 import sys
-import hashlib
+import xxhash
 from typing import Generator, Union, List
 from markupsafe import escape
 from urllib.parse import unquote
 
-def genHash(path: str) -> str:
+def genHash(path: str, chunkSize: int = 8192) -> str:
     """
-    Generates a hash of file.
+    Generates a fast, non-cryptographic hash of a file using xxHash.
     Why hash and not uuid?
     Hashes are based on content and not on name/path.
 
@@ -17,8 +17,11 @@ def genHash(path: str) -> str:
     Returns:
         A hexadecimal string representing the hash of the file.
     """
+    hash = xxhash.xxh64()
     with open(path, "rb") as f:
-        return hashlib.md5(f.read()).hexdigest()
+        for chunk in iter(lambda: f.read(chunkSize), b""):
+            hash.update(chunk)
+    return hash.hexdigest()
 
 
 def checkExtension(filePath: str, extensions: List[str]) -> bool:
