@@ -167,39 +167,18 @@ async function displayData(_section, button) {
     container.innerHTML = '';
 
     if (data.length === 0) {
-        const emptyContent = document.createElement('div')
 
-        emptyContent.className = 'empty-content'
+        /*
+        If media is being processed by models, revert to directory grouping 
+        to avoid false positives indicating that the section is empty.
+        */
 
-        const emptyMessageIcon = document.createElement('img');
-        emptyMessageIcon.src = '/static/icons/emptyMessageIcon.svg';
-
-        emptyMessageIcon.className = 'empty-message-icon'
-
-        emptyContent.appendChild(emptyMessageIcon)
-
-        const textMessage = document.createElement('span');
-
-        switch(section){
-            case 'trash':
-                textMessage.textContent = 'Nothing in Trash'
-                break;
-            case 'hidden':
-                textMessage.textContent = "You've got Nothing to Hide"
-                break;
-            case 'vid':
-                textMessage.textContent = 'No Videos were Found'
-                break;
-            case 'img':
-                textMessage.textContent = 'No Images were Found'
-                break;
-            default:
-                textMessage.textContent = 'No Content Available'
+        if (groupBy === 'class') {
+            toggleGroup(button);
         }
-
-        emptyContent.appendChild(textMessage)
-
-        container.appendChild(emptyContent)
+        else {
+            container.appendChild(indicateEmptySection())
+        }
         return;
     }
 
@@ -452,4 +431,42 @@ function showInfo(mediaContent) {
 
         mediaContent.innerHTML = infoHtml;
     });
+}
+
+
+// Indicate the section being displayed is empty
+function indicateEmptySection() {
+    const emptyContent = document.createElement('div')
+
+    emptyContent.className = 'empty-content'
+
+    const emptyMessageIcon = document.createElement('img');
+    emptyMessageIcon.src = '/static/icons/emptyMessageIcon.svg';
+
+    emptyMessageIcon.className = 'empty-message-icon'
+
+    emptyContent.appendChild(emptyMessageIcon)
+
+    const textMessage = document.createElement('span');
+
+    switch(section){
+        case 'trash':
+            textMessage.textContent = 'Nothing in Trash'
+            break;
+        case 'hidden':
+            textMessage.textContent = "You've got Nothing to Hide"
+            break;
+        case 'vid':
+            textMessage.textContent = 'No Videos were Found'
+            break;
+        case 'img':
+            textMessage.textContent = 'No Images were Found'
+            break;
+        default:
+            textMessage.textContent = 'No Content Available'
+    }
+
+    emptyContent.appendChild(textMessage)
+
+    return emptyContent;
 }
