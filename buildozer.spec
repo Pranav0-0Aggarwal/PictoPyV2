@@ -17,36 +17,36 @@ package.domain = org.xade
 # (str) Source code where the main.py live
 source.dir = .
 
-# (list) Source files to include (leave empty to include all the files)
-source.include_exts = py,png,jpg,kv,atlas
+# (list) Source files to include (let empty to include all the files)
+source.include_exts = py,png,jpg,kv,atlas,html,jar,css
 
 # (list) List of inclusions using pattern matching
-#source.include_patterns = assets/*,images/*.png
+source.include_patterns = static/*, models/*
 
 # (list) Source files to exclude (leave empty to not exclude anything)
 #source.exclude_exts = spec
 
-# (list) List of directory to exclude (leave empty to not exclude anything)
-#source.exclude_dirs = tests, bin, venv
+# (list) List of directory to exclude (let empty to not exclude anything)
+source.exclude_dirs = bin,build,dist,docs,logo,tests,pywebview.egg-info
 
 # (list) List of exclusions using pattern matching
 # Do not prefix with './'
 #source.exclude_patterns = license,images/*/*.jpg
 
 # (str) Application versioning (method 1)
-#version = 0.1
+version = 0.1
 
 # (str) Application versioning (method 2)
-version.regex = __version__ = ['"](.*)['"]
-version.filename = %(source.dir)s/main.py
+# version.regex = __version__ = ['"](.*)['"]
+# version.filename = %(source.dir)s/main.py
 
 # (list) Application requirements
 # comma separated e.g. requirements = sqlite3,kivy
-requirements = python3,kivy
+requirements = python3,kivy, blinker, bottle, click, coloredlogs, Flask, flatbuffers, humanfriendly, itsdangerous, Jinja2, MarkupSafe, mpmath, numpy, onnxruntime, opencv-python-headless, packaging, protobuf, proxy_tools, PyQt5, PyQt5-Qt5, PyQt5-sip, PyQtWebEngine, PyQtWebEngine-Qt5, pywebview, QtPy, sympy, typing_extensions, Werkzeug, xxhash, 
 
 # (str) Custom source folders for requirements
 # Sets custom source for any requirements with recipes
-# requirements.source.kivy = ../../kivy
+#requirements.source.webview = webview
 
 # (str) Presplash of the application
 presplash.filename = %(source.dir)s/static/asset/favicon
@@ -123,6 +123,9 @@ fullscreen = 0
 # (int) Android NDK API to use. This is the minimum API your app will support, it should usually match android.minapi.
 #android.ndk_api = 21
 
+# (bool) Use --private data storage (True) or --dir public storage (False)
+#android.private_storage = True
+
 # (str) Android NDK directory (if empty, it will be automatically downloaded.)
 #android.ndk_path =
 
@@ -181,11 +184,11 @@ fullscreen = 0
 # their classes. Don't add jars that you do not need, since extra jars can slow
 # down the build process. Allows wildcards matching, for example:
 # OUYA-ODK/libs/*.jar
-#android.add_jars = foo.jar,bar.jar,path/to/more/*.jar
+android.add_jars = ../../webview/lib/pywebview-android.jar
 
 # (list) List of Java files to add to the android project (can be java or a
 # directory containing the files)
-#android.add_src =
+#android.add_src = interop/android/lib/src/main/java/com/pywebview
 
 # (list) Android AAR archives to add
 #android.add_aars =
@@ -334,7 +337,7 @@ android.allow_backup = True
 # (str) python-for-android specific commit to use, defaults to HEAD, must be within p4a.branch
 #p4a.commit = HEAD
 
-# (str) python-for-android git clone directory
+# (str) python-for-android git clone directory (if empty, it will be automatically cloned from github)
 #p4a.source_dir =
 
 # (str) The directory in which python-for-android should look for your own build recipes (if any)
