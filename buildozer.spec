@@ -6,13 +6,13 @@
 [app]
 
 # (str) Title of your application
-title = My Application
+title = PictoPy
 
 # (str) Package name
-package.name = myapp
+package.name = PictoPy
 
 # (str) Package domain (needed for android/ios packaging)
-package.domain = org.test
+package.domain = org.xade
 
 # (str) Source code where the main.py live
 source.dir = .
@@ -34,11 +34,11 @@ source.include_exts = py,png,jpg,kv,atlas
 #source.exclude_patterns = license,images/*/*.jpg
 
 # (str) Application versioning (method 1)
-version = 0.1
+#version = 0.1
 
 # (str) Application versioning (method 2)
-# version.regex = __version__ = ['"](.*)['"]
-# version.filename = %(source.dir)s/main.py
+version.regex = __version__ = ['"](.*)['"]
+version.filename = %(source.dir)s/main.py
 
 # (list) Application requirements
 # comma separated e.g. requirements = sqlite3,kivy
@@ -49,10 +49,10 @@ requirements = python3,kivy
 # requirements.source.kivy = ../../kivy
 
 # (str) Presplash of the application
-#presplash.filename = %(source.dir)s/data/presplash.png
+presplash.filename = %(source.dir)s/static/asset/favicon
 
 # (str) Icon of the application
-#icon.filename = %(source.dir)s/data/icon.png
+icon.filename = %(source.dir)s/static/asset/favicon
 
 # (list) Supported orientations
 # Valid options are: landscape, portrait, portrait-reverse or landscape-reverse

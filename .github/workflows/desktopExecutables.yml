@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - artifact
+      - android
   pull_request:
     branches:
       - main
@@ -32,5 +33,5 @@ jobs:
       - name: UploadArtifacts
         uses: actions/upload-artifact@v4
         with:
-          name: Artifacts
+          name: Desktop
           path: dist/
