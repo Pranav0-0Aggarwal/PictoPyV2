@@ -42,7 +42,7 @@ version = 0.1
 
 # (list) Application requirements
 # comma separated e.g. requirements = sqlite3,kivy
-requirements = python3,kivy, blinker, bottle, click, coloredlogs, Flask, flatbuffers, humanfriendly, itsdangerous, Jinja2, MarkupSafe, mpmath, numpy, onnxruntime, opencv-python-headless, packaging, protobuf, proxy_tools, PyQt5, PyQt5-Qt5, PyQt5-sip, PyQtWebEngine, PyQtWebEngine-Qt5, pywebview, QtPy, sympy, typing_extensions, Werkzeug, xxhash, 
+requirements = python3,kivy,blinker,bottle,click,coloredlogs,Flask,flatbuffers,humanfriendly,itsdangerous,Jinja2,MarkupSafe,numpy,onnxruntime,opencv-python-headless,packaging,protobuf,proxy_tools,PyQt5,PyQt5-Qt5,PyQt5-sip,PyQtWebEngine,PyQtWebEngine-Qt5,pywebview,QtPy,sympy,typing_extensions,Werkzeug,xxhash
 
 # (str) Custom source folders for requirements
 # Sets custom source for any requirements with recipes
