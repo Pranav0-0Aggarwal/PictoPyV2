@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   windows-build:
     image: batonogov/pyinstaller-windows:latest
