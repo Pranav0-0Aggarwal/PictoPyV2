@@ -5,19 +5,19 @@
   channel = "stable-23.11"; # or "unstable"
 
   # Use https://search.nixos.org/packages to find packages
-  packages = [
-    pkgs.python3
-    pkgs.binutils
-    pkgs.krb5.dev
-    pkgs.gcc
-    pkgs.libkrb5
-    pkgs.python3Packages.gssapi
-    pkgs.winePackages.stable
-    pkgs.libGL
-    pkgs.glib
-    pkgs.sqlite
-    pkgs.fastfetch
-    pkgs.gh
+  packages = with pkgs; [
+    python3
+    binutils
+    krb5.dev
+    gcc
+    libkrb5
+    python3Packages.gssapi
+    winePackages.stable
+    libGL
+    glib
+    sqlite
+    fastfetch
+    gh
   ];
 
   # Sets environment variables in the workspace
