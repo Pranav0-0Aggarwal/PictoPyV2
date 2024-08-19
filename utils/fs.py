@@ -91,16 +91,6 @@ def detectFileWithHash(files: Generator[str, None, None], targetHash: str) -> Un
     return None
 
 
-def homeDir() -> str:
-    """
-    Get the home directory path.
-    Handle Android (TBI)
-
-    Returns:
-        str: Home directory path.
-    """
-    return os.path.expanduser("~")
-
 def deleteFile(paths: List[str]) -> None:
     """
     Delete files by path.

@@ -1,1 +1,1 @@
-from .config import dataDir, logPath, dbPath, dbSchema, yoloModelPath, LOG_CONFIG 
+from .config import homeDir, dataDir, logPath, dbPath, dbSchema, yoloModelPath, LOG_CONFIG 

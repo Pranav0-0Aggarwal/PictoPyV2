@@ -6,6 +6,16 @@ from typing import Dict
 Functions are being used instead of variables to ensure that the values cannot be altered by any means.
 """
 
+def homeDir() -> str:
+    """
+    Get the home directory path i.e. the directory to scan.
+    Handle Mobile (TBI)
+
+    Returns:
+        str: Home directory path.
+    """
+    return os.path.expanduser("~")
+
 def logPath() -> str:
     """
     Log file is created in the user's home directory.

@@ -1,4 +1,4 @@
 
-from .fs import genHash, checkExtension, mediaPaths, homeDir, deleteFile, pathExist, pathOf, decodeLinkPath
+from .fs import genHash, checkExtension, mediaPaths, deleteFile, pathExist, pathOf, decodeLinkPath
 from .db import createSchema, connectDB, createTable, closeConnection, groupByClass, groupByDir, updateMediaPath, hideByClass, deleteFromDB, cleanDB, insertMedia, insertClassRelation, toggleVisibility, moveToTrash, getUnlinkedMedia, getClassesForMediaID, getMediaIDForPath, getInfoByPath, executeQuery
 from .log import StreamToLogger
