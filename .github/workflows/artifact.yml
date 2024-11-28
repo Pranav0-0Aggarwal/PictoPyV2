@@ -16,7 +16,7 @@ jobs:
       - name: Create Executable
         uses: sayyid5416/pyinstaller@v1
         with:
-          python_ver: '3.11'
+          python_ver: '3.10'
           spec: 'build.spec'
           requirements: 'requirements.txt'
           upload_exe_with_name: 'pictopy_linux'
@@ -27,29 +27,18 @@ jobs:
       - name: Create Executable
         uses: sayyid5416/pyinstaller@v1
         with:
-          python_ver: '3.11'
+          python_ver: '3.10'
           spec: 'build.spec'
           requirements: 'requirements.txt'
           upload_exe_with_name: 'pictopy_windows'
 
-  osx-build-x86:
+  osx-build:
     runs-on: macos-12
     steps:
       - name: Create Executable
         uses: sayyid5416/pyinstaller@v1
         with:
-          python_ver: '3.11'
+          python_ver: '3.10'
           spec: 'build.spec'
           requirements: 'requirements.txt'
           upload_exe_with_name: 'pictopy_osx'
-
-  osx-build-arm:
-    runs-on: macos-14
-    steps:
-      - name: Create Executable
-        uses: sayyid5416/pyinstaller@v1
-        with:
-          python_ver: '3.11'
-          spec: 'build.spec'
-          requirements: 'requirements.txt'
-          upload_exe_with_name: 'pictopy_osx_arm'
