@@ -7,7 +7,7 @@ services:
        - path: ./requirements.txt
          action: rebuild
        - path: .
-         target: /app
+         target: /root/app
          action: sync
    volumes:
      - type: bind
